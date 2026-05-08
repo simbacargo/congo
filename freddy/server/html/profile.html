@@ -1,0 +1,203 @@
+
+<div class="min-h-screen bg-gray-950 text-gray-100 p-6">
+
+<div class="max-w-6xl mx-auto">
+
+  <!-- HEADER -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Account Settings</h1>
+    <p class="text-gray-400 text-sm">Manage your profile, security, and billing</p>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs" class="flex gap-2 mb-6 flex-wrap"></div>
+
+  <!-- CONTENT -->
+  <div id="content"></div>
+
+  <!-- DANGER -->
+  <div class="mt-6 bg-gray-900 border border-red-900 rounded-xl p-6 space-y-3">
+    <h2 class="text-red-400 font-semibold">Danger Zone</h2>
+    <p class="text-gray-400 text-sm">Irreversible actions</p>
+    <button class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg">Delete Account</button>
+  </div>
+
+</div>
+</div>
+
+<script>
+var tabs = ['Profile','Security','Preferences'];
+var activeTab = 'Profile';
+
+var user = {
+  name: 'John Doe',
+  email: 'john@kdcharite.com',
+  phone: '123-456-7890'
+};
+
+var settings = {
+  notifications: true,
+  emailUpdates: false,
+  twoFactor: false
+};
+
+var avatar = 'https://i.pravatar.cc/150';
+
+var sessions = [
+  { id:1, device:'Chrome - MacOS', location:'San Francisco' },
+  { id:2, device:'Safari - iPhone', location:'Los Angeles' }
+];
+
+function renderTabs() {
+  var el = document.getElementById('tabs');
+  el.innerHTML = tabs.map(tab => `
+    <button onclick="setTab('${tab}')"
+      class="px-4 py-2 rounded-lg text-sm transition ${
+        activeTab === tab
+        ? 'bg-blue-600 text-white'
+        : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+      }">
+      ${tab}
+    </button>
+  `).join('');
+}
+
+function setTab(tab) {
+  activeTab = tab;
+  render();
+}
+
+function renderContent() {
+  if (activeTab === 'Profile') {
+    return `
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4 text-center">
+        <img src="${avatar}" class="w-24 h-24 rounded-full border mx-auto">
+        <input type="file" onchange="changeAvatar(event)" class="text-sm w-full">
+        <p class="text-gray-400 text-sm">JPG, PNG up to 2MB</p>
+      </div>
+
+      <div class="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+        <h2 class="text-lg font-semibold">Profile Information</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input value="${user.name}" onchange="updateUser('name', this.value)" class="input" placeholder="Full Name">
+          <input value="${user.email}" onchange="updateUser('email', this.value)" class="input" placeholder="Email">
+          <input value="${user.phone}" onchange="updateUser('phone', this.value)" class="input md:col-span-2" placeholder="Phone">
+        </div>
+
+        <button onclick="save()" class="btn-primary">Save Profile</button>
+      </div>
+    </div>`;
+  }
+
+  if (activeTab === 'Security') {
+    return `
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+      <h2 class="text-lg font-semibold">Security</h2>
+
+      <input type="password" class="input" placeholder="Current Password">
+      <input type="password" class="input" placeholder="New Password">
+      <input type="password" class="input" placeholder="Confirm Password">
+
+      <button class="btn-danger">Update Password</button>
+
+      <div class="pt-6 border-t border-gray-800 space-y-2">
+        <h3 class="font-semibold">Active Sessions</h3>
+
+        ${sessions.map(s => `
+          <div class="flex justify-between items-center text-sm bg-gray-800 p-3 rounded-lg">
+            <div>
+              <p>${s.device}</p>
+              <p class="text-gray-400 text-xs">${s.location}</p>
+            </div>
+            <button class="text-red-400">Logout</button>
+          </div>
+        `).join('')}
+
+      </div>
+    </div>`;
+  }
+
+  if (activeTab === 'Preferences') {
+    return `
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+      <h2 class="text-lg font-semibold">Preferences</h2>
+
+      ${toggle('Notifications','notifications')}
+      ${toggle('Email Updates','emailUpdates')}
+      ${toggle('Two-Factor Authentication','twoFactor')}
+    </div>`;
+  }
+
+  if (activeTab === 'Billing') {
+    return `
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+      <h2 class="text-lg font-semibold">Billing</h2>
+
+      <div class="bg-gray-800 p-4 rounded-lg">
+        <p class="text-sm text-gray-400">Current Plan</p>
+        <p class="text-xl font-bold">Pro Plan</p>
+      </div>
+
+      <button class="btn-primary">Upgrade Plan</button>
+    </div>`;
+  }
+}
+
+function toggle(label, key) {
+  return `
+    <label class="flex justify-between bg-gray-800 p-3 rounded-lg">
+      <span>${label}</span>
+      <input type="checkbox" ${settings[key] ? 'checked' : ''} onchange="settings.${key} = this.checked">
+    </label>
+  `;
+}
+
+function updateUser(field, value) {
+  user[field] = value;
+}
+
+function changeAvatar(e) {
+  const file = e.target.files[0];
+  if (file) {
+    avatar = URL.createObjectURL(file);
+    render();
+  }
+}
+
+function save() {
+  console.log('Saved', user);
+  alert('Saved successfully!');
+}
+
+function render() {
+  renderTabs();
+  document.getElementById('content').innerHTML = renderContent();
+}
+
+render();
+</script>
+
+<style>
+.input {
+  width: 100%;
+  padding: 8px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+}
+
+.btn-primary {
+  padding: 8px 16px;
+  background: #2563eb;
+  border-radius: 8px;
+}
+
+.btn-danger {
+  padding: 8px 16px;
+  background: #dc2626;
+  border-radius: 8px;
+}
+</style>

@@ -1,0 +1,105 @@
+{% block content %}
+<div class="max-w-3xl mx-auto">
+
+  <div class="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg p-8">
+
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-white">
+        Create Report
+      </h1>
+
+      <p class="text-gray-400 mt-2">
+        Generate analytics and business reports
+      </p>
+    </div>
+
+    <form class="space-y-6">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">
+          Report Name
+        </label>
+
+        <input
+          type="text"
+          placeholder="Monthly Revenue Report"
+          class="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">
+          Report Type
+        </label>
+
+        <select
+          class="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option>Financial</option>
+          <option>Sales</option>
+          <option>Users</option>
+          <option>Inventory</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">
+            Start Date
+          </label>
+
+          <input
+            type="date"
+            class="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">
+            End Date
+          </label>
+
+          <input
+            type="date"
+            class="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">
+          Notes
+        </label>
+
+        <textarea
+          rows="5"
+          placeholder="Additional report details..."
+          class="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        ></textarea>
+      </div>
+
+      <div class="flex gap-4 pt-4">
+
+        <button
+          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition"
+        >
+          Generate Report
+        </button>
+
+        <button
+          type="button"
+          class="bg-gray-800 hover:bg-gray-700 text-gray-200 px-6 py-3 rounded-xl border border-gray-700 transition"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+{% endblock %}

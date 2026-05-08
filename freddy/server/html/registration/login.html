@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen flex items-center justify-center" style="background-color:#020d18;">
+
+<div class="w-full max-w-md bg-gray-900 p-8 rounded-2xl shadow-xl space-y-6 text-white">
+
+  <!-- Title -->
+  <div class="text-center">
+    <h1 class="text-2xl font-bold">Welcome Back</h1>
+    <p class="text-gray-400 text-sm">Login to your account</p>
+  </div>
+
+  <!-- Form -->
+  <form class="space-y-4" method="post" action="{% url 'login' %}">
+    {% if form.errors %}
+      <div class="bg-red-500 text-white p-2 rounded">
+        {% for field in form %}
+          {% for error in field.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% csrf_token %}
+
+    <!-- Email -->
+    <div>
+      <label class="block text-sm mb-1">Username</label>
+      <input type="text" placeholder="Enter your username" name="username"
+        class="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring focus:ring-blue-500 outline-none">
+    </div>
+
+    <!-- Password -->
+    <div>
+      <label class="block text-sm mb-1">Password</label>
+      <input type="password" placeholder="••••••••" name="password"
+        class="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring focus:ring-blue-500 outline-none">
+    </div>
+
+    <!-- Remember + Forgot -->
+    <div class="flex justify-between items-center text-sm">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" class="accent-blue-600">
+        Remember me
+      </label>
+      <a href="#" class="text-blue-400 hover:underline">Forgot password?</a>
+    </div>
+
+    <!-- Button -->
+    <button type="submit"
+      class="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded-lg font-semibold transition">
+      Login
+    </button>
+
+  </form>
+
+  <!-- Divider -->
+  <div class="text-center text-gray-500 text-sm">or</div>
+
+  <!-- Signup Link -->
+  <p class="text-center text-sm text-gray-400">
+    Don’t have an account?
+    <a href="/signup" class="text-blue-400 hover:underline">Sign up</a>
+  </p>
+
+</div>
+
+</body>
+</html>

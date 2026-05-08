@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-6">
+
+  <h1 class="text-2xl font-bold mb-6">
+    Edit Expense
+  </h1>
+
+  <form class="space-y-5">
+
+    <input
+      type="text"
+      value="Office Rent"
+      class="w-full border rounded-lg p-3"
+    >
+
+    <input
+      type="number"
+      value="500"
+      class="w-full border rounded-lg p-3"
+    >
+
+    <select class="w-full border rounded-lg p-3">
+      <option selected>Utilities</option>
+      <option>Transport</option>
+      <option>Supplies</option>
+    </select>
+
+    <input
+      type="date"
+      value="2026-05-08"
+      class="w-full border rounded-lg p-3"
+    >
+
+    <textarea
+      rows="4"
+      class="w-full border rounded-lg p-3"
+    >Monthly office payment</textarea>
+
+    <button class="bg-yellow-500 text-white px-6 py-3 rounded-lg">
+      Update Expense
+    </button>
+
+  </form>
+
+</div>
+{% endblock %}

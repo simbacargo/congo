@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-6">
+
+  <h1 class="text-2xl font-bold mb-6">
+    Create Subscription Plan
+  </h1>
+
+  <form class="space-y-5">
+
+    <input
+      type="text"
+      placeholder="Plan Name"
+      class="w-full border rounded-lg p-3"
+    >
+
+    <input
+      type="number"
+      placeholder="Monthly Price"
+      class="w-full border rounded-lg p-3"
+    >
+
+    <input
+      type="number"
+      placeholder="Max Users"
+      class="w-full border rounded-lg p-3"
+    >
+
+    <textarea
+      rows="4"
+      placeholder="Plan Features"
+      class="w-full border rounded-lg p-3"
+    ></textarea>
+
+    <select class="w-full border rounded-lg p-3">
+      <option>Monthly</option>
+      <option>Yearly</option>
+    </select>
+
+    <button class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700">
+      Save Plan
+    </button>
+
+  </form>
+
+</div>
+{% endblock %}

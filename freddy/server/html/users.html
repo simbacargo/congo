@@ -1,0 +1,165 @@
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+
+    <h1 class="text-2xl font-bold text-white">
+      Users
+    </h1>
+
+    <div class="flex items-center gap-3">
+
+      <input
+        type="text"
+        placeholder="Search users..."
+        class="bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+
+      <a
+        href="#"
+        hx-target="#main"
+        hx-swap="innerHTML"
+        hx-get="/users/create"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+      >
+        Add User
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- Table -->
+  <div class="bg-gray-900 rounded-xl shadow overflow-hidden border border-gray-700">
+
+    <table class="w-full text-gray-200">
+
+      <!-- Table Head -->
+      <thead class="bg-gray-800 text-gray-300">
+        <tr>
+          <th class="p-4 text-left">Name</th>
+          <th class="p-4 text-left">Email</th>
+          <th class="p-4 text-left">Role</th>
+          <th class="p-4 text-left">Status</th>
+          <th class="p-4 text-left">Actions</th>
+        </tr>
+      </thead>
+
+      <!-- Table Body -->
+      <tbody>
+
+        <!-- Row -->
+        <tr class="border-t border-gray-700 hover:bg-gray-800 transition">
+
+          <td class="p-4 font-medium">
+            John Doe
+          </td>
+
+          <td class="p-4 text-gray-400">
+            john@kdcharite.com
+          </td>
+
+          <td class="p-4">
+            Admin
+          </td>
+
+          <td class="p-4">
+            <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">
+              Active
+            </span>
+          </td>
+
+          <td class="p-4 flex gap-3">
+
+            <a
+              href="#"
+              hx-target="#main"
+              hx-swap="innerHTML"
+              hx-get="/users/1"
+              class="text-blue-400 hover:text-blue-300"
+            >
+              View
+            </a>
+
+            <a
+              href="#"
+              hx-target="#main"
+              hx-swap="innerHTML"
+              hx-get="/users/1/edit"
+              class="text-yellow-400 hover:text-yellow-300"
+            >
+              Edit
+            </a>
+
+            <button
+              class="text-red-400 hover:text-red-300"
+            >
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+
+        <!-- Row -->
+        <tr class="border-t border-gray-700 hover:bg-gray-800 transition">
+
+          <td class="p-4 font-medium">
+            Jane Smith
+          </td>
+
+          <td class="p-4 text-gray-400">
+            jane@kdcharite.com
+          </td>
+
+          <td class="p-4">
+            Editor
+          </td>
+
+          <td class="p-4">
+            <span class="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm">
+              Pending
+            </span>
+          </td>
+
+          <td class="p-4 flex gap-3">
+
+            <a
+              href="#"
+              hx-target="#main"
+              hx-swap="innerHTML"
+              hx-get="/users/2"
+              class="text-blue-400 hover:text-blue-300"
+            >
+              View
+            </a>
+
+            <a
+              href="#"
+              hx-target="#main"
+              hx-swap="innerHTML"
+              hx-get="/users/2/edit"
+              class="text-yellow-400 hover:text-yellow-300"
+            >
+              Edit
+            </a>
+
+            <button
+              class="text-red-400 hover:text-red-300"
+            >
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+{% endblock %}
