@@ -42,6 +42,14 @@ export interface TransactionResult {
   status: string;
 }
 
+export interface AgentProfile {
+  username: string;
+  email: string;
+  role: string;
+  assigned_station?: string;
+  managed_company?: string;
+}
+
 async function getAuthHeader(): Promise<Record<string, string>> {
   const token = await AsyncStorage.getItem("auth_token");
   return token ? { Authorization: `Token ${token}` } : {};
@@ -49,7 +57,7 @@ async function getAuthHeader(): Promise<Record<string, string>> {
 
 async function apiFetch<T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> {
   const authHeader = await getAuthHeader();
   const resp = await fetch(`${API_BASE}${path}`, {
@@ -67,18 +75,24 @@ async function apiFetch<T>(
   return resp.json();
 }
 
-export async function login(username: string, password: string): Promise<AuthToken> {
+export async function login(
+  username: string,
+  password: string,
+): Promise<AuthToken> {
   const data = await apiFetch<AuthToken>("/api/auth/login/", {
     method: "POST",
     body: JSON.stringify({ username, password }),
   });
   await AsyncStorage.setItem("auth_token", data.token);
+  await AsyncStorage.setItem("agent_username", username);
   return data;
 }
 
 export async function logout() {
-  await apiFetch("/api/auth/logout/", { method: "POST" });
-  await AsyncStorage.removeItem("auth_token");
+  try {
+    await apiFetch("/api/auth/logout/", { method: "POST" });
+  } catch {}
+  await AsyncStorage.multiRemove(["auth_token", "agent_username", "agent_profile"]);
 }
 
 export async function fetchCurrencyRate(): Promise<number> {
@@ -96,7 +110,7 @@ export async function fetchChurches(stationId?: string): Promise<Church[]> {
 }
 
 export async function postTransaction(
-  payload: TransactionPayload
+  payload: TransactionPayload,
 ): Promise<TransactionResult> {
   return apiFetch("/api/transactions/create/", {
     method: "POST",
@@ -105,8 +119,10 @@ export async function postTransaction(
 }
 
 export async function syncOfflineTransactions(
-  transactions: TransactionPayload[]
-): Promise<{ results: Array<{ sync_id: string; status: string; receipt_code?: string }> }> {
+  transactions: TransactionPayload[],
+): Promise<{
+  results: Array<{ sync_id: string; status: string; receipt_code?: string }>;
+}> {
   return apiFetch("/api/transactions/sync/", {
     method: "POST",
     body: JSON.stringify({ transactions }),
@@ -115,4 +131,16 @@ export async function syncOfflineTransactions(
 
 export async function verifyReceipt(receiptCode: string) {
   return apiFetch(`/api/verify/${receiptCode}/`);
+}
+
+export async function fetchProfile(): Promise<AgentProfile | null> {
+  try {
+    const profile = await apiFetch<AgentProfile>("/api/auth/profile/");
+    await AsyncStorage.setItem("agent_profile", JSON.stringify(profile));
+    return profile;
+  } catch {
+    // Try cached version
+    const cached = await AsyncStorage.getItem("agent_profile");
+    return cached ? JSON.parse(cached) : null;
+  }
 }

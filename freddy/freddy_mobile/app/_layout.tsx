@@ -22,11 +22,28 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DarkTheme}>
-      <Stack screenOptions={{ headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#f1f5f9" }}>
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: "#0a0f1e" },
+          headerTintColor: "#f8fafc",
+          headerShadowVisible: false,
+          contentStyle: { backgroundColor: "#0a0f1e" },
+        }}
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="transaction/new" options={{ title: "New Transaction", headerBackTitle: "Home" }} />
-        <Stack.Screen name="transaction/success" options={{ title: "Receipt", headerBackVisible: false }} />
+        <Stack.Screen
+          name="transaction/new"
+          options={{ title: "New Transaction", headerBackTitle: "Home" }}
+        />
+        <Stack.Screen
+          name="transaction/success"
+          options={{ title: "Receipt", headerBackVisible: false }}
+        />
+        <Stack.Screen
+          name="transaction/detail"
+          options={{ title: "Transaction Detail", headerBackTitle: "History" }}
+        />
         <Stack.Screen name="verify" options={{ title: "Verify Receipt" }} />
       </Stack>
     </ThemeProvider>

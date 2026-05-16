@@ -25,7 +25,7 @@ export async function flushOfflineQueue(): Promise<{ synced: number; failed: num
   let failed = 0;
   for (const r of results) {
     if (r.status === "created" || r.status === "duplicate") {
-      await markSynced(r.sync_id);
+      await markSynced(r.sync_id, r.receipt_code);
       synced++;
     } else {
       failed++;

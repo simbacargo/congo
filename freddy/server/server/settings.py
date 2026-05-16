@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-#+#t-asn)ni^jo!009l4rs02j*8p1#90e(kev1%y2-$%n8(#8&
 DEBUG = True
 
 ALLOWED_HOSTS = ["kdcharite.com","www.kdcharite.com","localhost","127.0.0.1"]
-
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
 # Application definition
 
