@@ -1,0 +1,534 @@
+# Swahili translations for LCI Office
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sw\n"
+
+msgid "English"
+msgstr "Kiingereza"
+
+msgid "French"
+msgstr "Kifaransa"
+
+msgid "Swahili"
+msgstr "Kiswahili"
+
+msgid "Charity Fuel Initiative"
+msgstr "Mpango wa Mafuta wa Hisani"
+
+msgid "Overview"
+msgstr "Muhtasari"
+
+msgid "Dashboard"
+msgstr "Dashibodi"
+
+msgid "Operations"
+msgstr "Operesheni"
+
+msgid "Transactions"
+msgstr "Miamala"
+
+msgid "Disbursements"
+msgstr "Malipo"
+
+msgid "Reports"
+msgstr "Ripoti"
+
+msgid "Directory"
+msgstr "Orodha"
+
+msgid "Companies"
+msgstr "Makampuni"
+
+msgid "Stations"
+msgstr "Vituo"
+
+msgid "Churches"
+msgstr "Makanisa"
+
+msgid "Users / Agents"
+msgstr "Watumiaji / Mawakala"
+
+msgid "System"
+msgstr "Mfumo"
+
+msgid "Audit Log"
+msgstr "Kumbukumbu ya Ukaguzi"
+
+msgid "Settings"
+msgstr "Mipangilio"
+
+msgid "Verify Receipt"
+msgstr "Thibitisha Risiti"
+
+msgid "Logout"
+msgstr "Toka"
+
+msgid "Excel"
+msgstr "Excel"
+
+msgid "PDF"
+msgstr "PDF"
+
+msgid "Login"
+msgstr "Ingia"
+
+msgid "Welcome Back"
+msgstr "Karibu Tena"
+
+msgid "Login to your account"
+msgstr "Ingia kwenye akaunti yako"
+
+msgid "Username"
+msgstr "Jina la mtumiaji"
+
+msgid "Enter your username"
+msgstr "Ingiza jina lako la mtumiaji"
+
+msgid "Password"
+msgstr "Nywila"
+
+msgid "Remember me"
+msgstr "Nikumbuke"
+
+msgid "Forgot password?"
+msgstr "Umesahau nywila?"
+
+msgid "or"
+msgstr "au"
+
+msgid "Don't have an account?"
+msgstr "Huna akaunti?"
+
+msgid "Sign up"
+msgstr "Jisajili"
+
+msgid "Live overview · auto-refreshes every 20 s"
+msgstr "Muhtasari wa moja kwa moja · inasasishwa kila sekunde 20"
+
+msgid "refreshing…"
+msgstr "inasasisha…"
+
+msgid "30-Day Levy Trend (USD)"
+msgstr "Mwenendo wa Kodi wa Siku 30 (USD)"
+
+msgid "Levy by Company"
+msgstr "Kodi kwa Kampuni"
+
+msgid "By Fuel Type"
+msgstr "Kwa Aina ya Mafuta"
+
+msgid "Transaction Status"
+msgstr "Hali ya Muamala"
+
+msgid "Company Drill-Down"
+msgstr "Maelezo ya Kampuni"
+
+msgid "No companies yet."
+msgstr "Hakuna makampuni bado."
+
+msgid "Recent Transactions"
+msgstr "Miamala ya Hivi Karibuni"
+
+msgid "View all"
+msgstr "Tazama yote"
+
+msgid "Receipt"
+msgstr "Risiti"
+
+msgid "Station"
+msgstr "Kituo"
+
+msgid "Church"
+msgstr "Kanisa"
+
+msgid "Levy USD"
+msgstr "Kodi USD"
+
+msgid "Status"
+msgstr "Hali"
+
+msgid "Date"
+msgstr "Tarehe"
+
+msgid "No transactions yet."
+msgstr "Hakuna miamala bado."
+
+msgid "Levy (USD)"
+msgstr "Kodi (USD)"
+
+msgid "Pending"
+msgstr "Inasubiri"
+
+msgid "Verified"
+msgstr "Imethibitishwa"
+
+msgid "Remitted"
+msgstr "Imetumwa"
+
+msgid "Today's Levy"
+msgstr "Kodi ya Leo"
+
+msgid "transactions"
+msgstr "miamala"
+
+msgid "This Month"
+msgstr "Mwezi Huu"
+
+msgid "All-Time Levy"
+msgstr "Kodi Yote"
+
+msgid "total"
+msgstr "jumla"
+
+msgid "Total Disbursed"
+msgstr "Jumla Iliyolipwa"
+
+msgid "pending payouts"
+msgstr "malipo yanayosubiri"
+
+msgid "Pending Review"
+msgstr "Inasubiri Ukaguzi"
+
+msgid "Review now"
+msgstr "Kagua sasa"
+
+msgid "View"
+msgstr "Tazama"
+
+msgid "Top Company"
+msgstr "Kampuni Bora"
+
+msgid "No data"
+msgstr "Hakuna data"
+
+msgid "records"
+msgstr "rekodi"
+
+msgid "total levy"
+msgstr "kodi jumla"
+
+msgid "Filter"
+msgstr "Chuja"
+
+msgid "Clear"
+msgstr "Futa"
+
+msgid "Select all visible"
+msgstr "Chagua zote zinazoonekana"
+
+msgid "Bulk action…"
+msgstr "Kitendo cha wingi…"
+
+msgid "Mark Verified"
+msgstr "Weka alama ya Kuthibitishwa"
+
+msgid "Mark Remitted"
+msgstr "Weka alama ya Kutumwa"
+
+msgid "Apply"
+msgstr "Tekeleza"
+
+msgid "Company"
+msgstr "Kampuni"
+
+msgid "Agent"
+msgstr "Wakala"
+
+msgid "Fuel"
+msgstr "Mafuta"
+
+msgid "Amount"
+msgstr "Kiasi"
+
+msgid "Levy"
+msgstr "Kodi"
+
+msgid "Detail"
+msgstr "Maelezo"
+
+msgid "No transactions match your filters."
+msgstr "Hakuna miamala inayolingana na vichujio vyako."
+
+msgid "Parent Companies"
+msgstr "Makampuni Mama"
+
+msgid "registered"
+msgstr "zilizosajiliwa"
+
+msgid "New Company"
+msgstr "Kampuni Mpya"
+
+msgid "Active"
+msgstr "Inafanya kazi"
+
+msgid "Inactive"
+msgstr "Haifanyi kazi"
+
+msgid "Drill-down"
+msgstr "Maelezo"
+
+msgid "Edit"
+msgstr "Hariri"
+
+msgid "Add one"
+msgstr "Ongeza moja"
+
+msgid "Fuel Stations"
+msgstr "Vituo vya Mafuta"
+
+msgid "New Station"
+msgstr "Kituo Kipya"
+
+msgid "All Companies"
+msgstr "Makampuni Yote"
+
+msgid "Code"
+msgstr "Msimbo"
+
+msgid "No stations yet."
+msgstr "Hakuna vituo bado."
+
+msgid "Churches & Beneficiaries"
+msgstr "Makanisa na Wanufaika"
+
+msgid "churches registered"
+msgstr "makanisa yaliyosajiliwa"
+
+msgid "New Church"
+msgstr "Kanisa Jipya"
+
+msgid "Contact"
+msgstr "Mawasiliano"
+
+msgid "Beneficiaries"
+msgstr "Wanufaika"
+
+msgid "Tx Count"
+msgstr "Idadi ya Miamala"
+
+msgid "No churches yet."
+msgstr "Hakuna makanisa bado."
+
+msgid "Total Levy"
+msgstr "Kodi Jumla"
+
+msgid "No transactions."
+msgstr "Hakuna miamala."
+
+msgid "Church Info"
+msgstr "Habari za Kanisa"
+
+msgid "Phone"
+msgstr "Simu"
+
+msgid "Disbursement"
+msgstr "Malipo"
+
+msgid "No disbursements."
+msgstr "Hakuna malipo."
+
+msgid "accounts"
+msgstr "akaunti"
+
+msgid "New User"
+msgstr "Mtumiaji Mpya"
+
+msgid "No users."
+msgstr "Hakuna watumiaji."
+
+msgid "Create one"
+msgstr "Unda mmoja"
+
+msgid "New Disbursement"
+msgstr "Malipo Mapya"
+
+msgid "All"
+msgstr "Yote"
+
+msgid "Reference"
+msgstr "Kumbukumbu"
+
+msgid "Period"
+msgstr "Kipindi"
+
+msgid "Payment"
+msgstr "Malipo"
+
+msgid "Prepared By"
+msgstr "Imetayarishwa na"
+
+msgid "Mark Paid"
+msgstr "Weka alama ya Kulipwa"
+
+msgid "No disbursements yet."
+msgstr "Hakuna malipo bado."
+
+msgid "Reports & Analytics"
+msgstr "Ripoti na Uchambuzi"
+
+msgid "Historical levy data and church summaries"
+msgstr "Data ya kodi ya kihistoria na muhtasari wa makanisa"
+
+msgid "Total Transactions"
+msgstr "Miamala Yote"
+
+msgid "Disbursed"
+msgstr "Imelipwa"
+
+msgid "Pending Disburse"
+msgstr "Malipo Yanayosubiri"
+
+msgid "Monthly Levy (12 Months)"
+msgstr "Kodi ya Kila Mwezi (Miezi 12)"
+
+msgid "Levy by Fuel Type"
+msgstr "Kodi kwa Aina ya Mafuta"
+
+msgid "Monthly Breakdown"
+msgstr "Muhtasari wa Kila Mwezi"
+
+msgid "Month"
+msgstr "Mwezi"
+
+msgid "Top 20 Churches by Levy"
+msgstr "Makanisa 20 Bora kwa Kodi"
+
+msgid "Tx"
+msgstr "Muamala"
+
+msgid "No data."
+msgstr "Hakuna data."
+
+msgid "Audit Trail"
+msgstr "Njia ya Ukaguzi"
+
+msgid "Immutable record of all field changes"
+msgstr "Kumbukumbu isiyobadilika ya mabadiliko yote ya sehemu"
+
+msgid "Time"
+msgstr "Wakati"
+
+msgid "Transaction"
+msgstr "Muamala"
+
+msgid "Field"
+msgstr "Sehemu"
+
+msgid "Old Value"
+msgstr "Thamani ya Zamani"
+
+msgid "New Value"
+msgstr "Thamani Mpya"
+
+msgid "Changed By"
+msgstr "Ilibadilishwa na"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "No audit entries yet."
+msgstr "Hakuna rekodi za ukaguzi bado."
+
+msgid "Check the authenticity of any LCI transaction"
+msgstr "Thibitisha uhalali wa muamala wowote wa LCI"
+
+msgid "Verify"
+msgstr "Thibitisha"
+
+msgid "Valid Receipt"
+msgstr "Risiti Halali"
+
+msgid "Receipt Code"
+msgstr "Msimbo wa Risiti"
+
+msgid "Fuel Type"
+msgstr "Aina ya Mafuta"
+
+msgid "Amount (USD)"
+msgstr "Kiasi (USD)"
+
+msgid "Amount (CDF)"
+msgstr "Kiasi (CDF)"
+
+msgid "2% Charity Levy"
+msgstr "Kodi ya Hisani ya 2%"
+
+msgid "Receipt Not Found"
+msgstr "Risiti Haipatikani"
+
+msgid "Code \"%(code)s\" does not match any transaction."
+msgstr "Msimbo \"%(code)s\" haukubaliani na muamala wowote."
+
+msgid "Transaction Detail"
+msgstr "Maelezo ya Muamala"
+
+msgid "Currency"
+msgstr "Sarafu"
+
+msgid "Amount USD"
+msgstr "Kiasi USD"
+
+msgid "Amount CDF"
+msgstr "Kiasi CDF"
+
+msgid "Rate"
+msgstr "Kiwango"
+
+msgid "Sync ID"
+msgstr "Kitambulisho cha Usawazishaji"
+
+msgid "CDF equivalent"
+msgstr "Sawa na CDF"
+
+msgid "Notes"
+msgstr "Maelezo ya Ziada"
+
+msgid "No changes recorded."
+msgstr "Hakuna mabadiliko yaliyorekodiwa."
+
+msgid "By %(user)s"
+msgstr "Na %(user)s"
+
+msgid "Update Status"
+msgstr "Sasisha Hali"
+
+msgid "Save Status"
+msgstr "Hifadhi Hali"
+
+msgid "Back to list"
+msgstr "Rudi kwenye orodha"
+
+msgid "Settings — Fuel Types"
+msgstr "Mipangilio — Aina za Mafuta"
+
+msgid "Fuel Types"
+msgstr "Aina za Mafuta"
+
+msgid "Name"
+msgstr "Jina"
+
+msgid "No fuel types."
+msgstr "Hakuna aina za mafuta."
+
+msgid "Add"
+msgstr "Ongeza"
+
+msgid "Save"
+msgstr "Hifadhi"
+
+msgid "Click Edit on a row to modify it, or use the button below."
+msgstr "Bonyeza Hariri kwenye safu mlalo kuibadilisha, au tumia kitufe hapa chini."
+
+msgid "Add Fuel Type"
+msgstr "Ongeza Aina ya Mafuta"
+
+msgid "Cancel"
+msgstr "Ghairi"
+
+msgid "user"
+msgstr "mtumiaji"
+
+msgid "Users"
+msgstr "Watumiaji"

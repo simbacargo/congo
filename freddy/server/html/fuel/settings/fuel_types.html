@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Fuel Types" %}{% endblock %}
+{% block page_title %}{% trans "Settings — Fuel Types" %}{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+  <!-- List -->
+  <div class="rounded-xl border overflow-hidden" style="border-color:var(--border);">
+    <div class="px-5 py-3 border-b" style="background:var(--surface2); border-color:var(--border);">
+      <h3 class="text-sm font-semibold text-white">{% trans "Fuel Types" %}</h3>
+    </div>
+    <table class="w-full text-sm" style="background:var(--surface);">
+      <thead style="background:var(--surface2);">
+        <tr style="color:var(--muted);" class="text-xs font-medium text-left">
+          <th class="px-4 py-3">{% trans "Name" %}</th>
+          <th class="px-4 py-3">{% trans "Code" %}</th>
+          <th class="px-4 py-3">{% trans "Status" %}</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody id="fuel-type-list" class="divide-y" style="border-color:var(--border);">
+        {% for ft in types %}
+        {% include "fuel/partials/fuel_type_row.html" %}
+        {% empty %}
+        <tr><td colspan="4" class="px-4 py-6 text-center text-xs" style="color:var(--muted);">{% trans "No fuel types." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add/Edit form -->
+  <div id="fuel-type-form-panel" class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
+    <h3 class="text-sm font-semibold text-white mb-4">{% if editing %}{% trans "Edit" %}{% else %}{% trans "Add" %}{% endif %} {% trans "Fuel Type" %}</h3>
+    {% if form %}
+    <form method="post"
+          action="{% if editing %}{% url 'fuel:fuel-type-edit' editing.pk %}{% else %}{% url 'fuel:fuel-type-create' %}{% endif %}"
+          hx-post="{% if editing %}{% url 'fuel:fuel-type-edit' editing.pk %}{% else %}{% url 'fuel:fuel-type-create' %}{% endif %}"
+          hx-target="#fuel-type-list"
+          hx-swap="beforeend"
+          class="space-y-3">
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label class="block text-xs font-medium mb-1 text-gray-400">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p class="text-xs text-red-400 mt-1">{{ field.errors.0 }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="px-4 py-2 rounded-lg text-sm font-medium text-white" style="background:var(--accent);">{% trans "Save" %}</button>
+    </form>
+    {% else %}
+    <p class="text-sm" style="color:var(--muted);">{% trans "Click Edit on a row to modify it, or use the button below." %}</p>
+    <a href="{% url 'fuel:fuel-type-create' %}" class="mt-3 inline-block px-4 py-2 rounded-lg text-sm font-medium text-white" style="background:var(--accent);">+ {% trans "Add Fuel Type" %}</a>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

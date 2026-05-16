@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-#+#t-asn)ni^jo!009l4rs02j*8p1#90e(kev1%y2-$%n8(#8&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["kdcharite.com","www.kdcharite.com","localhost","127.0.0.1"]
 
 
 # Application definition
@@ -20,17 +20,24 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "rest_framework",
+    "corsheaders",
+    "django_htmx",
     "authentication",
     "knox",
     "home",
+    "fuel_app",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -47,6 +54,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'fuel_app.context_processors.nav_stats',
             ],
         },
     },
@@ -86,7 +94,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('fr', _('French')),
+    ('sw', _('Swahili')),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
 
 TIME_ZONE = 'UTC'
 
@@ -106,4 +126,24 @@ AUTH_USER_MODEL = "authentication.User"
 
 ALLOWED_SIGNUP_DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com']
 
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# CORS (mobile app)
+CORS_ALLOW_ALL_ORIGINS = True  # restrict to specific origins in production
+
+# DRF + Knox
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["knox.auth.TokenAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+}
+
+from datetime import timedelta
+REST_KNOX = {
+    "TOKEN_TTL": timedelta(hours=24),
+    "AUTO_REFRESH": True,
+}
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

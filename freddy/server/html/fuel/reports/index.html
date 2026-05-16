@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Reports" %}{% endblock %}
+{% block page_title %}{% trans "Reports & Analytics" %}{% endblock %}
+{% block page_subtitle %}{% trans "Historical levy data and church summaries" %}{% endblock %}
+{% block content %}
+
+<!-- KPI summary -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+  <div class="rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs" style="color:var(--muted);">{% trans "Total Levy" %}</p>
+    <p class="text-2xl font-bold text-green-400">${{ stats.total_levy|floatformat:2 }}</p>
+  </div>
+  <div class="rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs" style="color:var(--muted);">{% trans "Total Transactions" %}</p>
+    <p class="text-2xl font-bold text-blue-400">{{ stats.total_count }}</p>
+  </div>
+  <div class="rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs" style="color:var(--muted);">{% trans "Disbursed" %}</p>
+    <p class="text-2xl font-bold text-emerald-400">${{ stats.total_disbursed|floatformat:2 }}</p>
+  </div>
+  <div class="rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs" style="color:var(--muted);">{% trans "Pending Disburse" %}</p>
+    <p class="text-2xl font-bold text-yellow-400">{{ stats.pending_disburse }}</p>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-sm font-semibold text-white">{% trans "Monthly Levy (12 Months)" %}</h3>
+      <div class="flex gap-2">
+        <a href="{% url 'fuel:export-excel' %}" class="text-xs text-green-400 hover:underline">{% trans "Excel" %}</a>
+        <a href="{% url 'fuel:export-pdf' %}" class="text-xs text-red-400 hover:underline">{% trans "PDF" %}</a>
+      </div>
+    </div>
+    <canvas id="monthlyChart" height="100"></canvas>
+  </div>
+
+  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
+    <h3 class="text-sm font-semibold text-white mb-4">{% trans "Levy by Fuel Type" %}</h3>
+    <canvas id="fuelChart" height="100"></canvas>
+  </div>
+
+</div>
+
+<!-- Monthly table -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+  <div class="rounded-xl border overflow-hidden" style="border-color:var(--border);">
+    <div class="px-5 py-3 border-b" style="background:var(--surface2); border-color:var(--border);">
+      <h3 class="text-sm font-semibold text-white">{% trans "Monthly Breakdown" %}</h3>
+    </div>
+    <table class="w-full text-xs" style="background:var(--surface);">
+      <thead style="background:var(--surface2);">
+        <tr style="color:var(--muted);">
+          <th class="text-left px-4 py-2">{% trans "Month" %}</th>
+          <th class="text-right px-4 py-2">{% trans "Transactions" %}</th>
+          <th class="text-right px-4 py-2">{% trans "Levy (USD)" %}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y" style="border-color:var(--border);">
+        {% for row in monthly %}
+        <tr class="hover:bg-blue-900/10">
+          <td class="px-4 py-2.5 text-gray-200">{{ row.label }}</td>
+          <td class="px-4 py-2.5 text-right" style="color:var(--muted);">{{ row.count }}</td>
+          <td class="px-4 py-2.5 text-right text-green-400 font-medium">${{ row.levy|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Top churches -->
+  <div class="rounded-xl border overflow-hidden" style="border-color:var(--border);">
+    <div class="px-5 py-3 border-b" style="background:var(--surface2); border-color:var(--border);">
+      <h3 class="text-sm font-semibold text-white">{% trans "Top 20 Churches by Levy" %}</h3>
+    </div>
+    <table class="w-full text-xs" style="background:var(--surface);">
+      <thead style="background:var(--surface2);">
+        <tr style="color:var(--muted);">
+          <th class="text-left px-4 py-2">{% trans "Church" %}</th>
+          <th class="text-left px-4 py-2">{% trans "Station" %}</th>
+          <th class="text-right px-4 py-2">{% trans "Tx" %}</th>
+          <th class="text-right px-4 py-2">{% trans "Levy" %}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y" style="border-color:var(--border);">
+        {% for row in church_summary %}
+        <tr class="hover:bg-blue-900/10">
+          <td class="px-4 py-2.5 text-gray-200">{{ row.church__name }}</td>
+          <td class="px-4 py-2.5" style="color:var(--muted);">{{ row.church__station__name }}</td>
+          <td class="px-4 py-2.5 text-right" style="color:var(--muted);">{{ row.tx_count }}</td>
+          <td class="px-4 py-2.5 text-right text-green-400 font-medium">${{ row.total_levy|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="px-4 py-6 text-center" style="color:var(--muted);">{% trans "No data." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const CO = {
+  responsive:true, maintainAspectRatio:true,
+  plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
+  scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#1e3448'}},
+          y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#1e3448'}}}
+};
+
+// Monthly bar
+const monthly = {{ monthly|safe }};
+new Chart(document.getElementById('monthlyChart'), {
+  type: 'bar',
+  data: {
+    labels: monthly.map(d=>d.label),
+    datasets: [{ label:'{% trans "Levy (USD)" %}', data: monthly.map(d=>d.levy),
+      backgroundColor:'#2563eb', borderRadius:4 }]
+  },
+  options: CO
+});
+
+// Fuel type
+const fuels = {{ fuel_summary|safe }};
+new Chart(document.getElementById('fuelChart'), {
+  type: 'doughnut',
+  data: {
+    labels: fuels.map(d=>d.fuel_type__name),
+    datasets: [{ data: fuels.map(d=>d.total||0),
+      backgroundColor:['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6'] }]
+  },
+  options: { responsive:true, plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}},position:'bottom'}} }
+});
+</script>
+{% endblock %}

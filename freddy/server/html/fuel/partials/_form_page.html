@@ -1,0 +1,41 @@
+{% load i18n %}
+{% comment %}
+  Reusable form shell.
+  Usage: {% include "fuel/partials/_form_page.html" with form=form title="…" back_url=back_url %}
+{% endcomment %}
+<div class="max-w-2xl mx-auto">
+  <div class="rounded-xl border overflow-hidden" style="border-color:var(--border);">
+    <div class="px-6 py-4 border-b" style="background:var(--surface); border-color:var(--border);">
+      <h2 class="font-semibold text-white">{{ title }}</h2>
+    </div>
+    <div class="p-6" style="background:var(--surface);">
+      <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+        <div>
+          <label class="block text-xs font-medium mb-1 text-gray-400">
+            {{ field.label }}{% if field.field.required %}<span class="text-red-400 ml-0.5">*</span>{% endif %}
+          </label>
+          {{ field }}
+          {% if field.errors %}
+          <p class="text-xs text-red-400 mt-1">{{ field.errors|join:", " }}</p>
+          {% endif %}
+          {% if field.help_text %}
+          <p class="text-xs mt-1" style="color:var(--muted);">{{ field.help_text }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <div class="flex gap-3 pt-2">
+          <button type="submit"
+                  class="px-5 py-2 rounded-lg text-sm font-semibold text-white transition"
+                  style="background:var(--accent);">{% trans "Save" %}</button>
+          {% if back_url %}
+          <a href="{{ back_url }}"
+             class="px-5 py-2 rounded-lg text-sm font-medium transition"
+             style="background:var(--surface2); color:var(--muted);">{% trans "Cancel" %}</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

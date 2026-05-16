@@ -1,0 +1,534 @@
+# French translations for LCI Office
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+
+msgid "English"
+msgstr "Anglais"
+
+msgid "French"
+msgstr "Français"
+
+msgid "Swahili"
+msgstr "Swahili"
+
+msgid "Charity Fuel Initiative"
+msgstr "Initiative de Carburant Caritatif"
+
+msgid "Overview"
+msgstr "Aperçu"
+
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+msgid "Operations"
+msgstr "Opérations"
+
+msgid "Transactions"
+msgstr "Transactions"
+
+msgid "Disbursements"
+msgstr "Décaissements"
+
+msgid "Reports"
+msgstr "Rapports"
+
+msgid "Directory"
+msgstr "Répertoire"
+
+msgid "Companies"
+msgstr "Sociétés"
+
+msgid "Stations"
+msgstr "Stations"
+
+msgid "Churches"
+msgstr "Églises"
+
+msgid "Users / Agents"
+msgstr "Utilisateurs / Agents"
+
+msgid "System"
+msgstr "Système"
+
+msgid "Audit Log"
+msgstr "Journal d'audit"
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Verify Receipt"
+msgstr "Vérifier le reçu"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Excel"
+msgstr "Excel"
+
+msgid "PDF"
+msgstr "PDF"
+
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Welcome Back"
+msgstr "Bienvenue"
+
+msgid "Login to your account"
+msgstr "Connectez-vous à votre compte"
+
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+msgid "Enter your username"
+msgstr "Entrez votre nom d'utilisateur"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Remember me"
+msgstr "Se souvenir de moi"
+
+msgid "Forgot password?"
+msgstr "Mot de passe oublié ?"
+
+msgid "or"
+msgstr "ou"
+
+msgid "Don't have an account?"
+msgstr "Pas de compte ?"
+
+msgid "Sign up"
+msgstr "S'inscrire"
+
+msgid "Live overview · auto-refreshes every 20 s"
+msgstr "Aperçu en direct · rafraîchissement toutes les 20 s"
+
+msgid "refreshing…"
+msgstr "actualisation…"
+
+msgid "30-Day Levy Trend (USD)"
+msgstr "Tendance de la taxe sur 30 jours (USD)"
+
+msgid "Levy by Company"
+msgstr "Taxe par société"
+
+msgid "By Fuel Type"
+msgstr "Par type de carburant"
+
+msgid "Transaction Status"
+msgstr "Statut des transactions"
+
+msgid "Company Drill-Down"
+msgstr "Détail par société"
+
+msgid "No companies yet."
+msgstr "Aucune société pour l'instant."
+
+msgid "Recent Transactions"
+msgstr "Transactions récentes"
+
+msgid "View all"
+msgstr "Tout voir"
+
+msgid "Receipt"
+msgstr "Reçu"
+
+msgid "Station"
+msgstr "Station"
+
+msgid "Church"
+msgstr "Église"
+
+msgid "Levy USD"
+msgstr "Taxe USD"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "No transactions yet."
+msgstr "Aucune transaction pour l'instant."
+
+msgid "Levy (USD)"
+msgstr "Taxe (USD)"
+
+msgid "Pending"
+msgstr "En attente"
+
+msgid "Verified"
+msgstr "Vérifié"
+
+msgid "Remitted"
+msgstr "Remis"
+
+msgid "Today's Levy"
+msgstr "Taxe d'aujourd'hui"
+
+msgid "transactions"
+msgstr "transactions"
+
+msgid "This Month"
+msgstr "Ce mois"
+
+msgid "All-Time Levy"
+msgstr "Taxe totale"
+
+msgid "total"
+msgstr "total"
+
+msgid "Total Disbursed"
+msgstr "Total décaissé"
+
+msgid "pending payouts"
+msgstr "paiements en attente"
+
+msgid "Pending Review"
+msgstr "En attente de révision"
+
+msgid "Review now"
+msgstr "Réviser maintenant"
+
+msgid "View"
+msgstr "Voir"
+
+msgid "Top Company"
+msgstr "Meilleure société"
+
+msgid "No data"
+msgstr "Aucune donnée"
+
+msgid "records"
+msgstr "enregistrements"
+
+msgid "total levy"
+msgstr "taxe totale"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Clear"
+msgstr "Effacer"
+
+msgid "Select all visible"
+msgstr "Sélectionner tout"
+
+msgid "Bulk action…"
+msgstr "Action groupée…"
+
+msgid "Mark Verified"
+msgstr "Marquer comme vérifié"
+
+msgid "Mark Remitted"
+msgstr "Marquer comme remis"
+
+msgid "Apply"
+msgstr "Appliquer"
+
+msgid "Company"
+msgstr "Société"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Fuel"
+msgstr "Carburant"
+
+msgid "Amount"
+msgstr "Montant"
+
+msgid "Levy"
+msgstr "Taxe"
+
+msgid "Detail"
+msgstr "Détail"
+
+msgid "No transactions match your filters."
+msgstr "Aucune transaction ne correspond à vos filtres."
+
+msgid "Parent Companies"
+msgstr "Sociétés mères"
+
+msgid "registered"
+msgstr "enregistrées"
+
+msgid "New Company"
+msgstr "Nouvelle société"
+
+msgid "Active"
+msgstr "Actif"
+
+msgid "Inactive"
+msgstr "Inactif"
+
+msgid "Drill-down"
+msgstr "Détail"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Add one"
+msgstr "En ajouter une"
+
+msgid "Fuel Stations"
+msgstr "Stations-service"
+
+msgid "New Station"
+msgstr "Nouvelle station"
+
+msgid "All Companies"
+msgstr "Toutes les sociétés"
+
+msgid "Code"
+msgstr "Code"
+
+msgid "No stations yet."
+msgstr "Aucune station pour l'instant."
+
+msgid "Churches & Beneficiaries"
+msgstr "Églises et bénéficiaires"
+
+msgid "churches registered"
+msgstr "églises enregistrées"
+
+msgid "New Church"
+msgstr "Nouvelle église"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Beneficiaries"
+msgstr "Bénéficiaires"
+
+msgid "Tx Count"
+msgstr "Nb de transactions"
+
+msgid "No churches yet."
+msgstr "Aucune église pour l'instant."
+
+msgid "Total Levy"
+msgstr "Taxe totale"
+
+msgid "No transactions."
+msgstr "Aucune transaction."
+
+msgid "Church Info"
+msgstr "Informations sur l'église"
+
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Disbursement"
+msgstr "Décaissement"
+
+msgid "No disbursements."
+msgstr "Aucun décaissement."
+
+msgid "accounts"
+msgstr "comptes"
+
+msgid "New User"
+msgstr "Nouvel utilisateur"
+
+msgid "No users."
+msgstr "Aucun utilisateur."
+
+msgid "Create one"
+msgstr "En créer un"
+
+msgid "New Disbursement"
+msgstr "Nouveau décaissement"
+
+msgid "All"
+msgstr "Tout"
+
+msgid "Reference"
+msgstr "Référence"
+
+msgid "Period"
+msgstr "Période"
+
+msgid "Payment"
+msgstr "Paiement"
+
+msgid "Prepared By"
+msgstr "Préparé par"
+
+msgid "Mark Paid"
+msgstr "Marquer comme payé"
+
+msgid "No disbursements yet."
+msgstr "Aucun décaissement pour l'instant."
+
+msgid "Reports & Analytics"
+msgstr "Rapports et analyses"
+
+msgid "Historical levy data and church summaries"
+msgstr "Données historiques des taxes et résumés des églises"
+
+msgid "Total Transactions"
+msgstr "Total des transactions"
+
+msgid "Disbursed"
+msgstr "Décaissé"
+
+msgid "Pending Disburse"
+msgstr "Décaissement en attente"
+
+msgid "Monthly Levy (12 Months)"
+msgstr "Taxe mensuelle (12 mois)"
+
+msgid "Levy by Fuel Type"
+msgstr "Taxe par type de carburant"
+
+msgid "Monthly Breakdown"
+msgstr "Ventilation mensuelle"
+
+msgid "Month"
+msgstr "Mois"
+
+msgid "Top 20 Churches by Levy"
+msgstr "Top 20 des églises par taxe"
+
+msgid "Tx"
+msgstr "Tx"
+
+msgid "No data."
+msgstr "Aucune donnée."
+
+msgid "Audit Trail"
+msgstr "Piste d'audit"
+
+msgid "Immutable record of all field changes"
+msgstr "Enregistrement immuable de toutes les modifications"
+
+msgid "Time"
+msgstr "Heure"
+
+msgid "Transaction"
+msgstr "Transaction"
+
+msgid "Field"
+msgstr "Champ"
+
+msgid "Old Value"
+msgstr "Ancienne valeur"
+
+msgid "New Value"
+msgstr "Nouvelle valeur"
+
+msgid "Changed By"
+msgstr "Modifié par"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "No audit entries yet."
+msgstr "Aucune entrée d'audit pour l'instant."
+
+msgid "Check the authenticity of any LCI transaction"
+msgstr "Vérifier l'authenticité de toute transaction LCI"
+
+msgid "Verify"
+msgstr "Vérifier"
+
+msgid "Valid Receipt"
+msgstr "Reçu valide"
+
+msgid "Receipt Code"
+msgstr "Code de reçu"
+
+msgid "Fuel Type"
+msgstr "Type de carburant"
+
+msgid "Amount (USD)"
+msgstr "Montant (USD)"
+
+msgid "Amount (CDF)"
+msgstr "Montant (CDF)"
+
+msgid "2% Charity Levy"
+msgstr "Taxe caritative de 2%"
+
+msgid "Receipt Not Found"
+msgstr "Reçu introuvable"
+
+msgid "Code \"%(code)s\" does not match any transaction."
+msgstr "Le code \"%(code)s\" ne correspond à aucune transaction."
+
+msgid "Transaction Detail"
+msgstr "Détail de la transaction"
+
+msgid "Currency"
+msgstr "Devise"
+
+msgid "Amount USD"
+msgstr "Montant USD"
+
+msgid "Amount CDF"
+msgstr "Montant CDF"
+
+msgid "Rate"
+msgstr "Taux"
+
+msgid "Sync ID"
+msgstr "ID de synchronisation"
+
+msgid "CDF equivalent"
+msgstr "Équivalent CDF"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "No changes recorded."
+msgstr "Aucun changement enregistré."
+
+msgid "By %(user)s"
+msgstr "Par %(user)s"
+
+msgid "Update Status"
+msgstr "Mettre à jour le statut"
+
+msgid "Save Status"
+msgstr "Enregistrer le statut"
+
+msgid "Back to list"
+msgstr "Retour à la liste"
+
+msgid "Settings — Fuel Types"
+msgstr "Paramètres — Types de carburant"
+
+msgid "Fuel Types"
+msgstr "Types de carburant"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "No fuel types."
+msgstr "Aucun type de carburant."
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Click Edit on a row to modify it, or use the button below."
+msgstr "Cliquez sur Modifier sur une ligne pour la modifier, ou utilisez le bouton ci-dessous."
+
+msgid "Add Fuel Type"
+msgstr "Ajouter un type de carburant"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "user"
+msgstr "utilisateur"
+
+msgid "Users"
+msgstr "Utilisateurs"

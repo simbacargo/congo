@@ -75,6 +75,16 @@ class UserAccountManager(BaseUserManager):
 
 
 from django.utils.translation import gettext_lazy as _
+
+ROLE_NGO_ADMIN = "NGO_ADMIN"
+ROLE_COMPANY_MANAGER = "COMPANY_MANAGER"
+ROLE_STATION_AGENT = "STATION_AGENT"
+USER_ROLES = (
+    (ROLE_NGO_ADMIN, "NGO Admin"),
+    (ROLE_COMPANY_MANAGER, "Company Manager"),
+    (ROLE_STATION_AGENT, "Station Agent"),
+)
+
 class User(AbstractBaseUser,PermissionsMixin):
     id = models.UUIDField(default=get_token, editable=False, unique=True,primary_key=True)
     firstname = models.CharField(max_length=100, null=True, blank=True)
@@ -82,6 +92,20 @@ class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(max_length=100, null=False, unique=True)
     email = models.EmailField(max_length=255,unique=True,blank=True,null=True)
     gender = models.CharField(choices=GENDER_TYPES, max_length=10)
+    role = models.CharField(max_length=20, choices=USER_ROLES, default=ROLE_STATION_AGENT)
+    # Set at account creation; enforced in API to scope transaction posting
+    assigned_station = models.ForeignKey(
+        "fuel_app.FuelStation",
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name="agents",
+    )
+    managed_company = models.ForeignKey(
+        "fuel_app.ParentCompany",
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name="managers",
+    )
     is_active = models.BooleanField(default=False)#designates if accounts can be used to log in
     is_staff = models.BooleanField(default=True)#is user allowed to add and manage data
     is_admin = models.BooleanField(default=False)

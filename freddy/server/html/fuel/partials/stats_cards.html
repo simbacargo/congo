@@ -1,0 +1,55 @@
+{% load i18n %}
+<div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
+
+  <div class="xl:col-span-2 rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs font-medium uppercase tracking-wide mb-1" style="color:var(--muted);">{% trans "Today's Levy" %}</p>
+    <p class="text-2xl font-bold text-green-400">${{ stats.today_levy|floatformat:2 }}</p>
+    <p class="text-xs mt-1" style="color:var(--muted);">{{ stats.today_count }} {% trans "transactions" %}</p>
+  </div>
+
+  <div class="xl:col-span-2 rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs font-medium uppercase tracking-wide mb-1" style="color:var(--muted);">{% trans "This Month" %}</p>
+    <p class="text-2xl font-bold text-blue-400">${{ stats.month_levy|floatformat:2 }}</p>
+    <p class="text-xs mt-1" style="color:var(--muted);">{{ stats.month_count }} {% trans "transactions" %}</p>
+  </div>
+
+  <div class="xl:col-span-2 rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs font-medium uppercase tracking-wide mb-1" style="color:var(--muted);">{% trans "All-Time Levy" %}</p>
+    <p class="text-2xl font-bold text-purple-400">${{ stats.total_levy|floatformat:2 }}</p>
+    <p class="text-xs mt-1" style="color:var(--muted);">{{ stats.total_count }} {% trans "total" %}</p>
+  </div>
+
+  <div class="xl:col-span-2 rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs font-medium uppercase tracking-wide mb-1" style="color:var(--muted);">{% trans "Total Disbursed" %}</p>
+    <p class="text-2xl font-bold text-emerald-400">${{ stats.total_disbursed|floatformat:2 }}</p>
+    <p class="text-xs mt-1" style="color:var(--muted);">{{ stats.pending_disburse }} {% trans "pending payouts" %}</p>
+  </div>
+
+  <div class="xl:col-span-2 rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs font-medium uppercase tracking-wide mb-2" style="color:var(--muted);">{% trans "Pending Review" %}</p>
+    <p class="text-2xl font-bold text-yellow-400">{{ stats.pending_count }}</p>
+    <a href="{% url 'fuel:transactions' %}?status=PENDING" class="text-xs text-blue-400 hover:underline">{% trans "Review now" %} →</a>
+  </div>
+
+  <div class="xl:col-span-2 rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs font-medium uppercase tracking-wide mb-2" style="color:var(--muted);">{% trans "Verified" %}</p>
+    <p class="text-2xl font-bold text-blue-400">{{ stats.verified_count }}</p>
+    <a href="{% url 'fuel:transactions' %}?status=VERIFIED" class="text-xs text-blue-400 hover:underline">{% trans "View" %} →</a>
+  </div>
+
+  <div class="xl:col-span-2 rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs font-medium uppercase tracking-wide mb-2" style="color:var(--muted);">{% trans "Remitted" %}</p>
+    <p class="text-2xl font-bold text-green-400">{{ stats.remitted_count }}</p>
+    <a href="{% url 'fuel:transactions' %}?status=REMITTED" class="text-xs text-blue-400 hover:underline">{% trans "View" %} →</a>
+  </div>
+
+  <!-- Top company -->
+  <div class="xl:col-span-2 rounded-xl border p-4" style="background:var(--surface); border-color:var(--border);">
+    <p class="text-xs font-medium uppercase tracking-wide mb-1" style="color:var(--muted);">{% trans "Top Company" %}</p>
+    {% if stats.by_company %}
+    <p class="text-sm font-bold text-white truncate">{{ stats.by_company.0.station__company__name }}</p>
+    <p class="text-xs text-green-400 mt-1">${{ stats.by_company.0.total|floatformat:2 }}</p>
+    {% else %}<p class="text-sm" style="color:var(--muted);">{% trans "No data" %}</p>{% endif %}
+  </div>
+
+</div>

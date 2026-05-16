@@ -1,0 +1,52 @@
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-5">
+    <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Raised Today</p>
+    <p class="text-3xl font-bold text-emerald-400">${{ stats.today_total_usd|floatformat:2 }}</p>
+    <p class="text-gray-500 text-xs mt-1">{{ stats.today_tx_count }} transactions</p>
+  </div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-5">
+    <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">All-Time Levy</p>
+    <p class="text-3xl font-bold text-blue-400">${{ stats.total_all_time_usd|floatformat:2 }}</p>
+    <p class="text-gray-500 text-xs mt-1">Cumulative 2% levy</p>
+  </div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-5">
+    <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Pending Review</p>
+    <p class="text-3xl font-bold text-yellow-400">{{ stats.pending_count }}</p>
+    <p class="text-gray-500 text-xs mt-1">Awaiting verification</p>
+  </div>
+
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-5">
+    <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Top Company</p>
+    {% if stats.by_company %}
+    <p class="text-lg font-bold text-white truncate">{{ stats.by_company.0.station__company__name }}</p>
+    <p class="text-gray-500 text-xs mt-1">${{ stats.by_company.0.total_usd|floatformat:2 }} levied</p>
+    {% else %}
+    <p class="text-gray-500 text-sm">No data yet</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Company levy bar chart -->
+{% if stats.by_company %}
+<div class="mt-4 bg-gray-800 border border-gray-700 rounded-xl p-5">
+  <h3 class="text-sm font-semibold text-gray-300 mb-3">Levy by Company (USD)</h3>
+  <div class="space-y-2">
+    {% for row in stats.by_company %}
+    <div>
+      <div class="flex justify-between text-xs text-gray-400 mb-1">
+        <span>{{ row.station__company__name }}</span>
+        <span>${{ row.total_usd|floatformat:2 }} · {{ row.tx_count }} tx</span>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-2">
+        <div class="bg-blue-500 h-2 rounded-full"
+             style="width: {% widthratio row.total_usd stats.total_all_time_usd 100 %}%"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

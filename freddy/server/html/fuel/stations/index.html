@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Stations" %}{% endblock %}
+{% block page_title %}{% trans "Fuel Stations" %}{% endblock %}
+{% block page_subtitle %}{{ stations|length }} {% trans "total" %}{% endblock %}
+{% block header_actions %}
+<a href="{% url 'fuel:station-create' %}" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition" style="background:var(--accent);">+ {% trans "New Station" %}</a>
+{% endblock %}
+{% block content %}
+<!-- Company filter -->
+<form method="get" class="flex gap-2 mb-4">
+  <select name="company" class="text-xs rounded-lg px-3 py-1.5 border"
+          style="background:var(--surface2); border-color:var(--border); color:var(--text);"
+          onchange="this.form.submit()">
+    <option value="">{% trans "All Companies" %}</option>
+    {% for c in companies %}<option value="{{ c.id }}" {% if selected_company == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+  </select>
+  {% if selected_company %}<a href="{% url 'fuel:stations' %}" class="text-xs self-center text-blue-400 hover:underline">{% trans "Clear" %}</a>{% endif %}
+</form>
+
+<div class="rounded-xl border overflow-hidden" style="border-color:var(--border);">
+  <table class="w-full text-sm">
+    <thead style="background:var(--surface2);">
+      <tr class="text-left text-xs font-medium" style="color:var(--muted);">
+        <th class="px-4 py-3">{% trans "Station" %}</th>
+        <th class="px-4 py-3">{% trans "Code" %}</th>
+        <th class="px-4 py-3">{% trans "Company" %}</th>
+        <th class="px-4 py-3">{% trans "Churches" %}</th>
+        <th class="px-4 py-3">{% trans "Transactions" %}</th>
+        <th class="px-4 py-3 text-right">{% trans "Levy (USD)" %}</th>
+        <th class="px-4 py-3">{% trans "Status" %}</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y" style="background:var(--surface); border-color:var(--border);">
+      {% for s in stations %}
+      <tr class="hover:bg-blue-900/10 transition">
+        <td class="px-4 py-3 font-medium text-white">{{ s.name }}</td>
+        <td class="px-4 py-3 font-mono text-xs" style="color:var(--muted);">{{ s.code }}</td>
+        <td class="px-4 py-3 text-gray-300">{{ s.company.name }}</td>
+        <td class="px-4 py-3 text-gray-300">{{ s.church_count }}</td>
+        <td class="px-4 py-3 text-gray-300">{{ s.tx_count }}</td>
+        <td class="px-4 py-3 text-right text-green-400 font-medium">${{ s.total_levy|default:0|floatformat:2 }}</td>
+        <td class="px-4 py-3">
+          <span class="px-2 py-0.5 rounded text-xs {% if s.is_active %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-400{% endif %}">
+            {% if s.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}
+          </span>
+        </td>
+        <td class="px-4 py-3">
+          <div class="flex gap-2 text-xs">
+            <button class="text-blue-400 hover:underline"
+                    hx-get="{% url 'fuel:station-detail' s.id %}"
+                    hx-target="#detail-panel"
+                    hx-swap="innerHTML">{% trans "View" %}</button>
+            <a href="{% url 'fuel:station-edit' s.id %}" class="text-gray-400 hover:text-white">{% trans "Edit" %}</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="px-4 py-8 text-center" style="color:var(--muted);">{% trans "No stations yet." %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="detail-panel" class="mt-4"></div>
+{% endblock %}

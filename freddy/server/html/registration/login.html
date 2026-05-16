@@ -1,8 +1,9 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
+<title>{% trans "Login" %}</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -12,8 +13,9 @@
 
   <!-- Title -->
   <div class="text-center">
-    <h1 class="text-2xl font-bold">Welcome Back</h1>
-    <p class="text-gray-400 text-sm">Login to your account</p>
+    <img src="/media/logo.jpg" alt="Logo" style="border-radius: 100%; width: 180px; height: 180px; margin: auto;">
+    <h1 class="text-2xl font-bold">{% trans "Welcome Back" %}</h1>
+    <p class="text-gray-400 text-sm">{% trans "Login to your account" %}</p>
   </div>
 
   <!-- Form -->
@@ -32,16 +34,16 @@
     {% endif %}
     {% csrf_token %}
 
-    <!-- Email -->
+    <!-- Username -->
     <div>
-      <label class="block text-sm mb-1">Username</label>
-      <input type="text" placeholder="Enter your username" name="username"
+      <label class="block text-sm mb-1">{% trans "Username" %}</label>
+      <input type="text" placeholder="{% trans 'Enter your username' %}" name="username"
         class="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring focus:ring-blue-500 outline-none">
     </div>
 
     <!-- Password -->
     <div>
-      <label class="block text-sm mb-1">Password</label>
+      <label class="block text-sm mb-1">{% trans "Password" %}</label>
       <input type="password" placeholder="••••••••" name="password"
         class="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring focus:ring-blue-500 outline-none">
     </div>
@@ -50,27 +52,43 @@
     <div class="flex justify-between items-center text-sm">
       <label class="flex items-center gap-2">
         <input type="checkbox" class="accent-blue-600">
-        Remember me
+        {% trans "Remember me" %}
       </label>
-      <a href="#" class="text-blue-400 hover:underline">Forgot password?</a>
+      <a href="#" class="text-blue-400 hover:underline">{% trans "Forgot password?" %}</a>
     </div>
 
     <!-- Button -->
     <button type="submit"
       class="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded-lg font-semibold transition">
-      Login
+      {% trans "Login" %}
     </button>
 
   </form>
 
   <!-- Divider -->
-  <div class="text-center text-gray-500 text-sm">or</div>
+  <div class="text-center text-gray-500 text-sm">{% trans "or" %}</div>
 
   <!-- Signup Link -->
   <p class="text-center text-sm text-gray-400">
-    Don’t have an account?
-    <a href="/signup" class="text-blue-400 hover:underline">Sign up</a>
+    {% trans "Don't have an account?" %}
+    <a href="/signup" class="text-blue-400 hover:underline">{% trans "Sign up" %}</a>
   </p>
+
+  <!-- Language switcher -->
+  <div class="flex justify-center">
+    <form action="{% url 'set_language' %}" method="post" class="flex items-center gap-2">
+      {% csrf_token %}
+      <input name="next" type="hidden" value="{{ request.get_full_path }}">
+      <select name="language" onchange="this.form.submit()"
+              class="text-xs rounded px-2 py-1 border border-gray-700 bg-gray-800 text-gray-300">
+        {% get_current_language as current_lang %}
+        {% get_available_languages as languages %}
+        {% for lang_code, lang_name in languages %}
+        <option value="{{ lang_code }}"{% if lang_code == current_lang %} selected{% endif %}>{{ lang_name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
 
 </div>
 

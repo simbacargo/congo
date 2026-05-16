@@ -1,0 +1,12 @@
+<tr class="hover:bg-blue-900/10 transition text-xs">
+  <td class="px-4 py-3 text-gray-200">{{ ft.name }}</td>
+  <td class="px-4 py-3 font-mono" style="color:var(--muted);">{{ ft.code }}</td>
+  <td class="px-4 py-3">
+    <span class="px-2 py-0.5 rounded {% if ft.is_active %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-400{% endif %}">
+      {% if ft.is_active %}Active{% else %}Inactive{% endif %}
+    </span>
+  </td>
+  <td class="px-4 py-3">
+    <a href="{% url 'fuel:fuel-type-edit' ft.pk %}" class="text-blue-400 hover:underline">Edit</a>
+  </td>
+</tr>

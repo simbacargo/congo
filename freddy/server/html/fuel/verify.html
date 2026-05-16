@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Verify Receipt" %}{% endblock %}
+{% block page_title %}{% trans "Verify Receipt" %}{% endblock %}
+{% block page_subtitle %}{% trans "Check the authenticity of any LCI transaction" %}{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto">
+  <div class="rounded-xl border p-6" style="background:var(--surface); border-color:var(--border);">
+    <form hx-get="{% url 'fuel:verify' %}"
+          hx-target="#verify-result"
+          hx-swap="innerHTML"
+          hx-trigger="submit"
+          class="flex gap-2">
+      {% csrf_token %}
+      <input type="text" name="code" value="{{ code }}"
+             placeholder="LCI-XXXX-XXXX-XXXX"
+             autofocus
+             class="flex-1 rounded-lg px-4 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-blue-500"
+             style="background:var(--surface2); border-color:var(--border); color:var(--text);">
+      <button type="submit"
+              class="px-5 py-2 rounded-lg text-sm font-semibold text-white transition"
+              style="background:var(--accent);">{% trans "Verify" %}</button>
+    </form>
+  </div>
+  <div id="verify-result" class="mt-4">
+    {% if code %}{% include "fuel/partials/verify_result.html" %}{% endif %}
+  </div>
+</div>
+{% endblock %}

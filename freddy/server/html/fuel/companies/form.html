@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "fuel/partials/_form_page.html" with back_url=back_url|default:"/companies/" %}
+{% endblock %}
