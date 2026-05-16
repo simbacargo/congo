@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { printReceipt } from "../../lib/print";
 
@@ -21,7 +22,7 @@ export default function SuccessScreen() {
   const isOffline = params.offline === "true";
 
   async function handlePrint() {
-    const agent = await AsyncStorage.getItem("agent_username") ?? "Agent";
+    const agent = (await AsyncStorage.getItem("agent_username")) ?? "Agent";
     await printReceipt({
       receiptCode: params.receiptCode,
       companyName: params.companyName,
@@ -39,28 +40,36 @@ export default function SuccessScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Status Icon */}
+    <ScrollView style={styles.root} contentContainerStyle={styles.content}>
+      {/* Status */}
       <View style={[styles.iconCircle, isOffline && styles.iconCircleOffline]}>
-        <Text style={styles.icon}>{isOffline ? "📦" : "✓"}</Text>
+        <FontAwesome
+          name={isOffline ? "cloud-upload" : "check"}
+          size={36}
+          color={isOffline ? "#fbbf24" : "#4ade80"}
+        />
       </View>
-      <Text style={styles.title}>{isOffline ? "Saved Offline" : "Transaction Posted!"}</Text>
+      <Text style={styles.title}>{isOffline ? "Saved Offline" : "Transaction Posted"}</Text>
       <Text style={styles.subtitle}>
         {isOffline
-          ? "No internet connection. This transaction is saved locally and will sync when you're back online."
-          : "Transaction has been recorded and verified."}
+          ? "No connection — saved locally and will sync automatically when you're back online."
+          : "Transaction recorded and submitted to the LCI server."}
       </Text>
 
-      {/* Receipt Code */}
-      <View style={styles.receiptBox}>
-        <Text style={styles.receiptLabel}>Receipt Code</Text>
-        <Text style={styles.receiptCode}>{params.receiptCode}</Text>
-        {!isOffline && <Text style={styles.receiptHint}>Present this code for NGO verification</Text>}
+      {/* Receipt code */}
+      <View style={[styles.receiptBox, isOffline && styles.receiptBoxOffline]}>
+        <Text style={styles.receiptLabel}>{isOffline ? "LOCAL REFERENCE" : "RECEIPT CODE"}</Text>
+        <Text style={[styles.receiptCode, isOffline && { color: "#fbbf24", fontSize: 15 }]}>
+          {params.receiptCode}
+        </Text>
+        {!isOffline && <Text style={styles.receiptHint}>Present to NGO for verification</Text>}
+        {isOffline && <Text style={styles.receiptHint}>Receipt code assigned after sync</Text>}
       </View>
 
-      {/* Details */}
+      {/* Details card */}
       <View style={styles.detailsCard}>
-        <DetailRow label="Company" value={params.companyName} />
+        <Text style={styles.detailsCardTitle}>Transaction Summary</Text>
+        {params.companyName ? <DetailRow label="Company" value={params.companyName} /> : null}
         {params.stationName ? <DetailRow label="Station" value={params.stationName} /> : null}
         <DetailRow label="Church" value={params.churchName} />
         <DetailRow label="Fuel Type" value={params.fuelType} />
@@ -77,11 +86,12 @@ export default function SuccessScreen() {
 
       {/* Actions */}
       <Pressable style={styles.printBtn} onPress={handlePrint}>
+        <FontAwesome name="print" size={16} color="#fff" />
         <Text style={styles.printBtnText}>Print Receipt</Text>
       </Pressable>
 
       <Pressable style={styles.doneBtn} onPress={() => router.replace("/(tabs)")}>
-        <Text style={styles.doneBtnText}>Done</Text>
+        <Text style={styles.doneBtnText}>Back to Home</Text>
       </Pressable>
     </ScrollView>
   );
@@ -97,52 +107,63 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
-  content: { padding: 24, alignItems: "center" },
+  root: { flex: 1, backgroundColor: "#0a0f1e" },
+  content: { padding: 24, alignItems: "center", paddingBottom: 40 },
+
   iconCircle: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: "#14532d",
-    justifyContent: "center", alignItems: "center", marginBottom: 16,
+    width: 88, height: 88, borderRadius: 44,
+    backgroundColor: "#052e16", borderWidth: 2, borderColor: "#166534",
+    justifyContent: "center", alignItems: "center", marginBottom: 18,
   },
-  iconCircleOffline: { backgroundColor: "#7c2d12" },
-  icon: { fontSize: 36 },
-  title: { fontSize: 22, fontWeight: "700", color: "#f1f5f9", textAlign: "center" },
-  subtitle: { fontSize: 13, color: "#64748b", textAlign: "center", marginTop: 8, lineHeight: 20, maxWidth: 300 },
+  iconCircleOffline: { backgroundColor: "#451a03", borderColor: "#78350f" },
+
+  title: { fontSize: 24, fontWeight: "800", color: "#f8fafc", textAlign: "center", marginBottom: 8 },
+  subtitle: {
+    fontSize: 13, color: "#64748b", textAlign: "center",
+    lineHeight: 20, maxWidth: 300, marginBottom: 24,
+  },
 
   receiptBox: {
-    backgroundColor: "#1e293b", borderRadius: 14, padding: 18, width: "100%",
-    alignItems: "center", marginTop: 24, borderWidth: 1, borderColor: "#334155",
+    backgroundColor: "#111827", borderRadius: 14, padding: 18, width: "100%",
+    alignItems: "center", marginBottom: 16, borderWidth: 1, borderColor: "#1e3a5f",
   },
-  receiptLabel: { fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 },
+  receiptBoxOffline: { borderColor: "#78350f" },
+  receiptLabel: { fontSize: 10, color: "#334155", letterSpacing: 1.5, marginBottom: 8 },
   receiptCode: { fontSize: 18, fontWeight: "700", color: "#60a5fa", letterSpacing: 2, fontFamily: "monospace" },
   receiptHint: { fontSize: 11, color: "#475569", marginTop: 6 },
 
   detailsCard: {
-    backgroundColor: "#1e293b", borderRadius: 14, padding: 18, width: "100%",
-    marginTop: 16, borderWidth: 1, borderColor: "#334155",
+    backgroundColor: "#111827", borderRadius: 14, padding: 18, width: "100%",
+    marginBottom: 20, borderWidth: 1, borderColor: "#1e2d45",
+  },
+  detailsCardTitle: {
+    fontSize: 11, fontWeight: "700", color: "#334155",
+    letterSpacing: 1, textTransform: "uppercase", marginBottom: 12,
   },
   detailRow: {
     flexDirection: "row", justifyContent: "space-between",
-    paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: "#0f172a",
+    paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: "#0a0f1e",
   },
   detailLabel: { color: "#64748b", fontSize: 13 },
-  detailValue: { color: "#f1f5f9", fontWeight: "600", fontSize: 13 },
+  detailValue: { color: "#f8fafc", fontWeight: "600", fontSize: 13 },
+
   levyRow: {
-    flexDirection: "row", justifyContent: "space-between",
+    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
     backgroundColor: "#052e16", borderRadius: 8, padding: 12, marginTop: 8,
   },
-  levyLabel: { color: "#4ade80", fontWeight: "700" },
-  levyValue: { color: "#34d399", fontWeight: "700", fontSize: 15 },
+  levyLabel: { color: "#4ade80", fontWeight: "700", fontSize: 13 },
+  levyValue: { color: "#34d399", fontWeight: "700", fontSize: 16 },
   levyCdf: { color: "#86efac", fontSize: 11 },
 
   printBtn: {
-    backgroundColor: "#1e40af", borderRadius: 12, padding: 16,
-    width: "100%", alignItems: "center", marginTop: 20,
+    flexDirection: "row", alignItems: "center", justifyContent: "center",
+    gap: 10, backgroundColor: "#1e40af", borderRadius: 14, padding: 16,
+    width: "100%", marginBottom: 10,
   },
   printBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
   doneBtn: {
-    backgroundColor: "#1e293b", borderRadius: 12, padding: 16,
-    width: "100%", alignItems: "center", marginTop: 12,
-    borderWidth: 1, borderColor: "#334155",
+    backgroundColor: "#111827", borderRadius: 14, padding: 16, width: "100%",
+    alignItems: "center", borderWidth: 1, borderColor: "#1e2d45",
   },
-  doneBtnText: { color: "#94a3b8", fontWeight: "600", fontSize: 16 },
+  doneBtnText: { color: "#64748b", fontWeight: "600", fontSize: 15 },
 });
