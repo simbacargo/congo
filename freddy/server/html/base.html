@@ -27,8 +27,35 @@
     .status-PAID      { background:#14532d; color:#86efac; }
     .status-SCHEDULED { background:#1e3a5f; color:#93c5fd; }
     .status-CANCELLED { background:#3f1f1f; color:#fca5a5; }
-    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background:#0d1f2d; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background:#0d1f2d; }
     ::-webkit-scrollbar-thumb { background:#1e3448; border-radius:3px; }
+    ::-webkit-scrollbar-thumb:hover { background:#2a4a64; }
+
+    /* Accessible focus rings */
+    a:focus-visible, button:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 6px;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent) !important; }
+
+    /* Smooth interactions */
+    a, button, input, select { transition: background-color .15s ease, color .15s ease,
+      border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+
+    /* KPI / summary cards lift on hover */
+    .kpi-card { transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+    .kpi-card:hover { transform: translateY(-2px); border-color: var(--accent) !important;
+      box-shadow: 0 6px 20px -8px rgba(37,99,235,.45); }
+
+    /* Reusable table helpers */
+    .tbl-sticky thead th { position: sticky; top: 0; z-index: 2; background: var(--surface2); }
+    .tbl-zebra tbody tr:nth-child(even) { background: rgba(255,255,255,.018); }
+
+    /* Custom select caret */
+    select { -webkit-appearance: none; -moz-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat; background-position: right .5rem center;
+      background-size: 1rem; padding-right: 1.75rem; }
   </style>
 </head>
 <body hx-boost="false">

@@ -363,28 +363,93 @@ def _driver_queryset(request):
     return qs.order_by("full_name"), cur
 
 
+DRIVER_SORTABLE = {
+    "name": "full_name", "commune": "commune", "vehicle": "vehicle_type",
+    "fuel": "fuel_type", "consumption": "daily_fuel_consumption",
+    "agent": "field_agent", "registered": "registration_date",
+}
+CONSUMPTION_ORDER = ["1 à 4", "5 à 10", "11 à 20", "21 à 30", "31 à 45", "Autre"]
+
+
 @login_required
 def driver_list(request):
-    qs, cur = _driver_queryset(request)
+    base_qs, cur = _driver_queryset(request)
+
+    # ── Sorting ──
+    sort = request.GET.get("sort", "name")
+    direction = request.GET.get("dir", "asc")
+    order_field = DRIVER_SORTABLE.get(sort, "full_name")
+    qs = base_qs.order_by(order_field if direction == "asc" else f"-{order_field}")
+
     paginator = Paginator(qs, 50)
     page_obj = paginator.get_page(request.GET.get("page"))
 
     def _opts(field):
         return sorted(v for v in Driver.objects.values_list(field, flat=True).distinct() if v)
 
+    # ── Insights (reflect the active filters) ──
+    agg = base_qs.order_by()
+
+    def _breakdown(field, limit=None):
+        rows = (agg.exclude(**{f"{field}__isnull": True}).exclude(**{field: ""})
+                .values(field).annotate(n=Count("id")).order_by("-n"))
+        rows = list(rows[:limit] if limit else rows)
+        return [[r[field], r["n"]] for r in rows]
+
+    health = {
+        "yes": agg.filter(has_health_coverage=True).count(),
+        "no": agg.filter(has_health_coverage=False).count(),
+        "unknown": agg.filter(has_health_coverage__isnull=True).count(),
+    }
+    vehicle_bd = _breakdown("vehicle_type")
+    top_vehicle = vehicle_bd[0] if vehicle_bd else ["—", 0]
+    covered = health["yes"] + health["no"]
+    kpi = {
+        "filtered": paginator.count,
+        "total": Driver.objects.count(),
+        "top_vehicle": top_vehicle[0], "top_vehicle_n": top_vehicle[1],
+        "coverage_pct": round(100 * health["yes"] / covered) if covered else 0,
+        "agents": (agg.exclude(field_agent__isnull=True).exclude(field_agent="")
+                   .values("field_agent").distinct().count()),
+    }
+
+    cons_map = dict(_breakdown("daily_fuel_consumption"))
+    consumption = [[k, cons_map[k]] for k in CONSUMPTION_ORDER if k in cons_map]
+    consumption += [[k, v] for k, v in cons_map.items() if k not in CONSUMPTION_ORDER]
+
+    # ── Active-filter chips ──
+    chips = []
+    for key, val in cur.items():
+        if val:
+            rem = request.GET.copy()
+            rem.pop(key, None)
+            rem.pop("page", None)
+            chips.append({"value": val, "qs": rem.urlencode()})
+
     params = request.GET.copy()
     params.pop("page", None)
+    sort_params = request.GET.copy()
+    for p in ("sort", "dir", "page"):
+        sort_params.pop(p, None)
 
     return render(request, "fuel/drivers/index.html", {
         "page_obj": page_obj,
-        "total_count": Driver.objects.count(),
+        "total_count": kpi["total"],
         "filtered_count": paginator.count,
         "communes": _opts("commune"),
         "vehicle_types": _opts("vehicle_type"),
         "fuel_types": _opts("fuel_type"),
         "agents": _opts("field_agent"),
         "cur": cur,
+        "chips": chips,
         "querystring": params.urlencode(),
+        "sort_querystring": sort_params.urlencode(),
+        "sort": sort, "dir": direction,
+        "kpi": kpi,
+        "chart_commune": _breakdown("commune", 8),
+        "chart_vehicle": vehicle_bd,
+        "chart_consumption": consumption,
+        "chart_health": [health["yes"], health["no"], health["unknown"]],
     })
 
 

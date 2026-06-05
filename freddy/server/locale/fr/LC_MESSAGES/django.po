@@ -648,3 +648,36 @@ msgstr "Consentement"
 
 msgid "Given"
 msgstr "Donné"
+
+msgid "Drivers shown"
+msgstr "Chauffeurs affichés"
+
+msgid "Top vehicle"
+msgstr "Véhicule principal"
+
+msgid "Have health coverage"
+msgstr "Disposent d'une couverture santé"
+
+msgid "Field agents"
+msgstr "Agents de terrain"
+
+msgid "Drivers by Commune"
+msgstr "Chauffeurs par commune"
+
+msgid "Vehicle Types"
+msgstr "Types de véhicule"
+
+msgid "Fuel Use (litres/day)"
+msgstr "Consommation (litres/jour)"
+
+msgid "Health Coverage"
+msgstr "Couverture santé"
+
+msgid "Active:"
+msgstr "Actifs :"
+
+msgid "Clear filters"
+msgstr "Effacer les filtres"
+
+msgid "Unknown"
+msgstr "Inconnu"
