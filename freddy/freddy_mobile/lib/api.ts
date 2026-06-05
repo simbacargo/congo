@@ -1,6 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 
-export const API_BASE = "http://10.0.2.2:8000"; // Android emulator → localhost
+const _platformDefault =
+  Platform.OS === "android" ? "http://10.0.2.2:8000" : "http://localhost:8000";
+
+export const API_BASE: string =
+  (Constants.expoConfig?.extra?.apiBase as string | undefined) ?? _platformDefault;
 
 export interface AuthToken {
   token: string;
@@ -55,10 +61,7 @@ async function getAuthHeader(): Promise<Record<string, string>> {
   return token ? { Authorization: `Token ${token}` } : {};
 }
 
-async function apiFetch<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
+async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const authHeader = await getAuthHeader();
   const resp = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -68,22 +71,42 @@ async function apiFetch<T>(
       ...(options.headers as Record<string, string>),
     },
   });
+
   if (!resp.ok) {
-    const err = await resp.text();
-    throw new Error(err);
+    if (resp.status === 401) {
+      await AsyncStorage.multiRemove([
+        "auth_token",
+        "auth_token_expiry",
+        "agent_username",
+        "agent_profile",
+      ]);
+      throw new Error("Session expired. Please log in again.");
+    }
+    const text = await resp.text();
+    let message = text;
+    try {
+      const json = JSON.parse(text);
+      if (json.detail) {
+        message = json.detail;
+      } else {
+        message = Object.entries(json)
+          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+          .join("; ");
+      }
+    } catch {}
+    throw new Error(message);
   }
+
   return resp.json();
 }
 
-export async function login(
-  username: string,
-  password: string,
-): Promise<AuthToken> {
+export async function login(username: string, password: string): Promise<AuthToken> {
   const data = await apiFetch<AuthToken>("/api/auth/login/", {
     method: "POST",
     body: JSON.stringify({ username, password }),
   });
   await AsyncStorage.setItem("auth_token", data.token);
+  await AsyncStorage.setItem("auth_token_expiry", data.expiry);
   await AsyncStorage.setItem("agent_username", username);
   return data;
 }
@@ -92,36 +115,73 @@ export async function logout() {
   try {
     await apiFetch("/api/auth/logout/", { method: "POST" });
   } catch {}
-  await AsyncStorage.multiRemove(["auth_token", "agent_username", "agent_profile"]);
+  await AsyncStorage.multiRemove([
+    "auth_token",
+    "auth_token_expiry",
+    "agent_username",
+    "agent_profile",
+  ]);
+}
+
+export async function isSessionExpired(): Promise<boolean> {
+  const expiry = await AsyncStorage.getItem("auth_token_expiry");
+  if (!expiry) return false;
+  return new Date(expiry) <= new Date();
 }
 
 export async function fetchCurrencyRate(): Promise<number> {
-  const data = await apiFetch<{ usd_to_cdf: string }>("/api/currency/");
-  return parseFloat(data.usd_to_cdf);
+  try {
+    const data = await apiFetch<{ usd_to_cdf: string }>("/api/currency/");
+    const rate = parseFloat(data.usd_to_cdf);
+    await AsyncStorage.setItem("cached_rate", String(rate));
+    return rate;
+  } catch {
+    const cached = await AsyncStorage.getItem("cached_rate");
+    if (cached) return parseFloat(cached);
+    return 2800;
+  }
 }
 
 export async function fetchFuelTypes(): Promise<FuelType[]> {
-  return apiFetch("/api/fuel-types/");
+  try {
+    const data = await apiFetch<FuelType[]>("/api/fuel-types/");
+    await AsyncStorage.setItem("cache_fuel_types", JSON.stringify(data));
+    return data;
+  } catch {
+    const cached = await AsyncStorage.getItem("cache_fuel_types");
+    if (cached) return JSON.parse(cached);
+    return [];
+  }
 }
 
 export async function fetchChurches(stationId?: string): Promise<Church[]> {
-  const query = stationId ? `?station=${stationId}` : "";
-  return apiFetch(`/api/churches/${query}`);
+  const cacheKey = stationId ? `cache_churches_${stationId}` : "cache_churches";
+  try {
+    const query = stationId ? `?station=${stationId}` : "";
+    const data = await apiFetch<Church[]>(`/api/churches/${query}`);
+    await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
+    return data;
+  } catch {
+    const cached = await AsyncStorage.getItem(cacheKey);
+    if (cached) return JSON.parse(cached);
+    return [];
+  }
 }
 
-export async function postTransaction(
-  payload: TransactionPayload,
-): Promise<TransactionResult> {
+export async function postTransaction(payload: TransactionPayload): Promise<TransactionResult> {
   return apiFetch("/api/transactions/create/", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
-export async function syncOfflineTransactions(
-  transactions: TransactionPayload[],
-): Promise<{
-  results: Array<{ sync_id: string; status: string; receipt_code?: string }>;
+export async function syncOfflineTransactions(transactions: TransactionPayload[]): Promise<{
+  results: Array<{
+    sync_id: string;
+    status: string;
+    receipt_code?: string;
+    levy_amount_usd?: string;
+  }>;
 }> {
   return apiFetch("/api/transactions/sync/", {
     method: "POST",
@@ -139,7 +199,6 @@ export async function fetchProfile(): Promise<AgentProfile | null> {
     await AsyncStorage.setItem("agent_profile", JSON.stringify(profile));
     return profile;
   } catch {
-    // Try cached version
     const cached = await AsyncStorage.getItem("agent_profile");
     return cached ? JSON.parse(cached) : null;
   }

@@ -55,6 +55,16 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
             "amount_usd", "amount_cdf", "notes", "sync_id", "created_at",
         ]
 
+    def validate_created_at(self, value):
+        from django.utils import timezone
+        import datetime
+        now = timezone.now()
+        if value > now + datetime.timedelta(minutes=5):
+            raise serializers.ValidationError("created_at cannot be in the future.")
+        if value < now - datetime.timedelta(days=7):
+            raise serializers.ValidationError("created_at cannot be more than 7 days in the past.")
+        return value
+
     def validate(self, data):
         request = self.context["request"]
         agent = request.user
@@ -110,27 +120,6 @@ class TransactionStatusUpdateSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = ["status", "notes"]
 
-
-class BulkSyncSerializer(serializers.Serializer):
-    """Mobile app sends a list of offline transactions for server-side upsert."""
-    transactions = TransactionCreateSerializer(many=True)
-
-    def create(self, validated_data):
-        results = []
-        for tx_data in validated_data["transactions"]:
-            sync_id = tx_data.get("sync_id")
-            if sync_id and Transaction.objects.filter(sync_id=sync_id).exists():
-                results.append({"sync_id": sync_id, "status": "duplicate"})
-                continue
-            serializer = TransactionCreateSerializer(
-                data=tx_data, context=self.context
-            )
-            if serializer.is_valid():
-                tx = serializer.save()
-                results.append({"sync_id": sync_id, "receipt_code": tx.receipt_code, "status": "created"})
-            else:
-                results.append({"sync_id": sync_id, "errors": serializer.errors, "status": "error"})
-        return results
 
 
 class TransactionAuditLogSerializer(serializers.ModelSerializer):

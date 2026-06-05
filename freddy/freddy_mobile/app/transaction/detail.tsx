@@ -18,11 +18,16 @@ export default function TransactionDetailScreen() {
   const { syncId } = useLocalSearchParams<{ syncId: string }>();
   const [tx, setTx] = useState<OfflineTx | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cachedRate, setCachedRate] = useState<number>(2800);
 
   useEffect(() => {
     (async () => {
-      const data = await getTxBySyncId(syncId);
+      const [data, rate] = await Promise.all([
+        getTxBySyncId(syncId),
+        AsyncStorage.getItem("cached_rate"),
+      ]);
       setTx(data);
+      if (rate) setCachedRate(parseFloat(rate));
       setLoading(false);
     })();
   }, [syncId]);
@@ -40,7 +45,7 @@ export default function TransactionDetailScreen() {
       amountUsd: tx.amount_usd,
       amountCdf: tx.amount_cdf,
       levyUsd: tx.levy_preview,
-      levyCdf: (parseFloat(tx.levy_preview) * 2800).toFixed(2),
+      levyCdf: (parseFloat(tx.levy_preview) * cachedRate).toFixed(2),
       agentName: agent,
       date: new Date(tx.created_at).toLocaleString(),
     });
@@ -114,7 +119,7 @@ export default function TransactionDetailScreen() {
           <Text style={styles.levyLabel}>2% Charity Levy</Text>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={styles.levyValue}>${levy.toFixed(4)}</Text>
-            <Text style={styles.levyCdf}>{(levy * 2800).toFixed(2)} FC (est.)</Text>
+            <Text style={styles.levyCdf}>{(levy * cachedRate).toFixed(2)} FC (est.)</Text>
           </View>
         </View>
       </View>

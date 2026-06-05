@@ -1,9 +1,9 @@
 # French translations for LCI Office
 msgid ""
 msgstr ""
+"Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 
 msgid "English"
 msgstr "Anglais"
@@ -519,7 +519,9 @@ msgid "Save"
 msgstr "Enregistrer"
 
 msgid "Click Edit on a row to modify it, or use the button below."
-msgstr "Cliquez sur Modifier sur une ligne pour la modifier, ou utilisez le bouton ci-dessous."
+msgstr ""
+"Cliquez sur Modifier sur une ligne pour la modifier, ou utilisez le bouton "
+"ci-dessous."
 
 msgid "Add Fuel Type"
 msgstr "Ajouter un type de carburant"
@@ -532,3 +534,117 @@ msgstr "utilisateur"
 
 msgid "Users"
 msgstr "Utilisateurs"
+
+msgid "Drivers"
+msgstr "Chauffeurs"
+
+msgid "of"
+msgstr "sur"
+
+msgid "registered drivers"
+msgstr "chauffeurs enregistrés"
+
+msgid "Export Excel"
+msgstr "Exporter Excel"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Name, phone, email, quartier…"
+msgstr "Nom, téléphone, e-mail, quartier…"
+
+msgid "Commune"
+msgstr "Commune"
+
+msgid "Vehicle"
+msgstr "Véhicule"
+
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgid "Location"
+msgstr "Localisation"
+
+msgid "Litres/day"
+msgstr "Litres/jour"
+
+msgid "Dependents"
+msgstr "Personnes à charge"
+
+msgid "Health cover"
+msgstr "Couverture santé"
+
+msgid "Registered"
+msgstr "Enregistré"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "No"
+msgstr "Non"
+
+msgid "No drivers match these filters."
+msgstr "Aucun chauffeur ne correspond à ces filtres."
+
+msgid "Page"
+msgstr "Page"
+
+msgid "Prev"
+msgstr "Précédent"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Driver"
+msgstr "Chauffeur"
+
+msgid "Back to drivers"
+msgstr "Retour aux chauffeurs"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Gender"
+msgstr "Sexe"
+
+msgid "Marital Status"
+msgstr "État civil"
+
+msgid "Quartier"
+msgstr "Quartier"
+
+msgid "City / Country"
+msgstr "Ville / Pays"
+
+msgid "Vehicle & Fuel"
+msgstr "Véhicule et carburant"
+
+msgid "Vehicle Type"
+msgstr "Type de véhicule"
+
+msgid "Vehicle Color"
+msgstr "Couleur du véhicule"
+
+msgid "Litres / day"
+msgstr "Litres / jour"
+
+msgid "OSS Health Program"
+msgstr "Programme de santé OSS"
+
+msgid "Has health coverage"
+msgstr "Dispose d'une couverture santé"
+
+msgid "Care access difficulty"
+msgstr "Difficulté d'accès aux soins"
+
+msgid "Registration"
+msgstr "Enregistrement"
+
+msgid "Field Agent"
+msgstr "Agent de terrain"
+
+msgid "Consent"
+msgstr "Consentement"
+
+msgid "Given"
+msgstr "Donné"

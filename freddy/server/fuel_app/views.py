@@ -1,6 +1,7 @@
 from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -17,7 +18,7 @@ from fuel_app.forms import (
     ParentCompanyForm, StationTargetForm, TransactionFilterForm, TransactionStatusForm,
 )
 from fuel_app.models import (
-    Church, Disbursement, ExchangeRateCache, FuelStation, FuelType,
+    Church, Disbursement, Driver, ExchangeRateCache, FuelStation, FuelType,
     ParentCompany, StationTarget, Transaction, TransactionAuditLog,
 )
 from fuel_app.permissions import IsNGOAdmin, IsStationAgent
@@ -337,6 +338,105 @@ def church_detail(request, pk):
     return render(request, "fuel/churches/detail.html", {
         "church": church, "txs": txs, "disbursements": disbursements, "totals": totals,
     })
+
+
+# ─── Drivers (OSS registrations) ──────────────────────────────────────────────
+
+def _driver_queryset(request):
+    """Apply the Drivers-page search/filters from the query string."""
+    qs = Driver.objects.all()
+    cur = {key: request.GET.get(key, "").strip() for key in
+           ("q", "commune", "vehicle_type", "fuel_type", "agent")}
+    if cur["q"]:
+        qs = qs.filter(
+            Q(full_name__icontains=cur["q"]) | Q(phone__icontains=cur["q"])
+            | Q(email__icontains=cur["q"]) | Q(quartier__icontains=cur["q"])
+        )
+    if cur["commune"]:
+        qs = qs.filter(commune=cur["commune"])
+    if cur["vehicle_type"]:
+        qs = qs.filter(vehicle_type=cur["vehicle_type"])
+    if cur["fuel_type"]:
+        qs = qs.filter(fuel_type=cur["fuel_type"])
+    if cur["agent"]:
+        qs = qs.filter(field_agent=cur["agent"])
+    return qs.order_by("full_name"), cur
+
+
+@login_required
+def driver_list(request):
+    qs, cur = _driver_queryset(request)
+    paginator = Paginator(qs, 50)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    def _opts(field):
+        return sorted(v for v in Driver.objects.values_list(field, flat=True).distinct() if v)
+
+    params = request.GET.copy()
+    params.pop("page", None)
+
+    return render(request, "fuel/drivers/index.html", {
+        "page_obj": page_obj,
+        "total_count": Driver.objects.count(),
+        "filtered_count": paginator.count,
+        "communes": _opts("commune"),
+        "vehicle_types": _opts("vehicle_type"),
+        "fuel_types": _opts("fuel_type"),
+        "agents": _opts("field_agent"),
+        "cur": cur,
+        "querystring": params.urlencode(),
+    })
+
+
+@login_required
+def driver_detail(request, pk):
+    driver = get_object_or_404(Driver, pk=pk)
+    return render(request, "fuel/drivers/detail.html", {"driver": driver})
+
+
+@login_required
+def export_drivers_excel(request):
+    import openpyxl
+    from openpyxl.styles import Alignment, Font, PatternFill
+
+    qs, _ = _driver_queryset(request)
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Drivers"
+    hfill = PatternFill("solid", fgColor="1A3C5E")
+    hfont = Font(bold=True, color="FFFFFF")
+    headers = [
+        "Full Name", "Phone", "Email", "Gender", "Marital Status", "Commune",
+        "Quartier", "City/Country", "Vehicle Type", "Vehicle Color",
+        "Litres/day", "Fuel Type", "Health Coverage", "Care Difficulty",
+        "Dependents", "Field Agent", "Registered",
+    ]
+    for col, h in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col, value=h)
+        cell.font = hfont
+        cell.fill = hfill
+        cell.alignment = Alignment(horizontal="center")
+
+    def _yn(v):
+        return "" if v is None else ("Yes" if v else "No")
+
+    for row, d in enumerate(qs, 2):
+        values = [
+            d.full_name, d.phone, d.email, d.gender, d.marital_status, d.commune,
+            d.quartier, d.city_country, d.vehicle_type, d.vehicle_color,
+            d.daily_fuel_consumption, d.fuel_type, _yn(d.has_health_coverage),
+            _yn(d.has_care_access_difficulty), d.dependents, d.field_agent,
+            d.registration_date.strftime("%Y-%m-%d") if d.registration_date else "",
+        ]
+        for col, val in enumerate(values, 1):
+            ws.cell(row=row, column=col, value=val)
+    for col in ws.columns:
+        ws.column_dimensions[col[0].column_letter].width = 18
+
+    resp = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    resp["Content-Disposition"] = 'attachment; filename="LCI_drivers.xlsx"'
+    wb.save(resp)
+    return resp
 
 
 # ─── Agents / Users ───────────────────────────────────────────────────────────
@@ -720,7 +820,7 @@ def api_bulk_sync(request):
         s = TransactionCreateSerializer(data=tx_data, context={"request": request})
         if s.is_valid():
             tx = s.save()
-            results.append({"sync_id": sync_id, "receipt_code": tx.receipt_code, "status": "created"})
+            results.append({"sync_id": sync_id, "receipt_code": tx.receipt_code, "levy_amount_usd": str(tx.levy_amount_usd), "status": "created"})
         else:
             results.append({"sync_id": sync_id, "errors": s.errors, "status": "error"})
     return Response({"results": results})
@@ -731,3 +831,16 @@ def api_bulk_sync(request):
 def api_audit_log(request, pk):
     tx = get_object_or_404(Transaction, pk=pk)
     return Response(TransactionAuditLogSerializer(tx.audit_logs.all(), many=True).data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def api_profile(request):
+    user = request.user
+    return Response({
+        "username": user.username,
+        "email": user.email,
+        "role": user.role,
+        "assigned_station": str(user.assigned_station_id) if user.assigned_station_id else None,
+        "managed_company": str(user.managed_company_id) if user.managed_company_id else None,
+    })

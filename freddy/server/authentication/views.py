@@ -224,70 +224,12 @@ class LogoutView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-#from django.contrib.auth.models import User
 from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from knox.models import AuthToken
-from google.oauth2 import id_token
-from google.auth.transport import requests
-
-class GoogleLoginView(APIView):
-    permission_classes = [permissions.AllowAny]
-    def post(self, request):
-        token = request.data.get('token')
-        try:
-            # Verify the token with Google
-            # Note: 'token' from React @react-oauth/google is usually the 'credential' (ID Token)
-            print ("token",token)
-            idinfo = id_token.verify_oauth2_token(token, requests.Request())
-            print (idinfo)
-
-            # ID information returned by Google
-            email = idinfo.get('email')
-            firstname = idinfo.get('given_name', '')
-            lastname = idinfo.get('family_name', '')
-            print (email, firstname, lastname)
-            # Get or create user in your local Django DB
-            user, created = User.objects.get_or_create(
-                email=email,
-                defaults={
-                    'username': email, # Or generate a unique username
-                    'firstname': firstname,
-                    'lastname': lastname,
-                }
-            )
-
-            # Create Knox Token
-            _, knox_token = AuthToken.objects.create(user)
-
-            # Return user info + token
-            return Response({
-                "success": True,
-                "access": knox_token,
-                "user": {
-                    "username": user.username,
-                    "email": user.email,
-                    "firstname": user.firstname,
-                    "lastname": user.lastname,
-                }
-            }, status=status.HTTP_200_OK)
-
-        except ValueError:
-            # Invalid token
-            return Response(
-                {"message": "Invalid Google token"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-
-import requests # Use the standard python requests library
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-#from django.contrib.auth.models import User
-from knox.models import AuthToken
+import requests
 
 class GoogleLoginView(APIView):
     permission_classes = [permissions.AllowAny]

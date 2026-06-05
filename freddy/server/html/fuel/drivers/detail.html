@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ driver.full_name|default:_("Driver") }}{% endblock %}
+{% block page_title %}{{ driver.full_name|default:_("Driver") }}{% endblock %}
+{% block page_subtitle %}{% if driver.commune %}{{ driver.commune }}{% endif %}{% if driver.quartier %} · {{ driver.quartier }}{% endif %}{% endblock %}
+{% block header_actions %}
+<a href="{% url 'fuel:drivers' %}" class="px-3 py-1.5 rounded-lg text-xs" style="background:var(--surface2); color:var(--muted);">← {% trans "Back to drivers" %}</a>
+{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <!-- Contact + identity -->
+  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
+    <h3 class="text-sm font-semibold text-white mb-3">{% trans "Contact" %}</h3>
+    <div class="space-y-3">
+      <div>
+        <p class="text-xs font-medium mb-0.5" style="color:var(--muted);">{% trans "Phone" %}</p>
+        {% if driver.phone %}<a href="tel:{{ driver.phone }}" class="text-sm text-blue-400 hover:underline">{{ driver.phone }}</a>{% else %}<p class="text-sm text-gray-200">—</p>{% endif %}
+      </div>
+      <div>
+        <p class="text-xs font-medium mb-0.5" style="color:var(--muted);">{% trans "Email" %}</p>
+        {% if driver.email %}<a href="mailto:{{ driver.email }}" class="text-sm text-blue-400 hover:underline break-all">{{ driver.email }}</a>{% else %}<p class="text-sm text-gray-200">—</p>{% endif %}
+      </div>
+      {% include "fuel/partials/_detail_row.html" with label=_("Gender") value=driver.gender %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Marital Status") value=driver.marital_status %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Dependents") value=driver.dependents %}
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
+    <h3 class="text-sm font-semibold text-white mb-3">{% trans "Location" %}</h3>
+    <div class="space-y-3">
+      {% include "fuel/partials/_detail_row.html" with label=_("Commune") value=driver.commune %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Quartier") value=driver.quartier %}
+      {% include "fuel/partials/_detail_row.html" with label=_("City / Country") value=driver.city_country %}
+    </div>
+  </div>
+
+  <!-- Vehicle -->
+  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
+    <h3 class="text-sm font-semibold text-white mb-3">{% trans "Vehicle & Fuel" %}</h3>
+    <div class="space-y-3">
+      {% include "fuel/partials/_detail_row.html" with label=_("Vehicle Type") value=driver.vehicle_type %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Vehicle Color") value=driver.vehicle_color %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Fuel Type") value=driver.fuel_type %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Litres / day") value=driver.daily_fuel_consumption %}
+    </div>
+  </div>
+
+  <!-- Health program (OSS) -->
+  <div class="rounded-xl border p-5 lg:col-span-2" style="background:var(--surface); border-color:var(--border);">
+    <h3 class="text-sm font-semibold text-white mb-3">{% trans "OSS Health Program" %}</h3>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <p class="text-xs font-medium mb-0.5" style="color:var(--muted);">{% trans "Has health coverage" %}</p>
+        {% if driver.has_health_coverage == True %}<span class="px-2 py-0.5 rounded text-xs bg-green-900 text-green-300">{% trans "Yes" %}</span>
+        {% elif driver.has_health_coverage == False %}<span class="px-2 py-0.5 rounded text-xs bg-gray-700 text-gray-400">{% trans "No" %}</span>
+        {% else %}<span style="color:var(--muted);">—</span>{% endif %}
+      </div>
+      <div>
+        <p class="text-xs font-medium mb-0.5" style="color:var(--muted);">{% trans "Care access difficulty" %}</p>
+        {% if driver.has_care_access_difficulty == True %}<span class="px-2 py-0.5 rounded text-xs bg-yellow-900 text-yellow-300">{% trans "Yes" %}</span>
+        {% elif driver.has_care_access_difficulty == False %}<span class="px-2 py-0.5 rounded text-xs bg-gray-700 text-gray-400">{% trans "No" %}</span>
+        {% else %}<span style="color:var(--muted);">—</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Registration -->
+  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
+    <h3 class="text-sm font-semibold text-white mb-3">{% trans "Registration" %}</h3>
+    <div class="space-y-3">
+      {% include "fuel/partials/_detail_row.html" with label=_("Field Agent") value=driver.field_agent %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Registered") value=driver.registration_date|date:"Y-m-d" %}
+      <div>
+        <p class="text-xs font-medium mb-0.5" style="color:var(--muted);">{% trans "Consent" %}</p>
+        {% if driver.consent %}<span class="px-2 py-0.5 rounded text-xs bg-green-900 text-green-300">{% trans "Given" %}</span>{% else %}<span style="color:var(--muted);">—</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

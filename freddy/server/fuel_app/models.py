@@ -232,6 +232,66 @@ class Disbursement(models.Model):
         return f"{self.reference} → {self.church} (${self.amount_usd})"
 
 
+class Driver(models.Model):
+    """A registered moto-taxi / vehicle driver for the OSS health program.
+
+    Imported from the Google Forms "Base de données chauffeurs" export.
+    Free-text categorical values (gender, vehicle type, etc.) are stored as
+    received to avoid losing data to dropdown typos; range fields such as daily
+    fuel consumption and dependents are kept as text because the source records
+    them as ranges (e.g. "5 à 10") rather than exact numbers.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # Google Form submission timestamp (Horodateur). Effectively a unique
+    # submission id, used as the idempotency key on (re-)import.
+    submitted_at = models.DateTimeField(
+        unique=True, null=True, blank=True,
+        help_text="Form submission timestamp (Horodateur)",
+    )
+    score = models.IntegerField(default=0)
+
+    # Identity
+    full_name = models.CharField(max_length=200, null=True, blank=True)
+    gender = models.CharField(max_length=20, null=True, blank=True)
+    phone = models.CharField(max_length=30, db_index=True, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    marital_status = models.CharField(max_length=30, null=True, blank=True)
+
+    # Location
+    commune = models.CharField(max_length=100, null=True, blank=True)
+    quartier = models.CharField(max_length=100, null=True, blank=True)
+    city_country = models.CharField(max_length=120, null=True, blank=True)
+
+    # Vehicle
+    vehicle_type = models.CharField(max_length=60, null=True, blank=True)
+    vehicle_color = models.CharField(max_length=40, null=True, blank=True)
+    daily_fuel_consumption = models.CharField(
+        max_length=30, null=True, blank=True, help_text="Litres per day (range)"
+    )
+    fuel_type = models.CharField(max_length=30, null=True, blank=True)
+
+    # OSS health program
+    has_health_coverage = models.BooleanField(null=True, blank=True)
+    has_care_access_difficulty = models.BooleanField(null=True, blank=True)
+    dependents = models.CharField(
+        max_length=20, null=True, blank=True, help_text="Number of dependents (range)"
+    )
+
+    field_agent = models.CharField(max_length=120, null=True, blank=True)
+    consent = models.BooleanField(default=False)
+    registration_date = models.DateField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-submitted_at"]
+
+    def __str__(self):
+        return f"{self.full_name or 'Unknown'} ({self.phone or 'no phone'})"
+
+
 class StationTarget(models.Model):
     """Monthly levy collection target per station, for progress tracking."""
     station = models.ForeignKey(FuelStation, on_delete=models.CASCADE, related_name="targets")

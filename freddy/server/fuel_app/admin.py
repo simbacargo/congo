@@ -1,6 +1,7 @@
 from django.contrib import admin
 from fuel_app.models import (
     Church,
+    Driver,
     ExchangeRateCache,
     FuelStation,
     FuelType,
@@ -64,6 +65,21 @@ class TransactionAuditLogAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Driver)
+class DriverAdmin(admin.ModelAdmin):
+    list_display = [
+        "full_name", "phone", "gender", "commune", "quartier",
+        "vehicle_type", "fuel_type", "field_agent", "registration_date",
+    ]
+    search_fields = ["full_name", "phone", "email"]
+    list_filter = [
+        "gender", "vehicle_type", "fuel_type", "commune",
+        "has_health_coverage", "has_care_access_difficulty", "field_agent",
+    ]
+    readonly_fields = ["submitted_at", "created_at"]
+    date_hierarchy = "registration_date"
 
 
 @admin.register(ExchangeRateCache)

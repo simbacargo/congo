@@ -1,7 +1,4 @@
-/**
- * Background sync: flush offline queue to server when connected.
- */
-import { getPendingTxs, markSynced } from "./db";
+import { getPendingTxs, markSynced, updateAfterSync } from "./db";
 import { syncOfflineTransactions, TransactionPayload } from "./api";
 
 export async function flushOfflineQueue(): Promise<{ synced: number; failed: number }> {
@@ -24,8 +21,13 @@ export async function flushOfflineQueue(): Promise<{ synced: number; failed: num
   let synced = 0;
   let failed = 0;
   for (const r of results) {
-    if (r.status === "created" || r.status === "duplicate") {
-      await markSynced(r.sync_id, r.receipt_code);
+    if (r.status === "created" && r.receipt_code && r.levy_amount_usd) {
+      await updateAfterSync(r.sync_id, r.receipt_code, r.levy_amount_usd);
+      synced++;
+    } else if (r.status === "duplicate") {
+      // Transaction already on server — mark synced locally without touching
+      // receipt_code or levy_preview (they may already be correct from a prior run).
+      await markSynced(r.sync_id);
       synced++;
     } else {
       failed++;

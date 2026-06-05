@@ -100,14 +100,23 @@ export async function getPendingTxs(): Promise<OfflineTx[]> {
   );
 }
 
-export async function markSynced(
+export async function markSynced(sync_id: string): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(
+    "UPDATE queued_transactions SET synced = 1 WHERE sync_id = ?",
+    [sync_id],
+  );
+}
+
+export async function updateAfterSync(
   sync_id: string,
-  receipt_code?: string,
+  receipt_code: string,
+  levy_usd: string,
 ): Promise<void> {
   const db = await getDb();
   await db.runAsync(
-    "UPDATE queued_transactions SET synced = 1, receipt_code = ? WHERE sync_id = ?",
-    [receipt_code ?? null, sync_id],
+    "UPDATE queued_transactions SET synced = 1, receipt_code = ?, levy_preview = ? WHERE sync_id = ?",
+    [receipt_code, levy_usd, sync_id],
   );
 }
 

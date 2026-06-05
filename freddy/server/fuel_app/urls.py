@@ -33,6 +33,11 @@ urlpatterns = [
     path("churches/<uuid:pk>/", views.church_detail, name="church-detail"),
     path("churches/<uuid:pk>/edit/", views.church_edit, name="church-edit"),
 
+    # ── Drivers ───────────────────────────────────────────────────────────
+    path("drivers/", views.driver_list, name="drivers"),
+    path("drivers/export/excel/", views.export_drivers_excel, name="drivers-export-excel"),
+    path("drivers/<uuid:pk>/", views.driver_detail, name="driver-detail"),
+
     # ── Agents / Users ────────────────────────────────────────────────────
     path("agents/", views.agent_list, name="agents"),
     path("agents/new/", views.agent_create, name="agent-create"),
@@ -73,4 +78,5 @@ urlpatterns = [
     path("api/transactions/<uuid:pk>/status/", views.api_transaction_status, name="api-tx-status"),
     path("api/transactions/<uuid:pk>/audit/", views.api_audit_log, name="api-tx-audit"),
     path("api/verify/<str:receipt_code>/", views.api_transaction_verify, name="api-verify"),
+    path("api/auth/profile/", views.api_profile, name="api-profile"),
 ]

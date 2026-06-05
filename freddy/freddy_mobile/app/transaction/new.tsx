@@ -46,16 +46,20 @@ export default function NewTransactionScreen() {
 
   useEffect(() => {
     (async () => {
-      try {
-        const [ft, ch, r] = await Promise.all([fetchFuelTypes(), fetchChurches(), fetchCurrencyRate()]);
-        setFuelTypes(ft);
-        setChurches(ch);
-        setRate(r);
-      } catch {
-        // use defaults / cached
-      } finally {
-        setLoading(false);
-      }
+      // Seed rate from cache immediately so CDF preview is accurate even if
+      // the network call below fails.
+      const cachedRate = await AsyncStorage.getItem("cached_rate");
+      if (cachedRate) setRate(parseFloat(cachedRate));
+
+      const [ft, ch, r] = await Promise.all([
+        fetchFuelTypes(),
+        fetchChurches(),
+        fetchCurrencyRate(),
+      ]);
+      setFuelTypes(ft);
+      setChurches(ch);
+      setRate(r);
+      setLoading(false);
     })();
   }, []);
 

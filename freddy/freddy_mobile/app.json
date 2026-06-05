@@ -37,6 +37,7 @@
       "typedRoutes": true
     },
     "extra": {
+      "apiBase": "http://10.0.2.2:8000",
       "router": {},
       "eas": {
         "projectId": "113249bc-77ae-4590-95ac-87aaf78d2c0d"
