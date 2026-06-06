@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST, require_http_methods
 from rest_framework import status as drf_status
@@ -456,7 +457,28 @@ def driver_list(request):
 @login_required
 def driver_detail(request, pk):
     driver = get_object_or_404(Driver, pk=pk)
-    return render(request, "fuel/drivers/detail.html", {"driver": driver})
+    profile_url = request.build_absolute_uri(
+        reverse("fuel:driver-detail", args=[driver.pk])
+    )
+    return render(
+        request,
+        "fuel/drivers/detail.html",
+        {"driver": driver, "qr_code": _qr_data_uri(profile_url), "profile_url": profile_url},
+    )
+
+
+def _qr_data_uri(data):
+    """Render `data` as a QR code and return it as a base64 PNG data URI."""
+    import base64
+    import io
+
+    import qrcode
+
+    img = qrcode.make(data)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    encoded = base64.b64encode(buf.getvalue()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
 
 
 @login_required
