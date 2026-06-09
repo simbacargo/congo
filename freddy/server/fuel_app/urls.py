@@ -37,6 +37,7 @@ urlpatterns = [
     path("drivers/", views.driver_list, name="drivers"),
     path("drivers/export/excel/", views.export_drivers_excel, name="drivers-export-excel"),
     path("drivers/<uuid:pk>/", views.driver_detail, name="driver-detail"),
+    path("drivers/<uuid:pk>/id-card/", views.driver_id_card, name="driver-id-card"),
 
     # ── Agents / Users ────────────────────────────────────────────────────
     path("agents/", views.agent_list, name="agents"),

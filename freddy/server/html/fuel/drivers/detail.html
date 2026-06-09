@@ -4,6 +4,7 @@
 {% block page_title %}{{ driver.full_name|default:_("Driver") }}{% endblock %}
 {% block page_subtitle %}{% if driver.commune %}{{ driver.commune }}{% endif %}{% if driver.quartier %} · {{ driver.quartier }}{% endif %}{% endblock %}
 {% block header_actions %}
+<a href="{% url 'fuel:driver-id-card' driver.pk %}" class="px-3 py-1.5 rounded-lg text-xs font-medium text-white" style="background:#0f7a2e;">{% trans "User ID card" %}</a>
 <a href="{% url 'fuel:drivers' %}" class="px-3 py-1.5 rounded-lg text-xs" style="background:var(--surface2); color:var(--muted);">← {% trans "Back to drivers" %}</a>
 {% endblock %}
 {% block content %}

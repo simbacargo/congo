@@ -481,6 +481,64 @@ def _qr_data_uri(data):
     return f"data:image/png;base64,{encoded}"
 
 
+def _barcode_data_uri(code):
+    """Render `code` as a Code128 barcode and return it as a base64 SVG data URI."""
+    import base64
+    import io
+
+    import barcode
+    from barcode.writer import SVGWriter
+
+    cls = barcode.get_barcode_class("code128")
+    buf = io.BytesIO()
+    cls(code, writer=SVGWriter()).write(
+        buf,
+        options={"write_text": False, "module_height": 12.0, "quiet_zone": 1.0},
+    )
+    encoded = base64.b64encode(buf.getvalue()).decode("ascii")
+    return f"data:image/svg+xml;base64,{encoded}"
+
+
+def _driver_card_number(driver):
+    """Stable 16-digit card number derived from the driver's UUID.
+
+    Returns ``(raw_digits, grouped)`` where ``grouped`` matches the card layout
+    (4-3-3-3-3, e.g. ``0001 004 550 650 111``).
+    """
+    raw = f"{driver.pk.int % 10 ** 16:016d}"
+    grouped = f"{raw[0:4]} {raw[4:7]} {raw[7:10]} {raw[10:13]} {raw[13:16]}"
+    return raw, grouped
+
+
+@login_required
+def driver_id_card(request, pk):
+    driver = get_object_or_404(Driver, pk=pk)
+    raw, card_number = _driver_card_number(driver)
+    profile_url = request.build_absolute_uri(
+        reverse("fuel:driver-detail", args=[driver.pk])
+    )
+
+    # 1-year validity from today.
+    delivery = timezone.localdate()
+    try:
+        expiration = delivery.replace(year=delivery.year + 1)
+    except ValueError:  # Feb 29
+        expiration = delivery.replace(year=delivery.year + 1, day=28)
+
+    return render(
+        request,
+        "fuel/drivers/id_card.html",
+        {
+            "driver": driver,
+            "card_number": card_number,
+            "qr_code": _qr_data_uri(profile_url),
+            "barcode": _barcode_data_uri(raw),
+            "delivery": delivery,
+            "expiration": expiration,
+        },
+    )
+
+
 @login_required
 def export_drivers_excel(request):
     import openpyxl

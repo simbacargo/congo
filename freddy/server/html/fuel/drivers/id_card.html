@@ -1,0 +1,282 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% trans "ID Card" %} — {{ driver.full_name|default:_("Driver") }}</title>
+  <style>
+    :root {
+      --card-w: 560px;
+      --green-1: #0a7d32;
+      --green-2: #0c5f24;
+      --green-3: #094c1d;
+      --flag-blue: #2b34c4;
+      --flag-yellow: #f4c20d;
+      --flag-red: #c81d1d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1f2937;
+      font-family: "Courier New", ui-monospace, monospace;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      padding: 32px 16px 64px;
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-family: system-ui, sans-serif;
+    }
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      color: #fff;
+    }
+    .btn-print { background: #0f7a2e; }
+    .btn-back { background: #374151; }
+
+    /* ── Card shell ─────────────────────────────────────────── */
+    .card {
+      position: relative;
+      width: var(--card-w);
+      aspect-ratio: 1017 / 649;
+      border-radius: 14px;
+      overflow: hidden;
+      background:
+        radial-gradient(120% 140% at 70% 30%, var(--green-1) 0%, var(--green-2) 55%, var(--green-3) 100%);
+      box-shadow: 0 12px 30px rgba(0,0,0,.45);
+      color: #fff;
+    }
+    /* faint state-emblem watermark */
+    .card::before {
+      content: "PAIX · JUSTICE · TRAVAIL";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: calc(var(--card-w) * .055);
+      font-weight: 700;
+      letter-spacing: .18em;
+      color: rgba(255,255,255,.06);
+      transform: rotate(-90deg);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .card > * { position: relative; z-index: 1; }
+
+    .pad { padding: calc(var(--card-w) * .035) calc(var(--card-w) * .045); height: 100%; display: flex; flex-direction: column; }
+
+    /* tricolor stripe */
+    .flag {
+      display: flex;
+      height: 9px;
+      width: 46%;
+      margin: 0 auto;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .flag i { flex: 1; }
+    .flag .b { background: var(--flag-blue); }
+    .flag .y { background: var(--flag-yellow); }
+    .flag .r { background: var(--flag-red); }
+    .flag-wide { width: 100%; height: 11px; border-radius: 0; }
+
+    .country {
+      text-align: center;
+      font-size: calc(var(--card-w) * .033);
+      font-weight: 700;
+      letter-spacing: .12em;
+      margin-top: 10px;
+    }
+    .title-band {
+      margin-top: 8px;
+      background: rgba(3, 40, 16, .45);
+      padding: 7px 10px;
+      text-align: center;
+      font-size: calc(var(--card-w) * .034);
+      font-weight: 700;
+      letter-spacing: .03em;
+      line-height: 1.15;
+    }
+
+    /* front body */
+    .front-body { flex: 1; display: flex; gap: 12px; margin-top: calc(var(--card-w) * .03); }
+    .front-main { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: calc(var(--card-w) * .03); }
+    .front-side { width: 26%; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; }
+
+    .holder { font-size: calc(var(--card-w) * .028); font-weight: 700; }
+    .holder b { color: #eaf7ee; font-weight: 700; }
+
+    .field { display: flex; align-items: center; gap: 10px; }
+    .icon {
+      flex: none;
+      width: calc(var(--card-w) * .07);
+      height: calc(var(--card-w) * .07);
+      background: #fff;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon svg { width: 60%; height: 60%; fill: #0c5f24; }
+    .field .val { font-size: calc(var(--card-w) * .04); font-weight: 700; letter-spacing: .02em; }
+    .field .lbl { font-size: calc(var(--card-w) * .026); color: #d7ead9; }
+    .field .num { font-size: calc(var(--card-w) * .034); font-weight: 700; letter-spacing: .05em; }
+
+    .qr {
+      width: calc(var(--card-w) * .20);
+      height: calc(var(--card-w) * .20);
+      background: #fff;
+      border-radius: 6px;
+      padding: 4px;
+    }
+    .qr img { width: 100%; height: 100%; display: block; }
+
+    /* logos */
+    .logo-oss {
+      width: calc(var(--card-w) * .20);
+      background: #fff;
+      border-radius: 6px;
+      padding: 6px 8px;
+      text-align: center;
+      color: #0c5f24;
+      font-family: system-ui, sans-serif;
+    }
+    .logo-oss .big { font-size: calc(var(--card-w) * .05); font-weight: 800; letter-spacing: .04em; }
+    .logo-oss .sub { font-size: calc(var(--card-w) * .017); font-weight: 700; }
+    .logo-oss .tag { font-size: calc(var(--card-w) * .015); font-style: italic; color: #c81d1d; }
+
+    /* front footer (dates) */
+    .dates {
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 3px 0;
+      width: max-content;
+      font-family: system-ui, sans-serif;
+      font-size: calc(var(--card-w) * .022);
+      font-weight: 700;
+    }
+    .dates .k { background: var(--flag-red); color: #fff; padding: 4px 8px; }
+    .dates .v { background: #062c12; color: var(--flag-yellow); padding: 4px 10px; text-align: center; }
+
+    /* back */
+    .back-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--card-w) * .03); }
+    .back-head { text-align: center; font-size: calc(var(--card-w) * .036); font-weight: 700; line-height: 1.25; }
+    .back-head .hi { color: var(--flag-yellow); }
+    .barcode { background: #fff; padding: 12px 16px; border-radius: 4px; width: 84%; }
+    .barcode img { width: 100%; height: calc(var(--card-w) * .12); display: block; }
+    .back-phone { font-size: calc(var(--card-w) * .05); font-weight: 700; letter-spacing: .06em; }
+    .back-logos { display: flex; gap: 24px; align-items: center; }
+    .logo-round {
+      width: calc(var(--card-w) * .12);
+      height: calc(var(--card-w) * .12);
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      line-height: 1;
+    }
+    .logo-kd { background: #b51b1b; color: #fff; }
+    .logo-kd b { font-size: calc(var(--card-w) * .03); font-weight: 800; }
+    .logo-kd span { font-size: calc(var(--card-w) * .016); }
+    .logo-rrr b { color: #1d4ed8; font-size: calc(var(--card-w) * .045); font-weight: 800; }
+    .logo-rrr span { color: #555; font-size: calc(var(--card-w) * .013); font-weight: 700; }
+
+    @media print {
+      body { background: #fff; padding: 0; gap: 12px; }
+      .toolbar { display: none; }
+      .card { box-shadow: none; page-break-inside: avoid; }
+      @page { size: landscape; margin: 12mm; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <a class="btn btn-back" href="{% url 'fuel:driver-detail' driver.pk %}">← {% trans "Back to driver" %}</a>
+    <button class="btn btn-print" onclick="window.print()">🖨 {% trans "Print card" %}</button>
+  </div>
+
+  <!-- ─────────────── FRONT ─────────────── -->
+  <div class="card">
+    <div class="pad">
+      <div class="flag"><i class="b"></i><i class="y"></i><i class="r"></i></div>
+      <div class="country">{% trans "REPUBLIQUE DEMOCRATIQUE DU CONGO" %}</div>
+      <div class="title-band">{% trans "CARTE DE CONSOMMATION DE CARBURANT POUR LA SANTE" %}</div>
+
+      <div class="front-body">
+        <div class="front-main">
+          <div class="holder">{% trans "Nom du porteur de la carte" %}: <b>{{ driver.full_name|default:"—" }}</b></div>
+
+          <div class="field">
+            <span class="icon">
+              <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+            </span>
+            <span class="val">{% if driver.phone %}{{ driver.phone }}{% else %}+243 . . . . . . . . . .{% endif %}</span>
+          </div>
+
+          <div class="field">
+            <span class="icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg>
+            </span>
+            <span>
+              <span class="lbl">{% trans "Numéro de la carte" %}</span><br>
+              <span class="num">{{ card_number }}</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="front-side">
+          <div class="qr"><img src="{{ qr_code }}" alt="QR" /></div>
+          <div class="logo-oss">
+            <div class="big">OSS</div>
+            <div class="sub">ORGANISATEUR DE SERVICES DE SANTE</div>
+            <div class="tag">Votre Santé, notre Priorité</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dates">
+        <span class="k">{% trans "Date de livraison" %}:</span><span class="v">{{ delivery|date:"m/y" }}</span>
+        <span class="k">{% trans "Date d'expiration" %}:</span><span class="v">{{ expiration|date:"m/y" }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── BACK ─────────────── -->
+  <div class="card">
+    <div class="pad" style="padding-bottom:0;">
+      <div class="back-body">
+        <div class="back-head">
+          {% trans "Si vous ramassez cette carte, veuillez contacter" %}:
+          <span class="hi">RRR ET ASSOCIES SUR CODE</span>
+        </div>
+        <div class="barcode"><img src="{{ barcode }}" alt="barcode" /></div>
+        <div class="back-phone">+243 993 535 701</div>
+        <div class="back-logos">
+          <div class="logo-round logo-kd"><b>KD</b><span>CHARITÉ</span></div>
+          <div class="logo-round logo-rrr"><b>RRR</b><span>&amp; ASSOCIÉS</span></div>
+        </div>
+      </div>
+      <div class="flag flag-wide"><i class="b"></i><i class="y"></i><i class="r"></i></div>
+    </div>
+  </div>
+
+</body>
+</html>
