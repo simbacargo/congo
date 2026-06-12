@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -533,10 +534,25 @@ def driver_id_card(request, pk):
             "card_number": card_number,
             "qr_code": _qr_data_uri(profile_url),
             "barcode": _barcode_data_uri(raw),
+            "kd_logo": _image_data_uri(settings.BASE_DIR / "logo.jpg"),
             "delivery": delivery,
             "expiration": expiration,
         },
     )
+
+
+def _image_data_uri(path):
+    """Read an image file and return it as a base64 data URI (empty string if missing)."""
+    import base64
+    import mimetypes
+
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return ""
+    mime = mimetypes.guess_type(str(path))[0] or "image/jpeg"
+    encoded = base64.b64encode(data).decode("ascii")
+    return f"data:{mime};base64,{encoded}"
 
 
 @login_required
