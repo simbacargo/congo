@@ -535,6 +535,7 @@ def driver_id_card(request, pk):
             "qr_code": _qr_data_uri(profile_url),
             "barcode": _barcode_data_uri(raw),
             "kd_logo": _image_data_uri(settings.BASE_DIR / "logo.jpg"),
+            "oss_logo": _image_data_uri(settings.BASE_DIR / "oss.png"),
             "delivery": delivery,
             "expiration": expiration,
         },
