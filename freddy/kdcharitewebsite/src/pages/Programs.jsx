@@ -1,23 +1,25 @@
 import { Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Page, { PageHero } from '../components/Page.jsx';
 import Ecosystem from '../components/Ecosystem.jsx';
-import { CrossCTA } from '../components/ui.jsx';
+import { CrossCTA, Rich } from '../components/ui.jsx';
 
 export default function Programs() {
+  const { t } = useTranslation();
   return (
-    <Page title="Programs">
+    <Page title={t('pages.programs.docTitle')}>
       <PageHero
-        badge="Our Programs"
+        badge={t('pages.programs.badge')}
         badgeIcon={Globe}
-        title={<>Two networks, <span className="text-gradient">one mission</span></>}
-        sub="KDCharité bridges commerce and faith — turning routine fuel purchases and Sunday offerings into a single, transparent engine of community relief."
+        title={<Rich k="pages.programs.title" />}
+        sub={t('pages.programs.sub')}
       />
       <Ecosystem showHeader={false} />
       <CrossCTA
-        title="Run a station or lead a congregation?"
-        sub="Onboard your community to the network in under a week."
-        primary={{ to: '/donate', label: 'Partner with us' }}
-        secondary={{ to: '/about', label: 'Meet the team' }}
+        title={t('pages.programs.ctaTitle')}
+        sub={t('pages.programs.ctaSub')}
+        primary={{ to: '/donate', label: t('pages.programs.ctaPrimary') }}
+        secondary={{ to: '/about', label: t('pages.programs.ctaSecondary') }}
       />
     </Page>
   );

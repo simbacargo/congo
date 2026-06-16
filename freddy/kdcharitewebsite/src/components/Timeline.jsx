@@ -1,12 +1,15 @@
 import { Milestone } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useGsap, gsap } from '../lib/anim.jsx';
 import { MILESTONES } from '../data.js';
-import { SectionHeader } from './ui.jsx';
+import { SectionHeader, Rich } from './ui.jsx';
 
 // GSAP ScrollTrigger: the vertical spine draws itself as you scroll, and each
 // milestone slides in from its side when it enters the viewport.
 
 export default function Timeline() {
+  const { t } = useTranslation();
+  const items = t('timeline.items', { returnObjects: true });
   const scope = useGsap((self) => {
     gsap.fromTo(
       self.selector('[data-spine]')[0],
@@ -38,10 +41,10 @@ export default function Timeline() {
     <section ref={scope} id="journey" className="py-28 px-4 relative">
       <div className="max-w-5xl mx-auto">
         <SectionHeader
-          badge="Our Journey"
+          badge={t('timeline.badge')}
           badgeIcon={Milestone}
-          title={<>From one pump to <span className="text-gradient">a movement</span></>}
-          sub="Four years of compounding 2-cent gifts. Here's how the network grew."
+          title={<Rich k="timeline.title" />}
+          sub={t('timeline.sub')}
         />
 
         <div data-list className="relative pl-12 md:pl-0">
@@ -53,6 +56,7 @@ export default function Timeline() {
           <div className="space-y-10">
             {MILESTONES.map((m, i) => {
               const side = i % 2 === 0 ? 'left' : 'right';
+              const item = items[i];
               return (
                 <div
                   key={m.year}
@@ -66,8 +70,8 @@ export default function Timeline() {
                   />
                   <div className="glass rounded-2xl p-6 hover:border-emerald-500/25 transition-colors">
                     <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">{m.year}</span>
-                    <h3 className="text-lg font-bold text-white mt-1 mb-2">{m.title}</h3>
-                    <p className="text-sm text-white/50 leading-relaxed">{m.body}</p>
+                    <h3 className="text-lg font-bold text-white mt-1 mb-2">{item.title}</h3>
+                    <p className="text-sm text-white/50 leading-relaxed">{item.body}</p>
                   </div>
                 </div>
               );

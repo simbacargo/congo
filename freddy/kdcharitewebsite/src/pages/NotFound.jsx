@@ -1,18 +1,21 @@
 import { Link } from 'react-router-dom';
 import { Home, ArrowRight, Compass } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Page from '../components/Page.jsx';
 
+// Labels reuse the nav.* keys so suggestions stay in sync with the menu.
 const SUGGEST = [
-  { to: '/how-it-works', label: 'How It Works' },
-  { to: '/programs', label: 'Programs' },
-  { to: '/impact', label: 'Impact' },
-  { to: '/donate', label: 'Donate' },
+  { to: '/how-it-works', key: 'nav.howItWorks' },
+  { to: '/programs', key: 'nav.programs' },
+  { to: '/impact', key: 'nav.impact' },
+  { to: '/donate', key: 'nav.donateNow' },
 ];
 
 export default function NotFound() {
+  const { t } = useTranslation();
   return (
-    <Page title="Page Not Found">
+    <Page title={t('pages.notFound.docTitle')}>
       <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-emerald-950/30 to-slate-950" />
         <motion.div
@@ -30,16 +33,16 @@ export default function NotFound() {
             404
           </motion.div>
           <Compass size={32} className="text-emerald-400 mx-auto mb-5 animate-float" />
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">This page took a wrong turn</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">{t('pages.notFound.heading')}</h1>
           <p className="text-white/50 mb-8">
-            The page you're looking for isn't here — but the mission still is. Let's get you back on the road.
+            {t('pages.notFound.body')}
           </p>
           <div className="flex flex-wrap gap-3 justify-center mb-8">
             <Link
               to="/"
               className="group flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-2xl transition-all shadow-lg shadow-emerald-900/50 hover:-translate-y-0.5"
             >
-              <Home size={16} /> Back home
+              <Home size={16} /> {t('pages.notFound.backHome')}
               <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -50,7 +53,7 @@ export default function NotFound() {
                 to={s.to}
                 className="text-xs glass rounded-full px-4 py-2 text-white/60 hover:text-white hover:border-emerald-500/40 transition-colors"
               >
-                {s.label}
+                {t(s.key)}
               </Link>
             ))}
           </div>

@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { Heart, ArrowRight, Mail, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSpring as useRSpring, animated } from '@react-spring/web';
+import { useTranslation } from 'react-i18next';
+import { Rich } from './ui.jsx';
 
 const AMOUNTS = [5, 10, 25, 50];
 
 export default function CTA() {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState(25);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -38,10 +41,10 @@ export default function CTA() {
         >
           <Heart size={28} className="text-emerald-400 mb-5" fill="currentColor" />
           <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight mb-3">
-            Give once. <span className="text-gradient">Change a block.</span>
+            <Rich k="cta.donateTitle" />
           </h2>
           <p className="text-white/55 leading-relaxed mb-7">
-            Not a driver in our network? You can still fuel the fund directly. 100% reaches the community — tracked on the same public ledger.
+            {t('cta.donateBody')}
           </p>
 
           <div className="grid grid-cols-4 gap-2 mb-5">
@@ -66,7 +69,7 @@ export default function CTA() {
             className="mt-auto group flex items-center justify-center gap-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-7 py-4 rounded-2xl transition-all shadow-xl shadow-emerald-900/50 hover:-translate-y-0.5"
           >
             <Heart size={17} fill="currentColor" />
-            Donate <animated.span>{n.to((v) => `$${Math.round(v)}`)}</animated.span> now
+            <animated.span>{n.to((v) => t('cta.donateNow', { amount: Math.round(v) }))}</animated.span>
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </a>
         </motion.div>
@@ -82,10 +85,10 @@ export default function CTA() {
         >
           <Mail size={28} className="text-amber-400 mb-5" />
           <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight mb-3">
-            Bring the 2% to your city
+            {t('cta.partnerTitle')}
           </h3>
           <p className="text-white/55 leading-relaxed mb-7">
-            Run a station or lead a congregation? Join the waitlist and we'll help you onboard in under a week — no hardware, no fees.
+            {t('cta.partnerBody')}
           </p>
 
           {subscribed ? (
@@ -95,7 +98,7 @@ export default function CTA() {
               className="mt-auto flex items-center gap-3 glass-emerald rounded-2xl px-5 py-4 text-emerald-400"
             >
               <CheckCircle2 size={20} />
-              <span className="text-sm font-semibold">You're on the list — we'll be in touch soon.</span>
+              <span className="text-sm font-semibold">{t('cta.subscribed')}</span>
             </motion.div>
           ) : (
             <form onSubmit={submit} className="mt-auto space-y-3">
@@ -103,16 +106,16 @@ export default function CTA() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@organization.org"
+                placeholder={t('cta.emailPlaceholder')}
                 className="w-full glass rounded-xl px-4 py-3.5 text-sm text-white placeholder-white/30 outline-none focus:border-amber-500/40 transition-colors"
               />
               <button
                 type="submit"
                 className="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-7 py-3.5 rounded-xl transition-colors"
               >
-                Request Access <ArrowRight size={16} />
+                {t('cta.requestAccess')} <ArrowRight size={16} />
               </button>
-              <p className="text-[11px] text-white/30 text-center">No spam. We email about onboarding, nothing else.</p>
+              <p className="text-[11px] text-white/30 text-center">{t('cta.noSpam')}</p>
             </form>
           )}
         </motion.div>

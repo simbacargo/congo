@@ -1,12 +1,15 @@
 import { Workflow } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useGsap, gsap } from '../lib/anim.jsx';
 import { STEPS } from '../data.js';
-import { Badge } from './ui.jsx';
+import { Badge, Rich } from './ui.jsx';
 
 // GSAP ScrollTrigger: the panel column is pinned while the steps advance
 // horizontally, and a progress rail fills as you scroll through.
 
 export default function HowItWorks() {
+  const { t } = useTranslation();
+  const steps = t('howItWorks.steps', { returnObjects: true });
   const scope = useGsap((self, root) => {
     const track = self.selector('[data-track]')[0];
     const panels = self.selector('[data-panel]');
@@ -55,11 +58,11 @@ export default function HowItWorks() {
 
       <div className="relative h-full flex flex-col justify-center max-w-7xl mx-auto px-4 w-full">
         <div className="mb-10">
-          <div className="mb-4"><Badge icon={Workflow}>How It Works</Badge></div>
+          <div className="mb-4"><Badge icon={Workflow}>{t('howItWorks.badge')}</Badge></div>
           <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-            From one tap to <span className="text-gradient">tangible change</span>
+            <Rich k="howItWorks.title" />
           </h2>
-          <p className="text-white/45 mt-3 max-w-md">Scroll to follow a single 2-cent donation on its journey through the network.</p>
+          <p className="text-white/45 mt-3 max-w-md">{t('howItWorks.sub')}</p>
         </div>
 
         {/* Progress rail */}
@@ -70,7 +73,7 @@ export default function HowItWorks() {
         {/* Horizontal track */}
         <div className="overflow-hidden">
           <div data-track className="flex gap-6 w-max">
-            {STEPS.map((s) => (
+            {STEPS.map((s, i) => (
               <article
                 key={s.n}
                 data-panel
@@ -81,8 +84,8 @@ export default function HowItWorks() {
                 <div className={`text-7xl font-black mb-6 ${s.accent === 'emerald' ? 'text-emerald-500/30' : 'text-amber-500/30'}`}>
                   {s.n}
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{s.title}</h3>
-                <p className="text-white/55 leading-relaxed">{s.body}</p>
+                <h3 className="text-2xl font-bold text-white mb-4">{steps[i].title}</h3>
+                <p className="text-white/55 leading-relaxed">{steps[i].body}</p>
               </article>
             ))}
           </div>

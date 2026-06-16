@@ -3,8 +3,9 @@ import * as THREE from 'three';
 import { Globe as GlobeIcon, Sparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSpring as useRSpring } from '@react-spring/web';
+import { useTranslation } from 'react-i18next';
 import { gsap } from '../lib/anim.jsx';
-import { SectionHeader } from './ui.jsx';
+import { SectionHeader, Rich } from './ui.jsx';
 
 // ─── 3D NETWORK GLOBE ────────────────────────────────────────────────────────
 // One scene, four animation engines:
@@ -130,6 +131,7 @@ function buildGlobe(reduced) {
 export default function Globe() {
   const mountRef = useRef(null);
   const reduced = useReducedMotion();
+  const { t } = useTranslation();
 
   // React Spring: pointer-driven tilt target, smoothed by spring physics.
   const [tilt, tiltApi] = useRSpring(() => ({
@@ -244,10 +246,10 @@ export default function Globe() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/15 to-transparent pointer-events-none" />
       <div className="max-w-6xl mx-auto relative">
         <SectionHeader
-          badge="The Network"
+          badge={t('globe.badge')}
           badgeIcon={GlobeIcon}
-          title={<>One network, <span className="text-gradient">every neighborhood</span></>}
-          sub="Each point is a partner station or congregation. The arcs are giving in motion — drag your cursor to lean the globe, scroll to spin it."
+          title={<Rich k="globe.title" />}
+          sub={t('globe.sub')}
         />
 
         <motion.div
@@ -273,14 +275,14 @@ export default function Globe() {
           >
             <span className="flex items-center gap-2 text-white/55">
               <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
-              Fuel stations
+              {t('globe.stations')}
             </span>
             <span className="flex items-center gap-2 text-white/55">
               <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]" />
-              Congregations
+              {t('globe.congregations')}
             </span>
             <span className="flex items-center gap-2 text-white/40">
-              <Sparkles size={12} className="text-emerald-400" /> Giving in motion
+              <Sparkles size={12} className="text-emerald-400" /> {t('globe.motion')}
             </span>
           </motion.div>
         </motion.div>

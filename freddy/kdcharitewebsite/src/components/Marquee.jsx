@@ -2,8 +2,9 @@
 // via the `.marquee-track` keyframe so the loop is perfectly continuous.
 
 const BRANDS = [
-  'Shell', 'BP', 'TotalEnergies', 'Chevron', 'ExxonMobil', 'Valero',
-  'Mobil', 'Grace Fellowship', "St. Matthew's", 'New Life Cathedral', 'Harvest Community',
+  'TotalEnergies', 'Engen', 'Puma Energy', 'Cobil', 'SEP Congo', 'Mining Oil',
+  'Cathédrale Saints Pierre et Paul', 'Église Méthodiste Unie', 'Nouvelle Cité de David',
+  'Centre Évangélique Shalom', 'Église Kimbanguiste',
 ];
 
 export default function Marquee() {

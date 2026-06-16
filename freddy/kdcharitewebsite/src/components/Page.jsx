@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ScrollTrigger } from '../lib/anim.jsx';
 import { Badge } from './ui.jsx';
 
@@ -24,10 +25,11 @@ export function ScrollManager() {
 // would break GSAP's pinned sections). Also sets the document title.
 
 export default function Page({ title, children }) {
+  const { t } = useTranslation();
   useEffect(() => {
     if (title) document.title = `${title} · KDCharité`;
-    return () => { document.title = 'KDCharité — Small Changes. Massive Impact.'; };
-  }, [title]);
+    return () => { document.title = t('page.defaultTitle'); };
+  }, [title, t]);
 
   return (
     <motion.main

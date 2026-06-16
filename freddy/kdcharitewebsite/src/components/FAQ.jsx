@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { HelpCircle, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FAQS } from '../data.js';
-import { SectionHeader } from './ui.jsx';
+import { useTranslation } from 'react-i18next';
+import { SectionHeader, Rich } from './ui.jsx';
 import { Reveal } from '../lib/anim.jsx';
 
 function Item({ q, a, isOpen, onToggle }) {
@@ -42,21 +42,23 @@ function Item({ q, a, isOpen, onToggle }) {
 }
 
 export default function FAQ({ showHeader = true }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(0);
+  const items = t('faq.items', { returnObjects: true });
   return (
     <section id="faq" className="py-28 px-4">
       <div className="max-w-3xl mx-auto">
         {showHeader && (
           <SectionHeader
-            badge="Questions"
+            badge={t('faq.badgeQuestions')}
             badgeIcon={HelpCircle}
-            title={<>Everything you <span className="text-gradient">might ask</span></>}
-            sub="Transparency starts with answering the hard questions plainly."
+            title={<Rich k="faq.title" />}
+            sub={t('faq.sub')}
           />
         )}
         <div className="space-y-3">
-          {FAQS.map((f, i) => (
-            <Item key={f.q} {...f} isOpen={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
+          {items.map((f, i) => (
+            <Item key={i} q={f.q} a={f.a} isOpen={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
           ))}
         </div>
       </div>

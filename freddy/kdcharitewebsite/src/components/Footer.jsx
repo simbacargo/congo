@@ -1,16 +1,18 @@
 import { Heart, Phone, Mail, MapPin, Share2, Rss, Send, Link2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
+// Column titles + link labels reference locale keys (resolved at render).
 const COLS = [
-  { title: 'Programs', links: ['Fuel Network', 'Faith Network', 'Community Grants', 'Impact Reports', 'Apply for Funding'] },
-  { title: 'Partners', links: ['Fuel Station Partners', 'Church Partners', 'Corporate Partners', 'Become a Partner', 'Partner Portal'] },
-  { title: 'Organization', links: ['About KDCharité', 'Leadership Team', 'Annual Report', 'Press & Media', 'Careers'] },
+  { title: 'footer.colPrograms', links: 'footer.programsLinks' },
+  { title: 'footer.colPartners', links: 'footer.partnersLinks' },
+  { title: 'footer.colOrganization', links: 'footer.organizationLinks' },
 ];
 
 const CONTACT = [
-  { icon: Phone, text: '+255 747 92 929 92' },
+  { icon: Phone, text: '+243 991 234 567' },
   { icon: Mail, text: 'impact@kdcharite.org' },
-  { icon: MapPin, text: '742 Philanthropy Way, Mwanza City, MC 90210' },
+  { icon: MapPin, text: '12, Avenue Lumumba, Commune de Lubumbashi\nHaut-Katanga, RDC' },
 ];
 
 const SOCIAL = [
@@ -21,7 +23,9 @@ const SOCIAL = [
 ];
 
 export default function Footer() {
+  const { t } = useTranslation();
   const year = new Date().getFullYear();
+  const legal = t('footer.legal', { returnObjects: true });
   return (
     <footer className="relative pt-20 pb-10 px-4 border-t border-white/10">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-950/20 pointer-events-none" />
@@ -37,7 +41,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm text-white/45 leading-relaxed mb-7 max-w-xs">
-              Turning the world's everyday transactions into a continuous engine of community relief — 2 cents at a time, at scale.
+              {t('footer.tagline')}
             </p>
             <div className="space-y-3 mb-7">
               {CONTACT.map((c) => (
@@ -63,9 +67,9 @@ export default function Footer() {
 
           {COLS.map((col) => (
             <div key={col.title}>
-              <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest mb-5">{col.title}</h4>
+              <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest mb-5">{t(col.title)}</h4>
               <ul className="space-y-3">
-                {col.links.map((l) => (
+                {t(col.links, { returnObjects: true }).map((l) => (
                   <li key={l}>
                     <a href="#" className="text-sm text-white/40 hover:text-emerald-400 transition-colors duration-200">{l}</a>
                   </li>
@@ -77,17 +81,17 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-xs text-white/25 text-center md:text-left">
-            © {year} KDCharité, Inc. All rights reserved. · Registered 501(c)(3) · EIN 88-0123456
+            {t('footer.copyright', { year })}
           </div>
           <div className="flex flex-wrap items-center gap-5 text-xs text-white/25">
-            {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Accessibility'].map((l) => (
+            {legal.map((l) => (
               <a key={l} href="#" className="hover:text-white/50 transition-colors">{l}</a>
             ))}
           </div>
         </div>
 
         <p className="text-[11px] text-white/15 mt-4 leading-relaxed max-w-2xl">
-          Disclaimer: KDCharité operates as a registered 501(c)(3) nonprofit. All fuel station 2% opt-in programs are subject to participating merchant agreements. Donations are non-refundable and tax-deductible to the extent permitted by law. Individual impact equivalencies are illustrative estimates based on program average costs. Past performance of community impact does not guarantee future results.
+          {t('footer.disclaimer')}
         </p>
       </div>
     </footer>

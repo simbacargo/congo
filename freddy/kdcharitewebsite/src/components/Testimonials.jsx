@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Quote, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { TESTIMONIALS } from '../data.js';
-import { SectionHeader } from './ui.jsx';
+import { SectionHeader, Rich } from './ui.jsx';
 
 const variants = {
   enter: (dir) => ({ x: dir > 0 ? 120 : -120, opacity: 0, scale: 0.95 }),
@@ -11,8 +12,10 @@ const variants = {
 };
 
 export default function Testimonials({ showHeader = true }) {
+  const { t } = useTranslation();
   const [[index, dir], setState] = useState([0, 0]);
   const count = TESTIMONIALS.length;
+  const items = t('testimonials.items', { returnObjects: true });
 
   const paginate = useCallback((d) => {
     setState(([i]) => [(i + d + count) % count, d]);
@@ -24,17 +27,18 @@ export default function Testimonials({ showHeader = true }) {
     return () => clearInterval(t);
   }, [paginate]);
 
-  const t = TESTIMONIALS[index];
+  const person = TESTIMONIALS[index];
+  const story = items[index];
 
   return (
     <section id="stories" className="py-28 px-4 relative">
       <div className="max-w-4xl mx-auto">
         {showHeader && (
           <SectionHeader
-            badge="Stories"
+            badge={t('testimonials.badge')}
             badgeIcon={MessageCircle}
-            title={<>Generosity, <span className="text-gradient">in their words</span></>}
-            sub="Drivers, pastors, station owners, and neighbors — the people who make and feel the 2%."
+            title={<Rich k="testimonials.title" />}
+            sub={t('testimonials.sub')}
           />
         )}
 
@@ -61,13 +65,13 @@ export default function Testimonials({ showHeader = true }) {
                 className="cursor-grab active:cursor-grabbing"
               >
                 <p className="text-xl md:text-2xl text-white/85 font-medium leading-relaxed mb-8">
-                  "{t.quote}"
+                  "{story.quote}"
                 </p>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl glass-emerald flex items-center justify-center text-2xl">{t.avatar}</div>
+                  <div className="w-12 h-12 rounded-2xl glass-emerald flex items-center justify-center text-2xl">{person.avatar}</div>
                   <div>
-                    <div className="text-sm font-bold text-white">{t.name}</div>
-                    <div className="text-xs text-white/45">{t.role}</div>
+                    <div className="text-sm font-bold text-white">{person.name}</div>
+                    <div className="text-xs text-white/45">{story.role}</div>
                   </div>
                 </div>
               </motion.div>
@@ -80,7 +84,7 @@ export default function Testimonials({ showHeader = true }) {
                 <button
                   key={i}
                   onClick={() => setState([i, i > index ? 1 : -1])}
-                  aria-label={`Go to story ${i + 1}`}
+                  aria-label={t('testimonials.goToStory', { n: i + 1 })}
                   className={`h-2 rounded-full transition-all duration-300 ${i === index ? 'w-8 bg-emerald-400' : 'w-2 bg-white/20 hover:bg-white/40'}`}
                 />
               ))}
@@ -90,7 +94,7 @@ export default function Testimonials({ showHeader = true }) {
                 <button
                   key={d}
                   onClick={() => paginate(d)}
-                  aria-label={d > 0 ? 'Next' : 'Previous'}
+                  aria-label={d > 0 ? t('testimonials.next') : t('testimonials.prev')}
                   className="w-10 h-10 glass rounded-xl flex items-center justify-center text-white/50 hover:text-white hover:border-emerald-500/40 transition-colors"
                 >
                   <Icon size={18} />

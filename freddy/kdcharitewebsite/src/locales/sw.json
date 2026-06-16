@@ -1,0 +1,333 @@
+{
+  "nav": {
+    "howItWorks": "Jinsi Inavyofanya Kazi",
+    "programs": "Programu",
+    "impact": "Athari",
+    "stories": "Hadithi",
+    "about": "Kuhusu Sisi",
+    "faq": "Maswali",
+    "partner": "Kuwa Mshirika",
+    "donateNow": "Changia Sasa",
+    "toggleMenu": "Fungua menyu"
+  },
+  "lang": {
+    "label": "Lugha"
+  },
+  "hero": {
+    "badge": "Mtindo Mpya wa Kutoa",
+    "est": "Tangu 2022",
+    "titleA": "Mabadiliko Madogo.",
+    "titleB": "Athari Kubwa.",
+    "lead": "Kugeuza ununuzi wa mafuta wa kila siku na sadaka za Jumapili kuwa msaada wa jamii katika jiji lote — kupitia mchango mdogo wa 2% usio na vikwazo wakati wa malipo.",
+    "sub": "Hakuna vikwazo. Uwazi kamili. Unaendeshwa na makanisa, vituo vya mafuta, na ukarimu wa kimya wa watu wa kawaida.",
+    "startGiving": "Anza Kutoa",
+    "howItWorks": "Jinsi Inavyofanya Kazi",
+    "trustedBy": "Wanaotuamini",
+    "scroll": "Sogeza chini kuchunguza",
+    "live": "Moja kwa moja",
+    "stats": {
+      "fundsLabel": "Jumla ya Fedha Zilizokusanywa",
+      "fundsSub": "Tangu Januari 2022",
+      "churchesLabel": "Makanisa Washirika",
+      "churchesSub": "Katika madhehebu 14",
+      "stationsLabel": "Vituo Vinavyoshiriki",
+      "stationsSub": "Katika maeneo 28 ya miji"
+    },
+    "principleTitle": "Kanuni ya 2%",
+    "principleBody": "Iwapo madereva 10,000 tu katika eneo la jiji watachangia 2% ya malipo yao ya wiki ya $60, hiyo ni <e>$624,000 kwa mwaka</e> — kiasi cha kutosha kulisha familia 3,000 kwa mwezi mzima."
+  },
+  "mission": {
+    "title": "Kwa Nini <g>KDCharité</g> Inafanya Kazi",
+    "sub": "Watu wengi wanataka kutoa. Wanahitaji tu kuondolewa vikwazo na kujengewa uaminifu.",
+    "pillars": [
+      { "title": "Michango Midogo ya Mafuta", "desc": "Chaguo la 2% kwenye vituo vya malipo katika mtandao wetu wa washirika. Hakuna programu. Hakuna akaunti inayohitajika." },
+      { "title": "Kutoa Kunakotokana na Imani", "desc": "Kufanya sadaka za Jumapili kuwa za kidijitali na kupanua wigo wake kufikia programu za ndani zilizothibitishwa." },
+      { "title": "Athari Iliyothibitishwa", "desc": "Kila dola hufuatiliwa, kila matokeo huripotiwa. Wachangiaji huona mabadiliko hasa waliyoyaleta." },
+      { "title": "Mabadiliko ya Kiwango cha Jiji", "desc": "Tunafikiri kwa mitaa, tunatenda kwa miji. Mtindo wetu hukua bila kupoteza muktadha wa ndani." }
+    ]
+  },
+  "globe": {
+    "badge": "Mtandao",
+    "title": "Mtandao mmoja, <g>kila mtaa</g>",
+    "sub": "Kila nukta ni kituo au kusanyiko mshirika. Mistari ni utoaji unaotembea — buruta kishale chako kuinamisha tufe, sogeza kuizungusha.",
+    "stations": "Vituo vya mafuta",
+    "congregations": "Makusanyiko",
+    "motion": "Utoaji unaotembea"
+  },
+  "home": {
+    "exploreTitle": "Chunguza <g>mtandao</g>",
+    "exploreSub": "Njia nne za kuingia kwenye hadithi. Anza popote.",
+    "explore": "Chunguza",
+    "cards": [
+      { "title": "Jinsi Inavyofanya Kazi", "desc": "Fuata mchango mmoja wa senti 2 kutoka pampu hadi mtaani." },
+      { "title": "Programu Zetu", "desc": "Mtandao wa Mafuta na Mtandao wa Imani, bega kwa bega." },
+      { "title": "Athari ya Moja kwa Moja", "desc": "Matokeo yaliyothibitishwa na rejista ya umma ya wakati halisi." },
+      { "title": "Hadithi", "desc": "Madereva, wachungaji, na majirani nyuma ya hizo 2%." }
+    ]
+  },
+  "howItWorks": {
+    "badge": "Jinsi Inavyofanya Kazi",
+    "title": "Kutoka mguso mmoja hadi <g>mabadiliko halisi</g>",
+    "sub": "Sogeza ili kufuata mchango mmoja wa senti 2 katika safari yake kupitia mtandao.",
+    "steps": [
+      { "title": "Dereva anajaza mafuta", "body": "Kwenye pampu yoyote iliyounganishwa na KDCharité, kituo huuliza swali moja: \"Ongeza 2% kusaidia jamii yako?\" Mguso mmoja. Hakuna programu, hakuna akaunti, hakuna vikwazo." },
+      { "title": "Mchango unathibitishwa", "body": "Kila mchango mdogo hupewa muhuri wa wakati, husimbwa, na huandikwa kwenye rejista yetu ya umma papo hapo muamala unapokamilika — unaoweza kuthibitishwa na yeyote, mara moja." },
+      { "title": "Fedha zinakusanyika jijini kote", "body": "Maelfu ya michango ya senti 2 huungana na zaka za makanisa za kidijitali kwenye mfuko wa jamii wenye uwazi, unaogawanywa kila mwezi kwa programu za ndani zilizokaguliwa." },
+      { "title": "Athari inafika mtaani", "body": "Maghala ya chakula hujazwa tena, kliniki za rununu huzinduliwa, visima huchimbwa. Kila mchangiaji huona matokeo hasa ya ukarimu wake, hadi ngazi ya mtaa." }
+    ]
+  },
+  "calculator": {
+    "badge": "Kionjo cha Athari",
+    "title": "Ona Malipo Yako ya Mafuta<br/><g>Yanachofadhili Hasa</g>",
+    "sub": "Sogeza kitelezi kulingana na matumizi yako ya mafuta ya wiki. Tazama wakati halisi jinsi 2% yako ya hiari inavyokuwa kitu cha kubadilisha maisha ya mtu aliye karibu.",
+    "weeklySpend": "Matumizi ya mafuta ya wiki",
+    "perFillup": "Mchango kwa kila kujaza",
+    "monthly": "Mchango wa mwezi",
+    "annual": "Athari ya mwaka",
+    "optIn": "Chagua kwenye pampu. Hakuna programu inayohitajika. Hakuna vikwazo.",
+    "translatesTo": "${{amount}} yako inamaanisha…",
+    "flowText": "Kila senti 2 kwa kila dola huenda moja kwa moja kwa programu za ndani zilizokaguliwa — maghala ya chakula, vitengo vya afya vya rununu, na miradi midogo ya maji safi — kwa uwazi kamili wa rejista.",
+    "cityJoined": "Iwapo jiji zima lingejiunga — kwa wastani wa $60/wiki",
+    "cityRaised": "~$124,000 zinakusanywa kwa wiki. Jiji zima.",
+    "impact": {
+      "seed": "Kunawasha hatua ya kwanza — mchango wako hupanda matumaini.",
+      "water": "Siku {{count}} za maji safi kwa mtoto mwenye uhitaji.",
+      "meals": "Milo {{count}} ya moto kwa familia inayohangaika.",
+      "mealsSchool": "Milo {{count}} ya moto + siku 1 ya vifaa vya shule kwa mtoto.",
+      "clinic": "Ushauri mmoja wa kliniki ya rununu kwa mgonjwa asiye na bima.",
+      "trees": "Hupanda miti {{count}} kupitia ruzuku zetu ndogo za upandaji misitu.",
+      "families": "Hufadhili wiki nzima ya milo ya jamii kwa familia {{count}}."
+    }
+  },
+  "ecosystem": {
+    "badge": "Mfumo Wetu",
+    "title": "Mitandao Miwili.<br/><g>Dhamira Moja.</g>",
+    "sub": "KDCharité huunganisha biashara na imani — kugeuza miamala ya kawaida kuwa matendo ya ukarimu yanayojirudia.",
+    "tabFuel": "Mtandao wa Mafuta",
+    "tabFaith": "Mtandao wa Imani",
+    "fuel": {
+      "heading": "Kutoa bila vikwazo kwenye pampu — hakuna programu, hakuna pochi.",
+      "body": "Dereva anapolipa kwenye kituo kilichounganishwa na KDCharité, ujumbe mmoja skrini huuliza: <em>\"Ongeza 2% kusaidia jamii yako?\"</em> Mguso mmoja. Imekamilika. Mchango mdogo huchakatwa pamoja na muamala — wa uwazi, wa papo hapo, na unaoweza kuthibitishwa kwenye rejista yetu ya umma.",
+      "features": [
+        { "title": "Muunganisho wa POS wa Wakati Halisi", "desc": "SDK asilia iliyojengwa katika mifumo mikuu ya usimamizi wa pampu — hakuna mabadiliko ya vifaa yanayohitajika." },
+        { "title": "Mtindo Usio na Ada", "desc": "100% ya kila 2% hufika kwenye mfuko wa jamii. Shughuli za KDCharité zinafadhiliwa na ruzuku." },
+        { "title": "Ripoti za Athari za Kila Mwezi", "desc": "Kila kituo kinachoshiriki hupokea muhtasari wa athari wenye chapa kwa ajili ya kuonyeshwa kwa jamii." }
+      ],
+      "livePartners": "Vituo Washirika Moja kwa Moja",
+      "active": "{{count}} hai",
+      "legendActive": "Hai",
+      "legendOnboarding": "Inajiunga"
+    },
+    "faith": {
+      "heading": "Kukuza ukarimu wa kale kwa uwajibikaji wa kisasa.",
+      "body": "Zaka ya jadi ina nguvu — lakini mara nyingi haiko wazi. KDCharité huipa kila kusanyiko jukwaa la kidijitali la kukusanya, kugawa, na kuripoti hadharani jinsi hasa utoaji wa imani wa jamii yao unavyobadilika kuwa matokeo halisi ya ndani. Wanachama huona hadithi nzima.",
+      "features": [
+        { "title": "Lango la Zaka la Kidijitali", "desc": "Kurasa za kutoa zinazofaa simu, misimbo ya QR, na ufanyaji wa kidijitali wa sadaka za Jumapili — vyote chini ya chapa ya kanisa lako." },
+        { "title": "Dashibodi ya Athari ya Mchangiaji", "desc": "Kila muumini ana dashibodi binafsi inayoonyesha hasa jinsi utoaji wake ulivyoleta mabadiliko." },
+        { "title": "Tabaka la Uzingatiaji na Uaminifu", "desc": "Ripoti za kiotomatiki tayari kwa fomu 990. Inaweza kukaguliwa na bodi yako, wachangiaji wako, na umma." }
+      ],
+      "partnerCommunities": "Jamii za Imani Washirika",
+      "members": "wanachama",
+      "raisedYTD": "zimekusanywa mwaka huu",
+      "moreCommunities": "+ jamii 307 zaidi",
+      "join": "Jiunge na mtandao"
+    }
+  },
+  "denominations": {
+    "Catholic": "Katoliki",
+    "Methodist": "Kimethodisti",
+    "Pentecostal": "Kipentekoste",
+    "Kimbanguist": "Kimbangu",
+    "Evangelical": "Kiinjili"
+  },
+  "ledger": {
+    "badge": "Rejista ya Uwazi",
+    "title": "Kila Senti, <g>Inayoonekana Hadharani</g>",
+    "sub": "Uwazi wa hali ya juu si kipengele — ni msingi wetu. Tazama mtandao ukipumua kwa wakati halisi.",
+    "url": "kdcharite.org / rejista-moja-kwa-moja",
+    "liveStream": "MTIRIRIKO WA MOJA KWA MOJA",
+    "colType": "Aina",
+    "colSource": "Chanzo",
+    "colLocation": "Eneo",
+    "colAmount": "Kiasi",
+    "colTime": "Muda",
+    "optIn": "Chaguo la 2%",
+    "tithe": "Zaka ya Wiki",
+    "footerNote": "Inaonyesha miamala ya hivi karibuni · Viasi vyote vimethibitishwa kwenye mnyororo",
+    "fullLedger": "Rejista kamili",
+    "justNow": "sasa hivi",
+    "minAgo": "dakika {{count}} zilizopita",
+    "hourAgo": "saa {{count}} zilizopita",
+    "trust": [
+      { "label": "Inakaguliwa Kila Mwaka", "sub": "Ukaguzi huru wa mhasibu" },
+      { "label": "Imesimbwa kwa biti 256", "sub": "Usalama wa kiwango cha benki" },
+      { "label": "Imesajiliwa 501(c)(3)", "sub": "EIN 88-0123456" }
+    ]
+  },
+  "testimonials": {
+    "badge": "Hadithi",
+    "title": "Ukarimu, <g>kwa maneno yao</g>",
+    "sub": "Madereva, wachungaji, wamiliki wa vituo, na majirani — watu wanaotekeleza na kuhisi hizo 2%.",
+    "next": "Ifuatayo",
+    "prev": "Iliyotangulia",
+    "goToStory": "Nenda kwenye hadithi {{n}}",
+    "items": [
+      { "quote": "Awali sikuwa nikitoa — nilikuwa nikinuia kila wakati, lakini wakati haukufika. Sasa kila ninapojaza mafuta, ninatoa. Ni otomatiki, ni ndogo sana, na kwa namna fulani inakuwa kitu ninachojivunia.", "role": "Msafiri wa kila siku, Kampemba" },
+      { "quote": "Kusanyiko letu halikuweza kuona sadaka inakwenda wapi. Kwa KDCharité, kila mwanachama hufungua simu yake na kuona zaka yake ikigeuka kuwa ziara za kliniki mitaa miwili tu mbali. Uaminifu ulibadilisha kila kitu.", "role": "Nouvelle Cité de David" },
+      { "quote": "Kama mmiliki wa kituo nilihofia kingepunguza kasi ya foleni. Hakikuongeza hata sekunde moja. Wateja wangu hupenda kuona kituo chetu kwenye ubao wa umma — kikawa jambo ambalo mtaa unazungumza.", "role": "Mmiliki, TotalEnergies #402" },
+      { "quote": "Kliniki ya rununu inayofadhiliwa na KDCharité iligundua mapema nimonia ya binti yangu. Senti mbili kwa wakati, kutoka kwa watu nisiowahi kukutana nao, zilimuweka mwenye afya. Nalia ninapofikiria.", "role": "Mwanajamii, Ruashi" }
+    ]
+  },
+  "impactShowcase": {
+    "badge": "Matokeo Yaliyothibitishwa",
+    "title": "Tarakimu nyuma ya <g>dhamira</g>",
+    "sub": "Kila tarakimu hapa chini hupatanishwa na rejista yetu ya umma na kukaguliwa kwa kujitegemea kila mwaka.",
+    "metrics": ["Milo iliyotolewa", "Lita za maji safi", "Ziara za kliniki zilizofadhiliwa", "Miti iliyopandwa"],
+    "quote": "\"Tunapima mafanikio si kwa dola zilizokusanywa, bali kwa <eb>milo iliyotolewa, visima vilivyochimbwa, na kliniki zilizofunguliwa</eb> — na tunamruhusu yeyote akague hesabu zetu.\"",
+    "attribution": "— Ripoti ya Athari ya KDCharité 2025"
+  },
+  "timeline": {
+    "badge": "Safari Yetu",
+    "title": "Kutoka pampu moja hadi <g>harakati</g>",
+    "sub": "Miaka minne ya michango ya senti 2 inayoongezeka. Hivi ndivyo mtandao ulivyokua.",
+    "items": [
+      { "title": "2% za kwanza", "body": "KDCharité huzinduliwa na vituo vitatu vya majaribio na kanisa moja mshirika katika mtaa mmoja wa jiji." },
+      { "title": "Rejista inakuwa ya umma", "body": "Tunafungua chanzo cha rejista ya uwazi. Michango huvuka $250K huku vituo 40 vikijiunga na mtandao." },
+      { "title": "Mtandao wa imani unaundwa", "body": "Lango la zaka la kidijitali huzinduliwa; makusanyiko 120 hufanya utoaji wao kuwa wa kidijitali katika robo ya kwanza." },
+      { "title": "Kiwango cha jiji", "body": "Vituo 1,800+ na makanisa 300+ katika maeneo 28 ya miji. Mfuko huvuka $1M zilizokusanywa." },
+      { "title": "Jukwaa wazi", "body": "KDCharité hufungua API yake ili mfanyabiashara au kusudi lolote liweze kuunganishwa na njia ya michango midogo." }
+    ]
+  },
+  "team": {
+    "badge": "Watu",
+    "title": "Wajenzi wa <g>harakati ya 2%</g>",
+    "sub": "Timu ndogo iliyojikita katika kuondoa kila chembe ya vikwazo kati ya nia na athari.",
+    "members": [
+      { "role": "Mwanzilishi na Mkurugenzi Mtendaji", "bio": "Aliyekuwa mratibu wa afya ya jamii aliyeamini kuwa ukarimu ulihitaji tu vikwazo vichache." },
+      { "role": "Mkuu wa Uhandisi", "bio": "Alijenga rejista ya umma na SDK ya muunganisho wa POS kuanzia mwanzo." },
+      { "role": "Mkurugenzi wa Ushirikiano", "bio": "Huleta mitandao ya mafuta na jamii za imani kwenye meza moja." },
+      { "role": "Mkuu wa Athari na Ripoti", "bio": "Hugeuza mtiririko wa michango ghafi kuwa matokeo yaliyothibitishwa, ngazi ya mtaa." }
+    ]
+  },
+  "faq": {
+    "badgeQuestions": "Maswali",
+    "badgeAnswers": "Majibu",
+    "title": "Kila kitu ambacho <g>ungeuliza</g>",
+    "sub": "Uwazi huanza kwa kujibu maswali magumu kwa uwazi.",
+    "items": [
+      { "q": "Je, 2% ni lazima?", "a": "Kamwe. Daima ni hiari, huombwa mara moja kwa kila muamala kwa mguso mmoja. Madereva wanaweza kukataa bila adhabu na bila usumbufu." },
+      { "q": "Pesa zangu zinakwenda wapi hasa?", "a": "100% ya kila mchango hufika kwenye mfuko wa jamii — shughuli za KDCharité zenyewe zinafadhiliwa na ruzuku. Mfuko hugawanywa kila mwezi kwa programu za ndani zilizokaguliwa kwa kujitegemea, na kila senti inafuatilika kwenye rejista yetu ya umma." },
+      { "q": "Nitajuaje kuwa ni kweli?", "a": "Kila mchango husimbwa na huandikwa kwenye rejista ya umma ya kuongeza-tu mara tu unapokamilika. Tunapitia ukaguzi huru wa kila mwaka na huchapisha ripoti tayari kwa fomu 990 ambazo yeyote anaweza kuzikagua." },
+      { "q": "Je, kanisa langu linaweza kujiunga?", "a": "Ndiyo. Kusanyiko lolote linaweza kuomba ufikiaji wa lango la zaka la kidijitali — kurasa za kutoa za simu, misimbo ya QR, na dashibodi ya athari kwa kila mwanachama, vyote chini ya chapa yako mwenyewe. Kujiunga huchukua chini ya wiki moja." },
+      { "q": "Je, mchango wangu unapunguzwa kodi?", "a": "KDCharité ni shirika lililosajiliwa 501(c)(3). Michango hupunguzwa kodi kwa kiwango kinachoruhusiwa na sheria, na unapokea risiti ya mwaka iliyounganishwa." },
+      { "q": "Je, inagharimu kiasi gani kwa kituo cha mafuta kushiriki?", "a": "Hakuna. SDK huunganishwa katika mifumo mikuu ya usimamizi wa pampu bila mabadiliko ya vifaa, na hakuna ada. Vituo hupokea ripoti ya athari ya kila mwezi yenye chapa kwa ajili ya kuonyeshwa kwa jamii." }
+    ]
+  },
+  "cta": {
+    "donateTitle": "Toa mara moja. <g>Badilisha mtaa.</g>",
+    "donateBody": "Si dereva katika mtandao wetu? Bado unaweza kuchangia mfuko moja kwa moja. 100% hufika kwa jamii — kufuatiliwa kwenye rejista ile ile ya umma.",
+    "donateNow": "Changia ${{amount}} sasa",
+    "partnerTitle": "Leta 2% kwenye jiji lako",
+    "partnerBody": "Unaendesha kituo au unaongoza kusanyiko? Jiunge na orodha ya kusubiri na tutakusaidia kujiunga kwa chini ya wiki moja — hakuna vifaa, hakuna ada.",
+    "emailPlaceholder": "wewe@shirika.org",
+    "requestAccess": "Omba Ufikiaji",
+    "noSpam": "Hakuna barua taka. Tunatuma barua kuhusu kujiunga, si kingine.",
+    "subscribed": "Uko kwenye orodha — tutawasiliana nawe hivi karibuni."
+  },
+  "crossCTA": {
+    "title": "Tayari kugeuza mabadiliko madogo kuwa mabadiliko makubwa?",
+    "sub": "Jiunge na mtandao kwa chini ya wiki moja — hakuna programu, hakuna vifaa, hakuna ada.",
+    "primary": "Anza Kutoa",
+    "secondary": "Ona programu"
+  },
+  "footer": {
+    "tagline": "Kugeuza miamala ya kila siku ya dunia kuwa injini endelevu ya msaada wa jamii — senti 2 kwa wakati, kwa kiwango kikubwa.",
+    "colPrograms": "Programu",
+    "colPartners": "Washirika",
+    "colOrganization": "Shirika",
+    "programsLinks": ["Mtandao wa Mafuta", "Mtandao wa Imani", "Ruzuku za Jamii", "Ripoti za Athari", "Omba Ufadhili"],
+    "partnersLinks": ["Washirika wa Vituo vya Mafuta", "Washirika wa Makanisa", "Washirika wa Mashirika", "Kuwa Mshirika", "Lango la Washirika"],
+    "organizationLinks": ["Kuhusu KDCharité", "Timu ya Uongozi", "Ripoti ya Mwaka", "Vyombo vya Habari", "Ajira"],
+    "copyright": "© {{year}} KDCharité, Inc. Haki zote zimehifadhiwa. · Imesajiliwa 501(c)(3) · EIN 88-0123456",
+    "legal": ["Sera ya Faragha", "Masharti ya Huduma", "Sera ya Vidakuzi", "Ufikivu"],
+    "disclaimer": "Kanusho: KDCharité hufanya kazi kama shirika lisilo la faida lililosajiliwa 501(c)(3). Programu zote za chaguo la 2% za vituo vya mafuta zinategemea makubaliano ya wafanyabiashara wanaoshiriki. Michango hairejeshwi na hupunguzwa kodi kwa kiwango kinachoruhusiwa na sheria. Ulinganifu wa athari za mtu binafsi ni makadirio ya mfano kulingana na gharama za wastani za programu. Utendaji wa zamani wa athari za jamii hauhakikishi matokeo ya baadaye."
+  },
+  "pages": {
+    "home": { "docTitle": "Mabadiliko Madogo. Athari Kubwa." },
+    "howItWorks": {
+      "docTitle": "Jinsi Inavyofanya Kazi",
+      "badge": "Utaratibu",
+      "title": "Mguso mmoja kwenye pampu, <g>msaada wa jiji lote</g>",
+      "sub": "Hakuna programu. Hakuna akaunti. Hakuna vikwazo. Hivi ndivyo hasa chaguo la 2% linavyokuwa mlo, ziara ya kliniki, au kisima — na jinsi ya kuwazia athari yako mwenyewe.",
+      "ctaTitle": "Una hamu ya kujua pesa zinaishia wapi?",
+      "ctaSub": "Kila senti inafuatilika kwenye rejista yetu ya umma ya wakati halisi.",
+      "ctaPrimary": "Ona athari ya moja kwa moja",
+      "ctaSecondary": "Toa sasa"
+    },
+    "programs": {
+      "docTitle": "Programu",
+      "badge": "Programu Zetu",
+      "title": "Mitandao miwili, <g>dhamira moja</g>",
+      "sub": "KDCharité huunganisha biashara na imani — kugeuza ununuzi wa kawaida wa mafuta na sadaka za Jumapili kuwa injini moja yenye uwazi ya msaada wa jamii.",
+      "ctaTitle": "Unaendesha kituo au unaongoza kusanyiko?",
+      "ctaSub": "Jiunge na jamii yako kwenye mtandao kwa chini ya wiki moja.",
+      "ctaPrimary": "Kuwa mshirika",
+      "ctaSecondary": "Kutana na timu"
+    },
+    "impact": {
+      "docTitle": "Athari",
+      "badge": "Uwazi wa Hali ya Juu",
+      "title": "Kila senti, <g>inayoonekana hadharani</g>",
+      "sub": "Tunapima mafanikio kwa milo iliyotolewa, visima vilivyochimbwa, na kliniki zilizofunguliwa — na tunamruhusu yeyote akague hesabu zetu, kwa wakati halisi.",
+      "ctaTitle": "Unataka kuongeza muamala wako kwenye rejista?",
+      "ctaSub": "Toa moja kwa moja, au leta 2% kwenye jiji lako mwenyewe.",
+      "ctaPrimary": "Toa sasa",
+      "ctaSecondary": "Soma hadithi"
+    },
+    "stories": {
+      "docTitle": "Hadithi",
+      "badge": "Sauti",
+      "title": "Ukarimu, <g>kwa maneno yao</g>",
+      "sub": "Madereva, wachungaji, wamiliki wa vituo, na majirani — watu wanaotekeleza na kuhisi hizo 2% kila siku.",
+      "ctaTitle": "Ongeza hadithi yako mwenyewe kwenye harakati",
+      "ctaSub": "Inaanza na mguso mmoja kwenye pampu.",
+      "ctaPrimary": "Anza kutoa",
+      "ctaSecondary": "Jinsi inavyofanya kazi"
+    },
+    "about": {
+      "docTitle": "Kuhusu Sisi",
+      "badge": "Sisi ni Nani",
+      "title": "Kuondoa vikwazo <g>kati ya nia na athari</g>",
+      "sub": "Watu wengi wanataka kutoa. KDCharité ni shirika lililosajiliwa 501(c)(3) lililojengwa juu ya imani moja: ukarimu unahitaji tu kuwa rahisi zaidi, na uaminifu unahitaji kupatikana hadharani.",
+      "ctaTitle": "Jenga harakati ya 2% pamoja nasi",
+      "ctaSub": "Iwe unatoa, unakuwa mshirika, au unajiunga na timu — kuna nafasi kwako.",
+      "ctaPrimary": "Shiriki",
+      "ctaSecondary": "Soma Maswali"
+    },
+    "faq": {
+      "docTitle": "Maswali",
+      "badge": "Majibu",
+      "title": "Kila kitu ambacho <g>ungeuliza</g>",
+      "sub": "Uwazi huanza kwa kujibu maswali magumu kwa uwazi. Bado una hamu? Tufikie kwa impact@kdcharite.org.",
+      "ctaTitle": "Hukupata jibu lako?",
+      "ctaSub": "Timu yetu itafurahi kukueleza chochote kabla hujajitolea.",
+      "ctaPrimary": "Zungumza nasi",
+      "ctaSecondary": "Chunguza programu"
+    },
+    "donate": {
+      "docTitle": "Toa na Ushirikiane",
+      "badge": "Shiriki",
+      "title": "Toa mara moja. <g>Badilisha mtaa.</g>",
+      "sub": "Toa moja kwa moja kwa mfuko wa jamii, au leta 2% kwenye jiji lako mwenyewe kama kituo au kusanyiko. 100% hufika kwa jamii — kufuatiliwa kwenye rejista ile ile ya umma."
+    },
+    "notFound": {
+      "docTitle": "Ukurasa Haukupatikana",
+      "heading": "Ukurasa huu ulipotea njia",
+      "body": "Ukurasa unaoutafuta hauko hapa — lakini dhamira bado ipo. Turudi barabarani pamoja.",
+      "backHome": "Rudi nyumbani"
+    }
+  },
+  "page": {
+    "defaultTitle": "KDCharité — Mabadiliko Madogo. Athari Kubwa."
+  }
+}

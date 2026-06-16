@@ -1,17 +1,20 @@
 import { Heart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Page, { PageHero } from '../components/Page.jsx';
 import CTA from '../components/CTA.jsx';
 import FAQ from '../components/FAQ.jsx';
+import { Rich } from '../components/ui.jsx';
 
 export default function Donate() {
+  const { t } = useTranslation();
   return (
-    <Page title="Donate & Partner">
+    <Page title={t('pages.donate.docTitle')}>
       <PageHero
-        badge="Get Involved"
+        badge={t('pages.donate.badge')}
         badgeIcon={Heart}
         badgeTone="emerald"
-        title={<>Give once. <span className="text-gradient">Change a block.</span></>}
-        sub="Donate directly to the community fund, or bring the 2% to your own city as a station or congregation. 100% reaches the community — tracked on the same public ledger."
+        title={<Rich k="pages.donate.title" />}
+        sub={t('pages.donate.sub')}
       />
       <CTA />
       <FAQ showHeader />

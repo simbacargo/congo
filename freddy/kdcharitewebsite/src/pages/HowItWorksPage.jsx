@@ -1,25 +1,27 @@
 import { Workflow } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Page, { PageHero } from '../components/Page.jsx';
 import HowItWorks from '../components/HowItWorks.jsx';
 import Calculator from '../components/Calculator.jsx';
-import { CrossCTA } from '../components/ui.jsx';
+import { CrossCTA, Rich } from '../components/ui.jsx';
 
 export default function HowItWorksPage() {
+  const { t } = useTranslation();
   return (
-    <Page title="How It Works">
+    <Page title={t('pages.howItWorks.docTitle')}>
       <PageHero
-        badge="The Mechanism"
+        badge={t('pages.howItWorks.badge')}
         badgeIcon={Workflow}
-        title={<>One tap at the pump, <span className="text-gradient">city-wide relief</span></>}
-        sub="No app. No account. No friction. Here's exactly how a 2% opt-in becomes a meal, a clinic visit, or a well — and how to picture your own impact."
+        title={<Rich k="pages.howItWorks.title" />}
+        sub={t('pages.howItWorks.sub')}
       />
       <HowItWorks />
       <Calculator />
       <CrossCTA
-        title="Curious where the money lands?"
-        sub="Every cent is traceable on our public, real-time ledger."
-        primary={{ to: '/impact', label: 'See live impact' }}
-        secondary={{ to: '/donate', label: 'Give now' }}
+        title={t('pages.howItWorks.ctaTitle')}
+        sub={t('pages.howItWorks.ctaSub')}
+        primary={{ to: '/impact', label: t('pages.howItWorks.ctaPrimary') }}
+        secondary={{ to: '/donate', label: t('pages.howItWorks.ctaSecondary') }}
       />
     </Page>
   );

@@ -3,13 +3,18 @@ import {
   Activity, Fuel, Church, MapPin, Clock, Shield, Lock, CheckCircle2, ArrowRight,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { INITIAL_LEDGER, NEW_DONATIONS } from '../data.js';
-import { SectionHeader } from './ui.jsx';
+import { SectionHeader, Rich } from './ui.jsx';
+
+const TRUST_ICONS = [Shield, Lock, CheckCircle2];
 
 export default function Ledger({ showHeader = true }) {
+  const { t } = useTranslation();
   const [entries, setEntries] = useState(INITIAL_LEDGER);
   const nextId = useRef(100);
   const donorIdx = useRef(0);
+  const trust = t('ledger.trust', { returnObjects: true });
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -24,9 +29,9 @@ export default function Ledger({ showHeader = true }) {
   }, []);
 
   const fmtTime = (mins) => {
-    if (mins === 0) return 'just now';
-    if (mins < 60) return `${mins} min ago`;
-    return `${Math.floor(mins / 60)}h ago`;
+    if (mins === 0) return t('ledger.justNow');
+    if (mins < 60) return t('ledger.minAgo', { count: mins });
+    return t('ledger.hourAgo', { count: Math.floor(mins / 60) });
   };
 
   return (
@@ -35,10 +40,10 @@ export default function Ledger({ showHeader = true }) {
       <div className="max-w-4xl mx-auto relative">
         {showHeader && (
           <SectionHeader
-            badge="Transparency Ledger"
+            badge={t('ledger.badge')}
             badgeIcon={Activity}
-            title={<>Every Cent, <span className="text-gradient">Publicly Visible</span></>}
-            sub="Radical transparency isn't a feature — it's our foundation. Watch the network breathe in real time."
+            title={<Rich k="ledger.title" />}
+            sub={t('ledger.sub')}
           />
         )}
 
@@ -56,20 +61,20 @@ export default function Ledger({ showHeader = true }) {
                 <span className="w-3 h-3 rounded-full bg-amber-500/70" />
                 <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
               </div>
-              <span className="text-xs text-white/40 font-medium">kdcharite.org / live-ledger</span>
+              <span className="text-xs text-white/40 font-medium">{t('ledger.url')}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              LIVE STREAM
+              {t('ledger.liveStream')}
             </div>
           </div>
 
           <div className="grid grid-cols-12 px-6 py-3 text-[11px] text-white/25 uppercase tracking-widest border-b border-white/5">
-            <span className="col-span-1">Type</span>
-            <span className="col-span-4">Source</span>
-            <span className="col-span-3">Location</span>
-            <span className="col-span-2 text-right">Amount</span>
-            <span className="col-span-2 text-right">Time</span>
+            <span className="col-span-1">{t('ledger.colType')}</span>
+            <span className="col-span-4">{t('ledger.colSource')}</span>
+            <span className="col-span-3">{t('ledger.colLocation')}</span>
+            <span className="col-span-2 text-right">{t('ledger.colAmount')}</span>
+            <span className="col-span-2 text-right">{t('ledger.colTime')}</span>
           </div>
 
           <div className="min-h-[420px]">
@@ -92,7 +97,7 @@ export default function Ledger({ showHeader = true }) {
                   <div className="col-span-4 pl-1">
                     <div className="text-sm font-semibold text-white/90 leading-tight">{entry.source}</div>
                     <div className={`text-[11px] font-medium mt-0.5 ${entry.type === 'fuel' ? 'text-emerald-500' : 'text-amber-500'}`}>
-                      {entry.type === 'fuel' ? '2% Opt-in' : 'Weekly Tithe'}
+                      {entry.type === 'fuel' ? t('ledger.optIn') : t('ledger.tithe')}
                     </div>
                   </div>
                   <div className="col-span-3 flex items-center gap-1.5">
@@ -115,31 +120,27 @@ export default function Ledger({ showHeader = true }) {
           </div>
 
           <div className="px-6 py-4 bg-white/[0.02] flex items-center justify-between">
-            <span className="text-xs text-white/30">Showing latest transactions · All amounts verified on-chain</span>
+            <span className="text-xs text-white/30">{t('ledger.footerNote')}</span>
             <button className="text-xs text-emerald-400 font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-              Full ledger <ArrowRight size={11} />
+              {t('ledger.fullLedger')} <ArrowRight size={11} />
             </button>
           </div>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
-          {[
-            { icon: Shield, label: 'Audited Annually', sub: 'Independent CPA review' },
-            { icon: Lock, label: '256-bit Encrypted', sub: 'Bank-grade security' },
-            { icon: CheckCircle2, label: '501(c)(3) Registered', sub: 'EIN 88-0123456' },
-          ].map((b, i) => (
+          {TRUST_ICONS.map((Icon, i) => (
             <motion.div
-              key={b.label}
+              key={i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               className="glass rounded-xl p-4 flex items-center gap-3"
             >
-              <b.icon size={18} className="text-emerald-400 flex-shrink-0" />
+              <Icon size={18} className="text-emerald-400 flex-shrink-0" />
               <div>
-                <div className="text-xs font-semibold text-white/80">{b.label}</div>
-                <div className="text-[11px] text-white/35">{b.sub}</div>
+                <div className="text-xs font-semibold text-white/80">{trust[i].label}</div>
+                <div className="text-[11px] text-white/35">{trust[i].sub}</div>
               </div>
             </motion.div>
           ))}

@@ -1,0 +1,333 @@
+{
+  "nav": {
+    "howItWorks": "Comment ça marche",
+    "programs": "Programmes",
+    "impact": "Impact",
+    "stories": "Témoignages",
+    "about": "À propos",
+    "faq": "FAQ",
+    "partner": "Devenez partenaire",
+    "donateNow": "Faire un don",
+    "toggleMenu": "Afficher le menu"
+  },
+  "lang": {
+    "label": "Langue"
+  },
+  "hero": {
+    "badge": "Un nouveau modèle de générosité",
+    "est": "Depuis 2022",
+    "titleA": "De petits gestes.",
+    "titleB": "Un impact immense.",
+    "lead": "Transformer les achats de carburant et les offrandes du dimanche en aide communautaire à l'échelle de la ville — grâce à un micro-don fluide de 2 % au point de vente.",
+    "sub": "Zéro friction. Transparence totale. Porté par les églises, les stations-service et la générosité discrète des gens ordinaires.",
+    "startGiving": "Commencer à donner",
+    "howItWorks": "Comment ça marche",
+    "trustedBy": "Ils nous font confiance",
+    "scroll": "Faites défiler pour explorer",
+    "live": "En direct",
+    "stats": {
+      "fundsLabel": "Fonds totaux récoltés",
+      "fundsSub": "Depuis janvier 2022",
+      "churchesLabel": "Églises partenaires",
+      "churchesSub": "Dans 14 confessions",
+      "stationsLabel": "Stations participantes",
+      "stationsSub": "Dans 28 régions métropolitaines"
+    },
+    "principleTitle": "Le principe des 2 %",
+    "principleBody": "Si seulement 10 000 conducteurs d'une zone métropolitaine donnaient 2 % de leur plein hebdomadaire de 60 $, cela représenterait <e>624 000 $ par an</e> — de quoi nourrir 3 000 familles pendant un mois entier."
+  },
+  "mission": {
+    "title": "Pourquoi <g>KDCharité</g> fonctionne",
+    "sub": "La plupart des gens veulent donner. Il leur faut simplement moins de friction et plus de confiance.",
+    "pillars": [
+      { "title": "Micro-dons sur le carburant", "desc": "Option de 2 % aux terminaux de paiement de notre réseau partenaire. Sans appli. Sans compte." },
+      { "title": "Don issu de la foi", "desc": "Numériser les collectes du dimanche et amplifier leur portée vers des programmes locaux vérifiés." },
+      { "title": "Impact vérifié", "desc": "Chaque dollar suivi, chaque résultat publié. Les donateurs voient le changement exact qu'ils ont produit." },
+      { "title": "Changement à l'échelle de la ville", "desc": "Nous pensons en quartiers et agissons en villes. Notre modèle grandit sans perdre le contexte local." }
+    ]
+  },
+  "globe": {
+    "badge": "Le réseau",
+    "title": "Un seul réseau, <g>chaque quartier</g>",
+    "sub": "Chaque point est une station ou une congrégation partenaire. Les arcs représentent les dons en mouvement — déplacez le curseur pour incliner le globe, défilez pour le faire tourner.",
+    "stations": "Stations-service",
+    "congregations": "Congrégations",
+    "motion": "Dons en mouvement"
+  },
+  "home": {
+    "exploreTitle": "Explorez le <g>réseau</g>",
+    "exploreSub": "Quatre portes d'entrée dans l'histoire. Commencez où vous voulez.",
+    "explore": "Explorer",
+    "cards": [
+      { "title": "Comment ça marche", "desc": "Suivez un seul don de 2 cents, de la pompe jusqu'à la rue." },
+      { "title": "Nos programmes", "desc": "Le Réseau Carburant et le Réseau Foi, côte à côte." },
+      { "title": "Impact en direct", "desc": "Des résultats vérifiés et un registre public en temps réel." },
+      { "title": "Témoignages", "desc": "Les conducteurs, pasteurs et voisins derrière les 2 %." }
+    ]
+  },
+  "howItWorks": {
+    "badge": "Comment ça marche",
+    "title": "D'un simple geste à <g>un changement concret</g>",
+    "sub": "Faites défiler pour suivre un seul don de 2 cents dans son parcours à travers le réseau.",
+    "steps": [
+      { "title": "Un conducteur fait le plein", "body": "À toute pompe intégrée à KDCharité, le terminal pose une seule question : « Ajouter 2 % pour aider votre communauté ? » Un geste. Sans appli, sans compte, sans friction." },
+      { "title": "Le prélèvement est vérifié", "body": "Chaque micro-don est horodaté, haché et inscrit dans notre registre public à l'instant où la transaction est validée — vérifiable par tous, instantanément." },
+      { "title": "Les fonds se rassemblent dans toute la ville", "body": "Des milliers de dons de 2 cents fusionnent avec les dîmes numérisées des églises dans un fonds communautaire transparent, alloué chaque mois à des programmes locaux contrôlés." },
+      { "title": "L'impact atteint la rue", "body": "Les banques alimentaires se réapprovisionnent, les cliniques mobiles se déploient, les puits se creusent. Chaque donateur voit le résultat précis de sa générosité, jusqu'au quartier." }
+    ]
+  },
+  "calculator": {
+    "badge": "Simulateur d'impact",
+    "title": "Découvrez ce que votre plein<br/><g>finance vraiment</g>",
+    "sub": "Déplacez le curseur selon votre budget carburant hebdomadaire. Voyez en temps réel comment vos 2 % optionnels deviennent une aide décisive pour quelqu'un près de vous.",
+    "weeklySpend": "Budget carburant hebdomadaire",
+    "perFillup": "Don par plein",
+    "monthly": "Contribution mensuelle",
+    "annual": "Impact annuel",
+    "optIn": "Option à la pompe. Sans appli. Zéro friction.",
+    "translatesTo": "Vos {{amount}} $ se traduisent par…",
+    "flowText": "Chaque 2 cents par dollar va directement à des programmes locaux contrôlés — banques alimentaires, unités de santé mobiles et micro-projets d'eau potable — en toute transparence.",
+    "cityJoined": "Si toute la ville participait — à 60 $/sem. en moyenne",
+    "cityRaised": "~124 000 $ récoltés par semaine. À l'échelle de la ville.",
+    "impact": {
+      "seed": "Le premier pas est lancé — votre geste sème l'espoir.",
+      "water": "{{count}} jours d'eau potable pour un enfant dans le besoin.",
+      "meals": "{{count}} repas chauds servis à une famille en difficulté.",
+      "mealsSchool": "{{count}} repas chauds + 1 jour de fournitures scolaires pour un enfant.",
+      "clinic": "Une consultation en clinique mobile pour un patient sans assurance.",
+      "trees": "Plante {{count}} arbres grâce à nos micro-subventions de reforestation.",
+      "families": "Finance une semaine entière de repas communautaires pour {{count}} familles."
+    }
+  },
+  "ecosystem": {
+    "badge": "Notre écosystème",
+    "title": "Deux réseaux.<br/><g>Une mission.</g>",
+    "sub": "KDCharité relie le commerce et la foi — transformant des transactions ordinaires en actes de générosité récurrents.",
+    "tabFuel": "Le Réseau Carburant",
+    "tabFaith": "Le Réseau Foi",
+    "fuel": {
+      "heading": "Donner sans friction à la pompe — sans appli, sans portefeuille.",
+      "body": "Lorsqu'un conducteur paie à un terminal intégré KDCharité, un simple message à l'écran demande : <em>« Ajouter 2 % pour aider votre communauté ? »</em> Un geste. C'est fait. Le micro-don est traité avec la transaction — transparent, instantané et vérifiable sur notre registre public.",
+      "features": [
+        { "title": "Intégration TPE en temps réel", "desc": "SDK natif intégré aux principaux systèmes de gestion de pompes — aucun changement de matériel." },
+        { "title": "Modèle sans frais", "desc": "100 % de chaque 2 % atteint le fonds communautaire. Les activités de KDCharité sont financées par des subventions." },
+        { "title": "Rapports d'impact mensuels", "desc": "Chaque station participante reçoit un résumé d'impact personnalisé à afficher pour la communauté." }
+      ],
+      "livePartners": "Stations partenaires en direct",
+      "active": "{{count}} actives",
+      "legendActive": "Active",
+      "legendOnboarding": "En intégration"
+    },
+    "faith": {
+      "heading": "Amplifier une générosité ancienne avec une responsabilité moderne.",
+      "body": "La dîme traditionnelle est puissante — mais souvent opaque. KDCharité offre à chaque congrégation une plateforme numérique pour collecter, allouer et publier exactement comment le don issu de la foi se traduit en résultats locaux concrets. Les membres voient toute l'histoire.",
+      "features": [
+        { "title": "Portail de dîme numérique", "desc": "Pages de don adaptées au mobile, QR codes et numérisation de l'offrande du dimanche — sous la marque de votre église." },
+        { "title": "Tableau de bord d'impact du donateur", "desc": "Chaque fidèle dispose d'un tableau de bord personnel montrant précisément l'effet de son don." },
+        { "title": "Couche de conformité et de confiance", "desc": "Rapports automatisés prêts pour le formulaire 990. Vérifiable par votre conseil, vos donateurs et le public." }
+      ],
+      "partnerCommunities": "Communautés de foi partenaires",
+      "members": "membres",
+      "raisedYTD": "récoltés cette année",
+      "moreCommunities": "+ 307 autres communautés",
+      "join": "Rejoindre le réseau"
+    }
+  },
+  "denominations": {
+    "Catholic": "Catholique",
+    "Methodist": "Méthodiste",
+    "Pentecostal": "Pentecôtiste",
+    "Kimbanguist": "Kimbanguiste",
+    "Evangelical": "Évangélique"
+  },
+  "ledger": {
+    "badge": "Registre de transparence",
+    "title": "Chaque centime, <g>visible publiquement</g>",
+    "sub": "La transparence radicale n'est pas une fonctionnalité — c'est notre fondation. Regardez le réseau respirer en temps réel.",
+    "url": "kdcharite.org / registre-direct",
+    "liveStream": "FLUX EN DIRECT",
+    "colType": "Type",
+    "colSource": "Source",
+    "colLocation": "Lieu",
+    "colAmount": "Montant",
+    "colTime": "Heure",
+    "optIn": "Option 2 %",
+    "tithe": "Dîme hebdomadaire",
+    "footerNote": "Affichage des dernières transactions · Tous les montants vérifiés sur la chaîne",
+    "fullLedger": "Registre complet",
+    "justNow": "à l'instant",
+    "minAgo": "il y a {{count}} min",
+    "hourAgo": "il y a {{count}} h",
+    "trust": [
+      { "label": "Audité chaque année", "sub": "Examen par un expert-comptable indépendant" },
+      { "label": "Chiffré en 256 bits", "sub": "Sécurité de niveau bancaire" },
+      { "label": "Enregistré 501(c)(3)", "sub": "EIN 88-0123456" }
+    ]
+  },
+  "testimonials": {
+    "badge": "Témoignages",
+    "title": "La générosité, <g>dans leurs mots</g>",
+    "sub": "Conducteurs, pasteurs, gérants de stations et voisins — ceux qui font et ressentent les 2 %.",
+    "next": "Suivant",
+    "prev": "Précédent",
+    "goToStory": "Aller au témoignage {{n}}",
+    "items": [
+      { "quote": "Avant, je ne donnais jamais — j'en avais toujours l'intention, mais le moment ne venait jamais. Maintenant, chaque fois que je fais le plein, je donne. C'est automatique, c'est minuscule, et au final cela devient quelque chose dont je suis fier.", "role": "Navetteur quotidien, Kampemba" },
+      { "quote": "Notre congrégation ne voyait jamais où allait l'offrande. Avec KDCharité, chaque membre ouvre son téléphone et voit sa dîme se transformer en consultations à deux rues de là. La confiance a tout changé.", "role": "Nouvelle Cité de David" },
+      { "quote": "Comme gérant de station, je craignais que cela ralentisse la file. Cela n'a ajouté aucune seconde. Mes clients adorent voir notre station sur le tableau public — c'est devenu le sujet du quartier.", "role": "Gérant, TotalEnergies #402" },
+      { "quote": "La clinique mobile financée par KDCharité a détecté tôt la pneumonie de ma fille. Deux cents à la fois, de gens que je ne rencontrerai jamais, l'ont gardée en bonne santé. J'en pleure d'émotion.", "role": "Membre de la communauté, Ruashi" }
+    ]
+  },
+  "impactShowcase": {
+    "badge": "Résultats vérifiés",
+    "title": "Les chiffres derrière <g>la mission</g>",
+    "sub": "Chaque chiffre ci-dessous est rapproché de notre registre public et audité de façon indépendante chaque année.",
+    "metrics": ["Repas servis", "Litres d'eau potable", "Visites en clinique financées", "Arbres plantés"],
+    "quote": "« Nous mesurons le succès non pas en dollars récoltés, mais en <eb>repas servis, puits creusés et cliniques ouvertes</eb> — et nous laissons chacun vérifier nos calculs. »",
+    "attribution": "— Rapport d'impact KDCharité 2025"
+  },
+  "timeline": {
+    "badge": "Notre parcours",
+    "title": "D'une seule pompe à <g>un mouvement</g>",
+    "sub": "Quatre ans de dons de 2 cents qui se cumulent. Voici comment le réseau a grandi.",
+    "items": [
+      { "title": "Les premiers 2 %", "body": "KDCharité démarre avec trois stations pilotes et une église partenaire dans un seul quartier métropolitain." },
+      { "title": "Le registre devient public", "body": "Nous ouvrons le code du registre de transparence. Les dons dépassent 250 000 $ tandis que 40 stations rejoignent le réseau." },
+      { "title": "Le réseau Foi se forme", "body": "Le portail de dîme numérique est lancé ; 120 congrégations numérisent leurs dons dès le premier trimestre." },
+      { "title": "À l'échelle de la ville", "body": "Plus de 1 800 stations et 300 églises dans 28 régions métropolitaines. Le fonds dépasse 1 M$ récoltés." },
+      { "title": "Plateforme ouverte", "body": "KDCharité ouvre son API afin que tout commerçant ou toute cause puisse se brancher au rail du micro-don." }
+    ]
+  },
+  "team": {
+    "badge": "Les personnes",
+    "title": "Les bâtisseurs du <g>mouvement des 2 %</g>",
+    "sub": "Une petite équipe obsédée par l'idée de supprimer chaque gramme de friction entre l'intention et l'impact.",
+    "members": [
+      { "role": "Fondatrice et directrice générale", "bio": "Ancienne organisatrice en santé communautaire, convaincue que la générosité avait simplement besoin de moins de friction." },
+      { "role": "Responsable de l'ingénierie", "bio": "A bâti le registre public et le SDK d'intégration TPE de A à Z." },
+      { "role": "Directrice des partenariats", "bio": "Réunit les réseaux de carburant et les communautés de foi autour d'une même table." },
+      { "role": "Responsable de l'impact et des rapports", "bio": "Transforme les flux de dons bruts en résultats vérifiés, à l'échelle du quartier." }
+    ]
+  },
+  "faq": {
+    "badgeQuestions": "Questions",
+    "badgeAnswers": "Réponses",
+    "title": "Tout ce que vous <g>pourriez demander</g>",
+    "sub": "La transparence commence par répondre clairement aux questions difficiles.",
+    "items": [
+      { "q": "Les 2 % sont-ils obligatoires ?", "a": "Jamais. C'est toujours optionnel, proposé une fois par transaction d'un simple geste. Les conducteurs peuvent refuser sans pénalité ni insistance." },
+      { "q": "Où va réellement mon argent ?", "a": "100 % de chaque don atteint le fonds communautaire — les activités propres de KDCharité sont financées par des subventions. Le fonds est alloué chaque mois à des programmes locaux contrôlés de façon indépendante, et chaque centime est traçable sur notre registre public." },
+      { "q": "Comment savoir que c'est réel ?", "a": "Chaque don est haché et inscrit dans un registre public en ajout seul dès qu'il est validé. Nous subissons chaque année un audit indépendant et publions des rapports prêts pour le formulaire 990 que chacun peut consulter." },
+      { "q": "Mon église peut-elle adhérer ?", "a": "Oui. Toute congrégation peut demander l'accès au portail de dîme numérique — pages de don mobiles, QR codes et tableau de bord d'impact par membre, sous votre propre marque. L'intégration prend moins d'une semaine." },
+      { "q": "Mon don est-il déductible des impôts ?", "a": "KDCharité est un organisme 501(c)(3) enregistré. Les dons sont déductibles dans la limite autorisée par la loi, et vous recevez un reçu annuel consolidé." },
+      { "q": "Combien coûte la participation à une station-service ?", "a": "Rien. Le SDK s'intègre aux principaux systèmes de gestion de pompes sans changement de matériel, et il n'y a aucun frais. Les stations reçoivent un rapport d'impact mensuel personnalisé à afficher pour la communauté." }
+    ]
+  },
+  "cta": {
+    "donateTitle": "Donnez une fois. <g>Changez un quartier.</g>",
+    "donateBody": "Vous n'êtes pas conducteur de notre réseau ? Vous pouvez tout de même alimenter le fonds directement. 100 % atteint la communauté — suivi sur le même registre public.",
+    "donateNow": "Donner {{amount}} $ maintenant",
+    "partnerTitle": "Apportez les 2 % à votre ville",
+    "partnerBody": "Vous gérez une station ou dirigez une congrégation ? Rejoignez la liste d'attente et nous vous aiderons à démarrer en moins d'une semaine — sans matériel, sans frais.",
+    "emailPlaceholder": "vous@organisation.org",
+    "requestAccess": "Demander l'accès",
+    "noSpam": "Pas de spam. Nous écrivons au sujet de l'intégration, rien d'autre.",
+    "subscribed": "Vous êtes sur la liste — nous vous contacterons bientôt."
+  },
+  "crossCTA": {
+    "title": "Prêt à transformer la petite monnaie en grand changement ?",
+    "sub": "Rejoignez le réseau en moins d'une semaine — sans appli, sans matériel, sans frais.",
+    "primary": "Commencer à donner",
+    "secondary": "Voir les programmes"
+  },
+  "footer": {
+    "tagline": "Transformer les transactions quotidiennes du monde en un moteur continu d'aide communautaire — 2 cents à la fois, à grande échelle.",
+    "colPrograms": "Programmes",
+    "colPartners": "Partenaires",
+    "colOrganization": "Organisation",
+    "programsLinks": ["Réseau Carburant", "Réseau Foi", "Subventions communautaires", "Rapports d'impact", "Demander un financement"],
+    "partnersLinks": ["Partenaires stations-service", "Partenaires églises", "Partenaires entreprises", "Devenir partenaire", "Portail partenaire"],
+    "organizationLinks": ["À propos de KDCharité", "Équipe dirigeante", "Rapport annuel", "Presse et médias", "Carrières"],
+    "copyright": "© {{year}} KDCharité, Inc. Tous droits réservés. · Enregistré 501(c)(3) · EIN 88-0123456",
+    "legal": ["Politique de confidentialité", "Conditions d'utilisation", "Politique relative aux cookies", "Accessibilité"],
+    "disclaimer": "Avertissement : KDCharité est un organisme à but non lucratif 501(c)(3) enregistré. Tous les programmes d'option 2 % des stations-service sont soumis aux accords des commerçants participants. Les dons sont non remboursables et déductibles des impôts dans la limite autorisée par la loi. Les équivalences d'impact individuel sont des estimations illustratives fondées sur les coûts moyens des programmes. Les performances passées de l'impact communautaire ne garantissent pas les résultats futurs."
+  },
+  "pages": {
+    "home": { "docTitle": "De petits gestes. Un impact immense." },
+    "howItWorks": {
+      "docTitle": "Comment ça marche",
+      "badge": "Le mécanisme",
+      "title": "Un geste à la pompe, <g>une aide à l'échelle de la ville</g>",
+      "sub": "Sans appli. Sans compte. Sans friction. Voici précisément comment une option de 2 % devient un repas, une consultation ou un puits — et comment imaginer votre propre impact.",
+      "ctaTitle": "Curieux de savoir où va l'argent ?",
+      "ctaSub": "Chaque centime est traçable sur notre registre public en temps réel.",
+      "ctaPrimary": "Voir l'impact en direct",
+      "ctaSecondary": "Donner maintenant"
+    },
+    "programs": {
+      "docTitle": "Programmes",
+      "badge": "Nos programmes",
+      "title": "Deux réseaux, <g>une mission</g>",
+      "sub": "KDCharité relie le commerce et la foi — transformant les achats de carburant et les offrandes du dimanche en un moteur unique et transparent d'aide communautaire.",
+      "ctaTitle": "Vous gérez une station ou dirigez une congrégation ?",
+      "ctaSub": "Intégrez votre communauté au réseau en moins d'une semaine.",
+      "ctaPrimary": "Devenir partenaire",
+      "ctaSecondary": "Rencontrer l'équipe"
+    },
+    "impact": {
+      "docTitle": "Impact",
+      "badge": "Transparence radicale",
+      "title": "Chaque centime, <g>visible publiquement</g>",
+      "sub": "Nous mesurons le succès en repas servis, puits creusés et cliniques ouvertes — et nous laissons chacun vérifier nos calculs, en temps réel.",
+      "ctaTitle": "Vous voulez ajouter votre transaction au registre ?",
+      "ctaSub": "Donnez directement, ou apportez les 2 % à votre propre ville.",
+      "ctaPrimary": "Donner maintenant",
+      "ctaSecondary": "Lire les témoignages"
+    },
+    "stories": {
+      "docTitle": "Témoignages",
+      "badge": "Voix",
+      "title": "La générosité, <g>dans leurs mots</g>",
+      "sub": "Conducteurs, pasteurs, gérants de stations et voisins — ceux qui font et ressentent les 2 % chaque jour.",
+      "ctaTitle": "Ajoutez votre propre histoire au mouvement",
+      "ctaSub": "Tout commence par un simple geste à la pompe.",
+      "ctaPrimary": "Commencer à donner",
+      "ctaSecondary": "Comment ça marche"
+    },
+    "about": {
+      "docTitle": "À propos",
+      "badge": "Qui nous sommes",
+      "title": "Supprimer la friction <g>entre l'intention et l'impact</g>",
+      "sub": "La plupart des gens veulent donner. KDCharité est un organisme 501(c)(3) enregistré, bâti sur une conviction : la générosité doit être plus facile, et la confiance doit se gagner en public.",
+      "ctaTitle": "Construisez le mouvement des 2 % avec nous",
+      "ctaSub": "Que vous donniez, deveniez partenaire ou rejoigniez l'équipe — il y a une place pour vous.",
+      "ctaPrimary": "S'impliquer",
+      "ctaSecondary": "Lire la FAQ"
+    },
+    "faq": {
+      "docTitle": "FAQ",
+      "badge": "Réponses",
+      "title": "Tout ce que vous <g>pourriez demander</g>",
+      "sub": "La transparence commence par répondre clairement aux questions difficiles. Toujours curieux ? Écrivez-nous à impact@kdcharite.org.",
+      "ctaTitle": "Vous n'avez pas trouvé votre réponse ?",
+      "ctaSub": "Notre équipe se fera un plaisir de tout vous expliquer avant que vous ne vous engagiez.",
+      "ctaPrimary": "Nous parler",
+      "ctaSecondary": "Explorer les programmes"
+    },
+    "donate": {
+      "docTitle": "Don et partenariat",
+      "badge": "S'impliquer",
+      "title": "Donnez une fois. <g>Changez un quartier.</g>",
+      "sub": "Donnez directement au fonds communautaire, ou apportez les 2 % à votre propre ville en tant que station ou congrégation. 100 % atteint la communauté — suivi sur le même registre public."
+    },
+    "notFound": {
+      "docTitle": "Page introuvable",
+      "heading": "Cette page a pris un mauvais virage",
+      "body": "La page que vous cherchez n'est pas ici — mais la mission, elle, l'est toujours. Reprenons la route ensemble.",
+      "backHome": "Retour à l'accueil"
+    }
+  },
+  "page": {
+    "defaultTitle": "KDCharité — De petits gestes. Un impact immense."
+  }
+}

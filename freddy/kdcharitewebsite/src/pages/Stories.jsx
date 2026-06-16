@@ -1,25 +1,27 @@
 import { MessageCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Page, { PageHero } from '../components/Page.jsx';
 import Testimonials from '../components/Testimonials.jsx';
 import ImpactShowcase from '../components/ImpactShowcase.jsx';
-import { CrossCTA } from '../components/ui.jsx';
+import { CrossCTA, Rich } from '../components/ui.jsx';
 
 export default function Stories() {
+  const { t } = useTranslation();
   return (
-    <Page title="Stories">
+    <Page title={t('pages.stories.docTitle')}>
       <PageHero
-        badge="Voices"
+        badge={t('pages.stories.badge')}
         badgeIcon={MessageCircle}
-        title={<>Generosity, <span className="text-gradient">in their words</span></>}
-        sub="Drivers, pastors, station owners, and neighbors — the people who make and feel the 2% every single day."
+        title={<Rich k="pages.stories.title" />}
+        sub={t('pages.stories.sub')}
       />
       <Testimonials showHeader={false} />
       <ImpactShowcase />
       <CrossCTA
-        title="Add your own story to the movement"
-        sub="It starts with a single tap at the pump."
-        primary={{ to: '/donate', label: 'Start giving' }}
-        secondary={{ to: '/how-it-works', label: 'How it works' }}
+        title={t('pages.stories.ctaTitle')}
+        sub={t('pages.stories.ctaSub')}
+        primary={{ to: '/donate', label: t('pages.stories.ctaPrimary') }}
+        secondary={{ to: '/how-it-works', label: t('pages.stories.ctaSecondary') }}
       />
     </Page>
   );

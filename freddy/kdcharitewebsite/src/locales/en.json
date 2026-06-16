@@ -1,0 +1,333 @@
+{
+  "nav": {
+    "howItWorks": "How It Works",
+    "programs": "Programs",
+    "impact": "Impact",
+    "stories": "Stories",
+    "about": "About",
+    "faq": "FAQ",
+    "partner": "Partner With Us",
+    "donateNow": "Donate Now",
+    "toggleMenu": "Toggle menu"
+  },
+  "lang": {
+    "label": "Language"
+  },
+  "hero": {
+    "badge": "A New Model of Giving",
+    "est": "Est. 2022",
+    "titleA": "Small Changes.",
+    "titleB": "Massive Impact.",
+    "lead": "Turning everyday fuel purchases and Sunday offerings into city-wide community relief — through a seamless 2% micro-donation at the point of sale.",
+    "sub": "Zero friction. Full transparency. Powered by churches, fuel stations, and the quiet generosity of ordinary people.",
+    "startGiving": "Start Giving",
+    "howItWorks": "How It Works",
+    "trustedBy": "Trusted by",
+    "scroll": "Scroll to explore",
+    "live": "Live",
+    "stats": {
+      "fundsLabel": "Total Funds Raised",
+      "fundsSub": "Since January 2022",
+      "churchesLabel": "Partner Churches",
+      "churchesSub": "Across 14 denominations",
+      "stationsLabel": "Participating Stations",
+      "stationsSub": "In 28 metro regions"
+    },
+    "principleTitle": "The 2% Principle",
+    "principleBody": "If just 10,000 drivers in a metro area donate 2% of their weekly $60 fill-up, that's <e>$624,000 per year</e> — enough to feed 3,000 families for an entire month."
+  },
+  "mission": {
+    "title": "Why <g>KDCharité</g> Works",
+    "sub": "Most people want to give. They just need the friction removed and the trust established.",
+    "pillars": [
+      { "title": "Fuel Micro-Donations", "desc": "2% opt-in at POS terminals across our partner network. No app. No account needed." },
+      { "title": "Faith-Based Giving", "desc": "Digitizing Sunday collections and amplifying their reach into verified local programs." },
+      { "title": "Verified Impact", "desc": "Every dollar tracked, every outcome reported. Donors see the precise change they made." },
+      { "title": "City-Scale Change", "desc": "We think in neighborhoods, act in cities. Our model scales without losing local context." }
+    ]
+  },
+  "globe": {
+    "badge": "The Network",
+    "title": "One network, <g>every neighborhood</g>",
+    "sub": "Each point is a partner station or congregation. The arcs are giving in motion — drag your cursor to lean the globe, scroll to spin it.",
+    "stations": "Fuel stations",
+    "congregations": "Congregations",
+    "motion": "Giving in motion"
+  },
+  "home": {
+    "exploreTitle": "Explore the <g>network</g>",
+    "exploreSub": "Four ways into the story. Start anywhere.",
+    "explore": "Explore",
+    "cards": [
+      { "title": "How It Works", "desc": "Follow a single 2-cent gift from the pump to the street." },
+      { "title": "Our Programs", "desc": "The Fuel Network and the Faith Network, side by side." },
+      { "title": "Live Impact", "desc": "Verified outcomes and a public, real-time ledger." },
+      { "title": "Stories", "desc": "The drivers, pastors, and neighbors behind the 2%." }
+    ]
+  },
+  "howItWorks": {
+    "badge": "How It Works",
+    "title": "From one tap to <g>tangible change</g>",
+    "sub": "Scroll to follow a single 2-cent donation on its journey through the network.",
+    "steps": [
+      { "title": "A driver fills up", "body": "At any KDCharité-integrated pump, the terminal asks a single question: \"Add 2% to help your community?\" One tap. No app, no account, no friction." },
+      { "title": "The levy is verified", "body": "Each micro-donation is timestamped, hashed, and written to our public ledger the instant the transaction settles — verifiable by anyone, instantly." },
+      { "title": "Funds pool city-wide", "body": "Thousands of 2-cent gifts merge with digitized church tithes into a transparent community fund, allocated to vetted local programs every month." },
+      { "title": "Impact reaches the street", "body": "Food banks restock, mobile clinics roll out, wells get dug. Every donor sees the precise outcome their generosity produced, down to the neighborhood." }
+    ]
+  },
+  "calculator": {
+    "badge": "Impact Simulator",
+    "title": "See What Your Fill-Up<br/><g>Really Fuels</g>",
+    "sub": "Move the slider to match your weekly fuel spend. Watch in real-time as your optional 2% becomes something life-changing for someone nearby.",
+    "weeklySpend": "Weekly fuel spend",
+    "perFillup": "Per fill-up donation",
+    "monthly": "Monthly contribution",
+    "annual": "Annual impact",
+    "optIn": "Opt-in at the pump. No app needed. Zero friction.",
+    "translatesTo": "Your ${{amount}} translates to…",
+    "flowText": "Every 2 cents on the dollar flows directly to vetted local programs — food banks, mobile health units, and clean-water micro-projects — with full ledger transparency.",
+    "cityJoined": "If the whole city joined — at avg. $60/wk",
+    "cityRaised": "~$124,000 raised per week. City-wide.",
+    "impact": {
+      "seed": "Sparks the first step — your change seeds hope.",
+      "water": "{{count}} days of clean water for a child in need.",
+      "meals": "{{count}} hot meals served to a struggling family.",
+      "mealsSchool": "{{count}} hot meals + 1 day of school supplies for a child.",
+      "clinic": "One mobile clinic consultation for an uninsured patient.",
+      "trees": "Plants {{count}} trees through our reforestation micro-grants.",
+      "families": "Funds a full week of community meals for {{count}} families."
+    }
+  },
+  "ecosystem": {
+    "badge": "Our Ecosystem",
+    "title": "Two Networks.<br/><g>One Mission.</g>",
+    "sub": "KDCharité bridges the intersection of commerce and faith — turning routine transactions into recurring acts of generosity.",
+    "tabFuel": "The Fuel Network",
+    "tabFaith": "The Faith Network",
+    "fuel": {
+      "heading": "Frictionless giving at the pump — no app, no wallet.",
+      "body": "When drivers pay at a KDCharité-integrated terminal, a single screen prompt asks: <em>\"Add 2% to help your community?\"</em> One tap. Done. The micro-donation is processed with the transaction — transparent, instant, and verifiable on our public ledger.",
+      "features": [
+        { "title": "Real-Time POS Integration", "desc": "Native SDK embedded in major pump management systems — no hardware changes needed." },
+        { "title": "Zero-Fee Model", "desc": "100% of every 2% reaches the community fund. KDCharité operations are grant-funded." },
+        { "title": "Monthly Impact Reports", "desc": "Every participating station receives a branded impact summary for community display." }
+      ],
+      "livePartners": "Live Partner Stations",
+      "active": "{{count}} Active",
+      "legendActive": "Active",
+      "legendOnboarding": "Onboarding"
+    },
+    "faith": {
+      "heading": "Amplifying ancient generosity with modern accountability.",
+      "body": "Traditional tithing is powerful — but often opaque. KDCharité gives every congregation a digital platform to collect, allocate, and publicly report exactly how their community's faith-giving flows into tangible local outcomes. Members see the full story.",
+      "features": [
+        { "title": "Digital Tithe Portal", "desc": "Mobile-friendly giving pages, QR codes, and Sunday offering digitization — all under your church brand." },
+        { "title": "Donor Impact Dashboard", "desc": "Every congregant has a personal dashboard showing exactly how their giving has moved the needle." },
+        { "title": "Compliance & Trust Layer", "desc": "Automated 990-ready reporting. Auditable by your board, your donors, and the public." }
+      ],
+      "partnerCommunities": "Partner Faith Communities",
+      "members": "members",
+      "raisedYTD": "raised YTD",
+      "moreCommunities": "+ 307 more communities",
+      "join": "Join the network"
+    }
+  },
+  "denominations": {
+    "Catholic": "Catholic",
+    "Methodist": "Methodist",
+    "Pentecostal": "Pentecostal",
+    "Kimbanguist": "Kimbanguist",
+    "Evangelical": "Evangelical"
+  },
+  "ledger": {
+    "badge": "Transparency Ledger",
+    "title": "Every Cent, <g>Publicly Visible</g>",
+    "sub": "Radical transparency isn't a feature — it's our foundation. Watch the network breathe in real time.",
+    "url": "kdcharite.org / live-ledger",
+    "liveStream": "LIVE STREAM",
+    "colType": "Type",
+    "colSource": "Source",
+    "colLocation": "Location",
+    "colAmount": "Amount",
+    "colTime": "Time",
+    "optIn": "2% Opt-in",
+    "tithe": "Weekly Tithe",
+    "footerNote": "Showing latest transactions · All amounts verified on-chain",
+    "fullLedger": "Full ledger",
+    "justNow": "just now",
+    "minAgo": "{{count}} min ago",
+    "hourAgo": "{{count}}h ago",
+    "trust": [
+      { "label": "Audited Annually", "sub": "Independent CPA review" },
+      { "label": "256-bit Encrypted", "sub": "Bank-grade security" },
+      { "label": "501(c)(3) Registered", "sub": "EIN 88-0123456" }
+    ]
+  },
+  "testimonials": {
+    "badge": "Stories",
+    "title": "Generosity, <g>in their words</g>",
+    "sub": "Drivers, pastors, station owners, and neighbors — the people who make and feel the 2%.",
+    "next": "Next",
+    "prev": "Previous",
+    "goToStory": "Go to story {{n}}",
+    "items": [
+      { "quote": "I never used to give — I always meant to, but the moment never came. Now every time I fill up, I give. It's automatic, it's tiny, and somehow it adds up to something I'm proud of.", "role": "Daily commuter, Kampemba" },
+      { "quote": "Our congregation could never see where the offering went. With KDCharité, every member opens their phone and watches their tithe turn into clinic visits two streets over. Trust changed everything.", "role": "Nouvelle Cité de David" },
+      { "quote": "As a station owner I worried it would slow the line. It added zero seconds. My customers love seeing our station on the public board — it became the thing the neighborhood talks about.", "role": "Owner, TotalEnergies #402" },
+      { "quote": "The mobile clinic that KDCharité funds caught my daughter's pneumonia early. Two cents at a time, from people I'll never meet, kept her healthy. I cry thinking about it.", "role": "Community member, Ruashi" }
+    ]
+  },
+  "impactShowcase": {
+    "badge": "Verified Outcomes",
+    "title": "The numbers behind <g>the mission</g>",
+    "sub": "Every figure below is reconciled against our public ledger and independently audited each year.",
+    "metrics": ["Meals served", "Liters of clean water", "Clinic visits funded", "Trees planted"],
+    "quote": "\"We measure success not in dollars raised, but in <eb>meals served, wells dug, and clinics opened</eb> — and we let anyone check our math.\"",
+    "attribution": "— KDCharité 2025 Impact Report"
+  },
+  "timeline": {
+    "badge": "Our Journey",
+    "title": "From one pump to <g>a movement</g>",
+    "sub": "Four years of compounding 2-cent gifts. Here's how the network grew.",
+    "items": [
+      { "title": "The first 2%", "body": "KDCharité launches with three pilot stations and one partner church in a single metro neighborhood." },
+      { "title": "The ledger goes public", "body": "We open-source the transparency ledger. Donations cross $250K as 40 stations join the network." },
+      { "title": "Faith network forms", "body": "The digital tithe portal launches; 120 congregations digitize their giving in the first quarter." },
+      { "title": "City-scale", "body": "1,800+ stations and 300+ churches across 28 metro regions. The fund clears $1M raised." },
+      { "title": "Open platform", "body": "KDCharité opens its API so any merchant or cause can plug into the micro-donation rail." }
+    ]
+  },
+  "team": {
+    "badge": "The People",
+    "title": "Builders of the <g>2% movement</g>",
+    "sub": "A small team obsessed with removing every gram of friction between intention and impact.",
+    "members": [
+      { "role": "Founder & Executive Director", "bio": "Former community health organizer who believed generosity just needed less friction." },
+      { "role": "Head of Engineering", "bio": "Built the public ledger and the POS integration SDK from the ground up." },
+      { "role": "Director of Partnerships", "bio": "Brings the fuel networks and faith communities to the same table." },
+      { "role": "Head of Impact & Reporting", "bio": "Turns raw donation flows into verified, neighborhood-level outcomes." }
+    ]
+  },
+  "faq": {
+    "badgeQuestions": "Questions",
+    "badgeAnswers": "Answers",
+    "title": "Everything you <g>might ask</g>",
+    "sub": "Transparency starts with answering the hard questions plainly.",
+    "items": [
+      { "q": "Is the 2% mandatory?", "a": "Never. It is always opt-in, prompted once per transaction with a single tap. Drivers can decline with no penalty and no nagging." },
+      { "q": "Where does my money actually go?", "a": "100% of every donation reaches the community fund — KDCharité's own operations are grant-funded. The fund is allocated monthly to independently vetted local programs, and every cent is traceable on our public ledger." },
+      { "q": "How do I know it's real?", "a": "Each donation is hashed and written to a public, append-only ledger the moment it settles. We undergo an annual independent CPA audit and publish 990-ready reports anyone can inspect." },
+      { "q": "Can my church join?", "a": "Yes. Any congregation can request access to the digital tithe portal — mobile giving pages, QR codes, and a per-member impact dashboard, all under your own brand. Onboarding takes under a week." },
+      { "q": "Is my donation tax-deductible?", "a": "KDCharité is a registered 501(c)(3). Donations are tax-deductible to the extent permitted by law, and you receive an annual consolidated receipt." },
+      { "q": "What does it cost a fuel station to participate?", "a": "Nothing. The SDK embeds into major pump management systems with no hardware changes, and there are no fees. Stations receive a branded monthly impact report for community display." }
+    ]
+  },
+  "cta": {
+    "donateTitle": "Give once. <g>Change a block.</g>",
+    "donateBody": "Not a driver in our network? You can still fuel the fund directly. 100% reaches the community — tracked on the same public ledger.",
+    "donateNow": "Donate ${{amount}} now",
+    "partnerTitle": "Bring the 2% to your city",
+    "partnerBody": "Run a station or lead a congregation? Join the waitlist and we'll help you onboard in under a week — no hardware, no fees.",
+    "emailPlaceholder": "you@organization.org",
+    "requestAccess": "Request Access",
+    "noSpam": "No spam. We email about onboarding, nothing else.",
+    "subscribed": "You're on the list — we'll be in touch soon."
+  },
+  "crossCTA": {
+    "title": "Ready to turn small change into big change?",
+    "sub": "Join the network in under a week — no app, no hardware, no fees.",
+    "primary": "Start Giving",
+    "secondary": "See the programs"
+  },
+  "footer": {
+    "tagline": "Turning the world's everyday transactions into a continuous engine of community relief — 2 cents at a time, at scale.",
+    "colPrograms": "Programs",
+    "colPartners": "Partners",
+    "colOrganization": "Organization",
+    "programsLinks": ["Fuel Network", "Faith Network", "Community Grants", "Impact Reports", "Apply for Funding"],
+    "partnersLinks": ["Fuel Station Partners", "Church Partners", "Corporate Partners", "Become a Partner", "Partner Portal"],
+    "organizationLinks": ["About KDCharité", "Leadership Team", "Annual Report", "Press & Media", "Careers"],
+    "copyright": "© {{year}} KDCharité, Inc. All rights reserved. · Registered 501(c)(3) · EIN 88-0123456",
+    "legal": ["Privacy Policy", "Terms of Service", "Cookie Policy", "Accessibility"],
+    "disclaimer": "Disclaimer: KDCharité operates as a registered 501(c)(3) nonprofit. All fuel station 2% opt-in programs are subject to participating merchant agreements. Donations are non-refundable and tax-deductible to the extent permitted by law. Individual impact equivalencies are illustrative estimates based on program average costs. Past performance of community impact does not guarantee future results."
+  },
+  "pages": {
+    "home": { "docTitle": "Small Changes. Massive Impact." },
+    "howItWorks": {
+      "docTitle": "How It Works",
+      "badge": "The Mechanism",
+      "title": "One tap at the pump, <g>city-wide relief</g>",
+      "sub": "No app. No account. No friction. Here's exactly how a 2% opt-in becomes a meal, a clinic visit, or a well — and how to picture your own impact.",
+      "ctaTitle": "Curious where the money lands?",
+      "ctaSub": "Every cent is traceable on our public, real-time ledger.",
+      "ctaPrimary": "See live impact",
+      "ctaSecondary": "Give now"
+    },
+    "programs": {
+      "docTitle": "Programs",
+      "badge": "Our Programs",
+      "title": "Two networks, <g>one mission</g>",
+      "sub": "KDCharité bridges commerce and faith — turning routine fuel purchases and Sunday offerings into a single, transparent engine of community relief.",
+      "ctaTitle": "Run a station or lead a congregation?",
+      "ctaSub": "Onboard your community to the network in under a week.",
+      "ctaPrimary": "Partner with us",
+      "ctaSecondary": "Meet the team"
+    },
+    "impact": {
+      "docTitle": "Impact",
+      "badge": "Radical Transparency",
+      "title": "Every cent, <g>publicly visible</g>",
+      "sub": "We measure success in meals served, wells dug, and clinics opened — and we let anyone check our math, in real time.",
+      "ctaTitle": "Want to add your transaction to the ledger?",
+      "ctaSub": "Give directly, or bring the 2% to your own city.",
+      "ctaPrimary": "Donate now",
+      "ctaSecondary": "Read the stories"
+    },
+    "stories": {
+      "docTitle": "Stories",
+      "badge": "Voices",
+      "title": "Generosity, <g>in their words</g>",
+      "sub": "Drivers, pastors, station owners, and neighbors — the people who make and feel the 2% every single day.",
+      "ctaTitle": "Add your own story to the movement",
+      "ctaSub": "It starts with a single tap at the pump.",
+      "ctaPrimary": "Start giving",
+      "ctaSecondary": "How it works"
+    },
+    "about": {
+      "docTitle": "About",
+      "badge": "Who We Are",
+      "title": "Removing the friction <g>between intention and impact</g>",
+      "sub": "Most people want to give. KDCharité is a registered 501(c)(3) built on one belief: generosity just needs to be easier, and trust needs to be earned in public.",
+      "ctaTitle": "Build the 2% movement with us",
+      "ctaSub": "Whether you give, partner, or join the team — there's a place for you.",
+      "ctaPrimary": "Get involved",
+      "ctaSecondary": "Read the FAQ"
+    },
+    "faq": {
+      "docTitle": "FAQ",
+      "badge": "Answers",
+      "title": "Everything you <g>might ask</g>",
+      "sub": "Transparency starts with answering the hard questions plainly. Still curious? Reach us at impact@kdcharite.org.",
+      "ctaTitle": "Didn't find your answer?",
+      "ctaSub": "Our team is happy to walk you through anything before you commit.",
+      "ctaPrimary": "Talk to us",
+      "ctaSecondary": "Explore programs"
+    },
+    "donate": {
+      "docTitle": "Donate & Partner",
+      "badge": "Get Involved",
+      "title": "Give once. <g>Change a block.</g>",
+      "sub": "Donate directly to the community fund, or bring the 2% to your own city as a station or congregation. 100% reaches the community — tracked on the same public ledger."
+    },
+    "notFound": {
+      "docTitle": "Page Not Found",
+      "heading": "This page took a wrong turn",
+      "body": "The page you're looking for isn't here — but the mission still is. Let's get you back on the road.",
+      "backHome": "Back home"
+    }
+  },
+  "page": {
+    "defaultTitle": "KDCharité — Small Changes. Massive Impact."
+  }
+}

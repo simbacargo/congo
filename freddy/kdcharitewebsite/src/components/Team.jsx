@@ -1,20 +1,23 @@
 import { Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { RevealGroup, Reveal, fadeUp } from '../lib/anim.jsx';
 import { TEAM } from '../data.js';
-import { SectionHeader } from './ui.jsx';
+import { SectionHeader, Rich } from './ui.jsx';
 
 export default function Team() {
+  const { t } = useTranslation();
+  const members = t('team.members', { returnObjects: true });
   return (
     <section id="team" className="py-28 px-4">
       <div className="max-w-6xl mx-auto">
         <SectionHeader
-          badge="The People"
+          badge={t('team.badge')}
           badgeIcon={Users}
-          title={<>Builders of the <span className="text-gradient">2% movement</span></>}
-          sub="A small team obsessed with removing every gram of friction between intention and impact."
+          title={<Rich k="team.title" />}
+          sub={t('team.sub')}
         />
         <RevealGroup gap={0.1} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {TEAM.map((p) => (
+          {TEAM.map((p, i) => (
             <Reveal
               key={p.name}
               variants={fadeUp}
@@ -25,8 +28,8 @@ export default function Team() {
                 {p.avatar}
               </div>
               <h3 className="text-base font-bold text-white">{p.name}</h3>
-              <div className="text-xs text-emerald-400 font-semibold mb-3">{p.role}</div>
-              <p className="text-xs text-white/45 leading-relaxed">{p.bio}</p>
+              <div className="text-xs text-emerald-400 font-semibold mb-3">{members[i].role}</div>
+              <p className="text-xs text-white/45 leading-relaxed">{members[i].bio}</p>
             </Reveal>
           ))}
         </RevealGroup>

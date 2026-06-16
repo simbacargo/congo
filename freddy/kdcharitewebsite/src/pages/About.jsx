@@ -1,27 +1,29 @@
 import { Heart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Page, { PageHero } from '../components/Page.jsx';
 import Mission from '../components/Mission.jsx';
 import Timeline from '../components/Timeline.jsx';
 import Team from '../components/Team.jsx';
-import { CrossCTA } from '../components/ui.jsx';
+import { CrossCTA, Rich } from '../components/ui.jsx';
 
 export default function About() {
+  const { t } = useTranslation();
   return (
-    <Page title="About">
+    <Page title={t('pages.about.docTitle')}>
       <PageHero
-        badge="Who We Are"
+        badge={t('pages.about.badge')}
         badgeIcon={Heart}
-        title={<>Removing the friction <span className="text-gradient">between intention and impact</span></>}
-        sub="Most people want to give. KDCharité is a registered 501(c)(3) built on one belief: generosity just needs to be easier, and trust needs to be earned in public."
+        title={<Rich k="pages.about.title" />}
+        sub={t('pages.about.sub')}
       />
       <Mission />
       <Timeline />
       <Team />
       <CrossCTA
-        title="Build the 2% movement with us"
-        sub="Whether you give, partner, or join the team — there's a place for you."
-        primary={{ to: '/donate', label: 'Get involved' }}
-        secondary={{ to: '/faq', label: 'Read the FAQ' }}
+        title={t('pages.about.ctaTitle')}
+        sub={t('pages.about.ctaSub')}
+        primary={{ to: '/donate', label: t('pages.about.ctaPrimary') }}
+        secondary={{ to: '/faq', label: t('pages.about.ctaSecondary') }}
       />
     </Page>
   );

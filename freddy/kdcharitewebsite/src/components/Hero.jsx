@@ -5,6 +5,7 @@ import {
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSpring as useRSpring, animated } from '@react-spring/web';
+import { Trans, useTranslation } from 'react-i18next';
 import { useGsap, gsap, SpringNumber, stagger, fadeUp } from '../lib/anim.jsx';
 
 // React-spring-animated router link, used by the magnetic CTA below.
@@ -13,23 +14,24 @@ const AnimatedLink = animated(Link);
 // ─── LIVE COUNTERS (React Spring physics numbers) ────────────────────────────
 
 function LiveCounters() {
+  const { t } = useTranslation();
   const [funds, setFunds]       = useState(1_284_532);
   const [churches, setChurches] = useState(312);
   const [stations, setStations] = useState(1_847);
 
   useEffect(() => {
-    const t = setInterval(() => {
+    const id = setInterval(() => {
       setFunds((f) => f + Math.floor(Math.random() * 85 + 15));
       if (Math.random() < 0.04) setChurches((c) => c + 1);
       if (Math.random() < 0.06) setStations((s) => s + 1);
     }, 1800);
-    return () => clearInterval(t);
+    return () => clearInterval(id);
   }, []);
 
   const stats = [
-    { label: 'Total Funds Raised', value: funds, icon: DollarSign, color: 'text-emerald-400', glow: 'rgba(16,185,129,0.25)', sub: 'Since January 2022', fmt: (n) => '$' + Math.round(n).toLocaleString() },
-    { label: 'Partner Churches', value: churches, icon: Church, color: 'text-amber-400', glow: 'rgba(251,191,36,0.22)', sub: 'Across 14 denominations', fmt: (n) => Math.round(n).toLocaleString() + '+' },
-    { label: 'Participating Stations', value: stations, icon: Fuel, color: 'text-emerald-300', glow: 'rgba(110,231,183,0.2)', sub: 'In 28 metro regions', fmt: (n) => Math.round(n).toLocaleString() },
+    { label: t('hero.stats.fundsLabel'), value: funds, icon: DollarSign, color: 'text-emerald-400', glow: 'rgba(16,185,129,0.25)', sub: t('hero.stats.fundsSub'), fmt: (n) => '$' + Math.round(n).toLocaleString() },
+    { label: t('hero.stats.churchesLabel'), value: churches, icon: Church, color: 'text-amber-400', glow: 'rgba(251,191,36,0.22)', sub: t('hero.stats.churchesSub'), fmt: (n) => Math.round(n).toLocaleString() + '+' },
+    { label: t('hero.stats.stationsLabel'), value: stations, icon: Fuel, color: 'text-emerald-300', glow: 'rgba(110,231,183,0.2)', sub: t('hero.stats.stationsSub'), fmt: (n) => Math.round(n).toLocaleString() },
   ];
 
   return (
@@ -54,7 +56,7 @@ function LiveCounters() {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs text-emerald-400 font-medium uppercase tracking-widest">Live</span>
+              <span className="text-xs text-emerald-400 font-medium uppercase tracking-widest">{t('hero.live')}</span>
             </div>
           </div>
           <div className={`text-3xl font-bold tracking-tight ${s.color} mb-1`}>
@@ -100,6 +102,7 @@ function MagneticButton({ children, to, className }) {
 // ─── HERO ────────────────────────────────────────────────────────────────────
 
 export default function Hero() {
+  const { t } = useTranslation();
   // GSAP: scroll parallax on the ambient orbs + ring, and a mouse-driven drift.
   const scope = useGsap((self, root) => {
     const orbs = self.selector('[data-orb]');
@@ -155,21 +158,21 @@ export default function Hero() {
           <motion.div variants={container} initial="hidden" animate="show">
             <motion.div variants={fadeUp} className="flex items-center gap-3 mb-8">
               <span className="glass-emerald rounded-full px-4 py-1.5 text-xs font-semibold text-emerald-400 uppercase tracking-widest">
-                A New Model of Giving
+                {t('hero.badge')}
               </span>
-              <span className="text-xs text-white/30">Est. 2022</span>
+              <span className="text-xs text-white/30">{t('hero.est')}</span>
             </motion.div>
 
             <motion.h1 variants={fadeUp} className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6">
-              Small Changes.<br />
-              <span className="text-gradient-anim">Massive Impact.</span>
+              {t('hero.titleA')}<br />
+              <span className="text-gradient-anim">{t('hero.titleB')}</span>
             </motion.h1>
 
             <motion.p variants={fadeUp} className="text-xl text-white/55 leading-relaxed mb-4 max-w-lg">
-              Turning everyday fuel purchases and Sunday offerings into city-wide community relief — through a seamless 2% micro-donation at the point of sale.
+              {t('hero.lead')}
             </motion.p>
             <motion.p variants={fadeUp} className="text-sm text-white/35 leading-relaxed mb-10 max-w-md">
-              Zero friction. Full transparency. Powered by churches, fuel stations, and the quiet generosity of ordinary people.
+              {t('hero.sub')}
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4 mb-14">
@@ -178,14 +181,14 @@ export default function Hero() {
                 className="group flex items-center gap-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-7 py-3.5 rounded-2xl shadow-xl shadow-emerald-900/50 cursor-pointer"
               >
                 <Heart size={17} fill="currentColor" />
-                Start Giving
+                {t('hero.startGiving')}
                 <ChevronRight size={15} className="group-hover:translate-x-1 transition-transform" />
               </MagneticButton>
               <Link
                 to="/how-it-works"
                 className="flex items-center gap-2.5 glass hover:border-emerald-500/40 text-white font-semibold px-7 py-3.5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
               >
-                How It Works
+                {t('hero.howItWorks')}
                 <ChevronDown size={15} />
               </Link>
             </motion.div>
@@ -193,11 +196,11 @@ export default function Hero() {
             <motion.div variants={fadeUp}>
               <div className="flex items-center gap-3 text-xs text-white/25 mb-3">
                 <span className="h-px flex-1 bg-white/[0.08]" />
-                <span>Trusted by</span>
+                <span>{t('hero.trustedBy')}</span>
                 <span className="h-px flex-1 bg-white/[0.08]" />
               </div>
               <div className="flex items-center gap-6 flex-wrap">
-                {['Shell', 'BP', 'TotalEnergies', 'Chevron', 'ExxonMobil', 'Valero'].map((brand) => (
+                {['TotalEnergies', 'Engen', 'Puma Energy', 'Cobil', 'SEP Congo', 'Mining Oil'].map((brand) => (
                   <span key={brand} className="text-xs font-bold text-white/20 tracking-widest uppercase whitespace-nowrap">
                     {brand}
                   </span>
@@ -220,9 +223,12 @@ export default function Hero() {
                   <Sparkles size={20} className="text-amber-400" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-white mb-1">The 2% Principle</div>
+                  <div className="text-sm font-bold text-white mb-1">{t('hero.principleTitle')}</div>
                   <p className="text-xs text-white/45 leading-relaxed">
-                    If just 10,000 drivers in a metro area donate 2% of their weekly $60 fill-up, that's <span className="text-emerald-400 font-semibold">$624,000 per year</span> — enough to feed 3,000 families for an entire month.
+                    <Trans
+                      i18nKey="hero.principleBody"
+                      components={{ e: <span className="text-emerald-400 font-semibold" /> }}
+                    />
                   </p>
                 </div>
               </div>
@@ -236,7 +242,7 @@ export default function Hero() {
         transition={{ repeat: Infinity, duration: 2 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <span className="text-xs text-white/25 tracking-widest uppercase">Scroll to explore</span>
+        <span className="text-xs text-white/25 tracking-widest uppercase">{t('hero.scroll')}</span>
         <ChevronDown size={16} className="text-white/25" />
       </motion.div>
     </section>

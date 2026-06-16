@@ -2,17 +2,20 @@ import { useState, useEffect } from 'react';
 import { Heart, Menu, X } from 'lucide-react';
 import { NavLink, Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher.jsx';
 
 const LINKS = [
-  { label: 'How It Works', to: '/how-it-works' },
-  { label: 'Programs',     to: '/programs' },
-  { label: 'Impact',       to: '/impact' },
-  { label: 'Stories',      to: '/stories' },
-  { label: 'About',        to: '/about' },
-  { label: 'FAQ',          to: '/faq' },
+  { key: 'howItWorks', to: '/how-it-works' },
+  { key: 'programs',   to: '/programs' },
+  { key: 'impact',     to: '/impact' },
+  { key: 'stories',    to: '/stories' },
+  { key: 'about',      to: '/about' },
+  { key: 'faq',        to: '/faq' },
 ];
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -67,7 +70,7 @@ export default function Navbar() {
             >
               {({ isActive }) => (
                 <>
-                  {l.label}
+                  {t(`nav.${l.key}`)}
                   <span
                     className={`absolute -bottom-1 left-0 h-px bg-emerald-400 transition-all duration-300 ${
                       isActive ? 'w-full' : 'w-0 group-hover:w-full'
@@ -80,26 +83,30 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher />
           <Link to="/donate" className="text-sm text-white/60 hover:text-white transition-colors px-4 py-2">
-            Partner With Us
+            {t('nav.partner')}
           </Link>
           <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}>
             <Link
               to="/donate"
               className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-5 py-2 rounded-xl shadow-lg shadow-emerald-900/40"
             >
-              <Heart size={13} fill="currentColor" /> Donate Now
+              <Heart size={13} fill="currentColor" /> {t('nav.donateNow')}
             </Link>
           </motion.div>
         </div>
 
-        <button
-          className="md:hidden text-white/60 hover:text-white"
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="flex items-center gap-1 md:hidden">
+          <LanguageSwitcher compact />
+          <button
+            className="text-white/60 hover:text-white p-1"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={t('nav.toggleMenu')}
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -126,7 +133,7 @@ export default function Navbar() {
                       `block text-sm py-2.5 ${isActive ? 'text-emerald-400' : 'text-white/70 hover:text-white'}`
                     }
                   >
-                    {l.label}
+                    {t(`nav.${l.key}`)}
                   </NavLink>
                 </motion.div>
               ))}
@@ -135,7 +142,7 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl w-fit mt-3"
               >
-                <Heart size={13} fill="currentColor" /> Donate Now
+                <Heart size={13} fill="currentColor" /> {t('nav.donateNow')}
               </Link>
             </div>
           </motion.div>

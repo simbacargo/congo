@@ -1,23 +1,25 @@
 import { HelpCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Page, { PageHero } from '../components/Page.jsx';
 import FAQ from '../components/FAQ.jsx';
-import { CrossCTA } from '../components/ui.jsx';
+import { CrossCTA, Rich } from '../components/ui.jsx';
 
 export default function FAQPage() {
+  const { t } = useTranslation();
   return (
-    <Page title="FAQ">
+    <Page title={t('pages.faq.docTitle')}>
       <PageHero
-        badge="Answers"
+        badge={t('pages.faq.badge')}
         badgeIcon={HelpCircle}
-        title={<>Everything you <span className="text-gradient">might ask</span></>}
-        sub="Transparency starts with answering the hard questions plainly. Still curious? Reach us at impact@kdcharite.org."
+        title={<Rich k="pages.faq.title" />}
+        sub={t('pages.faq.sub')}
       />
       <FAQ showHeader={false} />
       <CrossCTA
-        title="Didn't find your answer?"
-        sub="Our team is happy to walk you through anything before you commit."
-        primary={{ to: '/donate', label: 'Talk to us' }}
-        secondary={{ to: '/programs', label: 'Explore programs' }}
+        title={t('pages.faq.ctaTitle')}
+        sub={t('pages.faq.ctaSub')}
+        primary={{ to: '/donate', label: t('pages.faq.ctaPrimary') }}
+        secondary={{ to: '/programs', label: t('pages.faq.ctaSecondary') }}
       />
     </Page>
   );
