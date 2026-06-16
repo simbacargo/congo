@@ -1,0 +1,13 @@
+import { chromium } from '@playwright/test';
+const errors = [];
+const browser = await chromium.launch({ args: ['--use-gl=angle','--use-angle=swiftshader','--enable-webgl','--ignore-gpu-blocklist'] });
+const page = await browser.newPage();
+page.on('console', m => { if (m.type()==='error') errors.push('console: '+m.text()); });
+page.on('pageerror', e => errors.push('pageerror: '+e.message));
+await page.goto('http://localhost:4173/', { waitUntil: 'networkidle' });
+await page.evaluate(() => document.querySelector('#network')?.scrollIntoView());
+await page.waitForTimeout(2500);
+const hasCanvas = await page.evaluate(() => !!document.querySelector('#network canvas'));
+console.log('canvas mounted in #network:', hasCanvas);
+console.log('errors:', errors.length ? JSON.stringify(errors, null, 2) : 'none');
+await browser.close();
