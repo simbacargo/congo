@@ -5,9 +5,9 @@ import { SectionHeader, Rich } from './ui.jsx';
 
 // Visual style per pillar; titles/descriptions come from mission.pillars[i].
 const PILLAR_STYLES = [
-  { icon: Fuel,      color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+  { icon: Fuel,      color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' },
   { icon: Church,    color: 'text-amber-400',   bg: 'bg-amber-500/10 border-amber-500/20' },
-  { icon: HandHeart, color: 'text-emerald-300', bg: 'bg-emerald-400/10 border-emerald-400/20' },
+  { icon: HandHeart, color: 'text-red-300', bg: 'bg-red-400/10 border-red-400/20' },
   { icon: Globe,     color: 'text-amber-300',   bg: 'bg-amber-400/10 border-amber-400/20' },
 ];
 
@@ -27,7 +27,7 @@ export default function Mission() {
               key={i}
               variants={scaleIn}
               whileHover={{ y: -6 }}
-              className="glass rounded-2xl p-6 group hover:border-emerald-500/25 transition-colors duration-300"
+              className="glass rounded-2xl p-6 group hover:border-red-500/25 transition-colors duration-300"
             >
               <div className={`w-11 h-11 rounded-xl border ${p.bg} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
                 <p.icon size={20} className={p.color} />

@@ -14,7 +14,7 @@ import { SectionHeader, Rich } from './ui.jsx';
 //   • GSAP/ScrollT. — scrubs the globe's spin + scale across the section scroll
 //   • Framer Motion — reveals the canvas + heading on enter (see <Reveal>/motion)
 
-const EMERALD = new THREE.Color('#34d399');
+const BRAND = new THREE.Color('#f87171');
 const AMBER = new THREE.Color('#fbbf24');
 const RADIUS = 100;
 
@@ -68,13 +68,13 @@ function arcPoints(a, b, lift = 0.25, segments = 48) {
 function buildGlobe(reduced) {
   const group = new THREE.Group();
 
-  // — Point cloud — mostly emerald, a scatter of amber "hub" nodes.
+  // — Point cloud — mostly red, a scatter of amber "hub" nodes.
   const surface = fibonacciSphere(2600, RADIUS);
   const positions = new Float32Array(surface.length * 3);
   const colors = new Float32Array(surface.length * 3);
   surface.forEach((p, i) => {
     positions.set([p.x, p.y, p.z], i * 3);
-    const c = Math.random() < 0.12 ? AMBER : EMERALD;
+    const c = Math.random() < 0.12 ? AMBER : BRAND;
     colors.set([c.r, c.g, c.b], i * 3);
   });
   const geo = new THREE.BufferGeometry();
@@ -92,11 +92,11 @@ function buildGlobe(reduced) {
   });
   group.add(new THREE.Points(geo, mat));
 
-  // — Wireframe shell — a faint emerald sphere for volume behind the dots.
+  // — Wireframe shell — a faint red sphere for volume behind the dots.
   const shell = new THREE.Mesh(
     new THREE.IcosahedronGeometry(RADIUS * 0.985, 3),
     new THREE.MeshBasicMaterial({
-      color: EMERALD,
+      color: BRAND,
       wireframe: true,
       transparent: true,
       opacity: 0.04,
@@ -113,7 +113,7 @@ function buildGlobe(reduced) {
     const pts = arcPoints(a, b, 0.18 + Math.random() * 0.22);
     const ag = new THREE.BufferGeometry().setFromPoints(pts);
     const am = new THREE.LineBasicMaterial({
-      color: Math.random() < 0.5 ? EMERALD : AMBER,
+      color: Math.random() < 0.5 ? BRAND : AMBER,
       transparent: true,
       opacity: 0.55,
       blending: THREE.AdditiveBlending,
@@ -243,7 +243,7 @@ export default function Globe() {
 
   return (
     <section id="network" className="relative py-28 px-4 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/15 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/15 to-transparent pointer-events-none" />
       <div className="max-w-6xl mx-auto relative">
         <SectionHeader
           badge={t('globe.badge')}
@@ -274,7 +274,7 @@ export default function Globe() {
             className="absolute bottom-5 left-5 flex flex-wrap items-center gap-4 text-xs pointer-events-none"
           >
             <span className="flex items-center gap-2 text-white/55">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+              <span className="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.9)]" />
               {t('globe.stations')}
             </span>
             <span className="flex items-center gap-2 text-white/55">
@@ -282,7 +282,7 @@ export default function Globe() {
               {t('globe.congregations')}
             </span>
             <span className="flex items-center gap-2 text-white/40">
-              <Sparkles size={12} className="text-emerald-400" /> {t('globe.motion')}
+              <Sparkles size={12} className="text-red-400" /> {t('globe.motion')}
             </span>
           </motion.div>
         </motion.div>

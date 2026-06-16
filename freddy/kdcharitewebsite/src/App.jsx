@@ -40,7 +40,7 @@ export default function App() {
     // MotionConfig honours the user's OS-level reduced-motion preference for
     // every Framer Motion animation in the tree.
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen bg-[#0a0f0d]">
+      <div className="min-h-screen bg-[#0f0a0a]">
         <ScrollManager />
         <Navbar />
         <AnimatedRoutes />

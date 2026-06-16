@@ -66,9 +66,9 @@ export const CHURCHES = [
 
 // How-it-works steps — copy comes from howItWorks.steps[i]; accent is style only.
 export const STEPS = [
-  { n: '01', accent: 'emerald' },
+  { n: '01', accent: 'red' },
   { n: '02', accent: 'amber' },
-  { n: '03', accent: 'emerald' },
+  { n: '03', accent: 'red' },
   { n: '04', accent: 'amber' },
 ];
 

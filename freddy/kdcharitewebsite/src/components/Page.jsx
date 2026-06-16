@@ -49,11 +49,11 @@ export default function Page({ title, children }) {
 export function PageHero({ badge, badgeIcon, badgeTone, title, sub, children }) {
   return (
     <section className="relative pt-40 pb-16 px-4 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/30 via-slate-950 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-red-950/30 via-slate-950 to-transparent" />
       <motion.div
         animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.55, 0.3] }}
         transition={{ repeat: Infinity, duration: 9 }}
-        className="absolute -top-10 left-1/2 -translate-x-1/2 w-[36rem] h-72 bg-emerald-600/15 rounded-full blur-[120px] pointer-events-none"
+        className="absolute -top-10 left-1/2 -translate-x-1/2 w-[36rem] h-72 bg-red-600/15 rounded-full blur-[120px] pointer-events-none"
       />
       <div className="relative max-w-4xl mx-auto text-center">
         {badge && (

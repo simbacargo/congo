@@ -23,11 +23,11 @@ export default function CTA() {
 
   return (
     <section id="donate" className="py-28 px-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/40 via-slate-950 to-amber-950/20" />
+      <div className="absolute inset-0 bg-gradient-to-br from-red-950/40 via-slate-950 to-amber-950/20" />
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
         transition={{ repeat: Infinity, duration: 7 }}
-        className="absolute -top-20 left-1/3 w-96 h-96 bg-emerald-600/15 rounded-full blur-[130px]"
+        className="absolute -top-20 left-1/3 w-96 h-96 bg-red-600/15 rounded-full blur-[130px]"
       />
 
       <div className="max-w-5xl mx-auto relative grid lg:grid-cols-2 gap-8 items-stretch">
@@ -37,9 +37,9 @@ export default function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="glass-emerald rounded-3xl p-8 md:p-10 border-glow flex flex-col"
+          className="glass-red rounded-3xl p-8 md:p-10 border-glow flex flex-col"
         >
-          <Heart size={28} className="text-emerald-400 mb-5" fill="currentColor" />
+          <Heart size={28} className="text-red-400 mb-5" fill="currentColor" />
           <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight mb-3">
             <Rich k="cta.donateTitle" />
           </h2>
@@ -57,7 +57,7 @@ export default function CTA() {
                 }`}
               >
                 {amount === a && (
-                  <motion.span layoutId="amt" className="absolute inset-0 rounded-xl bg-emerald-600 shadow-lg shadow-emerald-900/50" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
+                  <motion.span layoutId="amt" className="absolute inset-0 rounded-xl bg-red-600 shadow-lg shadow-red-900/50" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
                 )}
                 <span className="relative z-10">${a}</span>
               </button>
@@ -66,7 +66,7 @@ export default function CTA() {
 
           <a
             href="#"
-            className="mt-auto group flex items-center justify-center gap-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-7 py-4 rounded-2xl transition-all shadow-xl shadow-emerald-900/50 hover:-translate-y-0.5"
+            className="mt-auto group flex items-center justify-center gap-2.5 bg-red-600 hover:bg-red-500 text-white font-bold px-7 py-4 rounded-2xl transition-all shadow-xl shadow-red-900/50 hover:-translate-y-0.5"
           >
             <Heart size={17} fill="currentColor" />
             <animated.span>{n.to((v) => t('cta.donateNow', { amount: Math.round(v) }))}</animated.span>
@@ -95,7 +95,7 @@ export default function CTA() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mt-auto flex items-center gap-3 glass-emerald rounded-2xl px-5 py-4 text-emerald-400"
+              className="mt-auto flex items-center gap-3 glass-red rounded-2xl px-5 py-4 text-red-400"
             >
               <CheckCircle2 size={20} />
               <span className="text-sm font-semibold">{t('cta.subscribed')}</span>

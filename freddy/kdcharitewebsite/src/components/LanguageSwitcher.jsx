@@ -34,7 +34,7 @@ export default function LanguageSwitcher({ compact = false }) {
         aria-haspopup="listbox"
         aria-expanded={open}
         className={`flex items-center gap-1.5 text-white/60 hover:text-white transition-colors ${
-          compact ? 'text-sm py-2' : 'glass rounded-xl px-3 py-2 text-sm hover:border-emerald-500/40'
+          compact ? 'text-sm py-2' : 'glass rounded-xl px-3 py-2 text-sm hover:border-red-500/40'
         }`}
       >
         <Languages size={15} />
@@ -60,7 +60,7 @@ export default function LanguageSwitcher({ compact = false }) {
                   onClick={() => choose(l.code)}
                   className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                     l.code === current.code
-                      ? 'text-emerald-400 bg-emerald-500/10'
+                      ? 'text-red-400 bg-red-500/10'
                       : 'text-white/70 hover:text-white hover:bg-white/5'
                   }`}
                 >

@@ -17,11 +17,11 @@ export default function NotFound() {
   return (
     <Page title={t('pages.notFound.docTitle')}>
       <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-emerald-950/30 to-slate-950" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-red-950/30 to-slate-950" />
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
           transition={{ repeat: Infinity, duration: 8 }}
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-600/15 rounded-full blur-[120px]"
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-600/15 rounded-full blur-[120px]"
         />
         <div className="relative text-center max-w-lg">
           <motion.div
@@ -32,7 +32,7 @@ export default function NotFound() {
           >
             404
           </motion.div>
-          <Compass size={32} className="text-emerald-400 mx-auto mb-5 animate-float" />
+          <Compass size={32} className="text-red-400 mx-auto mb-5 animate-float" />
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">{t('pages.notFound.heading')}</h1>
           <p className="text-white/50 mb-8">
             {t('pages.notFound.body')}
@@ -40,7 +40,7 @@ export default function NotFound() {
           <div className="flex flex-wrap gap-3 justify-center mb-8">
             <Link
               to="/"
-              className="group flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-2xl transition-all shadow-lg shadow-emerald-900/50 hover:-translate-y-0.5"
+              className="group flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-6 py-3 rounded-2xl transition-all shadow-lg shadow-red-900/50 hover:-translate-y-0.5"
             >
               <Home size={16} /> {t('pages.notFound.backHome')}
               <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
@@ -51,7 +51,7 @@ export default function NotFound() {
               <Link
                 key={s.to}
                 to={s.to}
-                className="text-xs glass rounded-full px-4 py-2 text-white/60 hover:text-white hover:border-emerald-500/40 transition-colors"
+                className="text-xs glass rounded-full px-4 py-2 text-white/60 hover:text-white hover:border-red-500/40 transition-colors"
               >
                 {t(s.key)}
               </Link>

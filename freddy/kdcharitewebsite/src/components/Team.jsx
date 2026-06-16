@@ -22,13 +22,13 @@ export default function Team() {
               key={p.name}
               variants={fadeUp}
               whileHover={{ y: -6 }}
-              className="glass rounded-2xl p-6 text-center group hover:border-emerald-500/25 transition-colors"
+              className="glass rounded-2xl p-6 text-center group hover:border-red-500/25 transition-colors"
             >
-              <div className="w-20 h-20 rounded-2xl glass-emerald mx-auto flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-20 h-20 rounded-2xl glass-red mx-auto flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform">
                 {p.avatar}
               </div>
               <h3 className="text-base font-bold text-white">{p.name}</h3>
-              <div className="text-xs text-emerald-400 font-semibold mb-3">{members[i].role}</div>
+              <div className="text-xs text-red-400 font-semibold mb-3">{members[i].role}</div>
               <p className="text-xs text-white/45 leading-relaxed">{members[i].bio}</p>
             </Reveal>
           ))}

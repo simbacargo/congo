@@ -12,7 +12,7 @@ export default function Donate() {
       <PageHero
         badge={t('pages.donate.badge')}
         badgeIcon={Heart}
-        badgeTone="emerald"
+        badgeTone="red"
         title={<Rich k="pages.donate.title" />}
         sub={t('pages.donate.sub')}
       />

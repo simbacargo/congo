@@ -36,7 +36,7 @@ export default function Ledger({ showHeader = true }) {
 
   return (
     <section id="ledger" className="py-28 px-4 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/15 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/15 to-transparent pointer-events-none" />
       <div className="max-w-4xl mx-auto relative">
         {showHeader && (
           <SectionHeader
@@ -59,12 +59,12 @@ export default function Ledger({ showHeader = true }) {
               <div className="flex gap-1.5">
                 <span className="w-3 h-3 rounded-full bg-red-500/70" />
                 <span className="w-3 h-3 rounded-full bg-amber-500/70" />
-                <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
+                <span className="w-3 h-3 rounded-full bg-red-500/70" />
               </div>
               <span className="text-xs text-white/40 font-medium">{t('ledger.url')}</span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="flex items-center gap-2 text-xs text-red-400 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
               {t('ledger.liveStream')}
             </div>
           </div>
@@ -83,20 +83,20 @@ export default function Ledger({ showHeader = true }) {
                 <motion.div
                   key={entry.id}
                   layout
-                  initial={{ opacity: 0, height: 0, backgroundColor: 'rgba(16,185,129,0.10)' }}
-                  animate={{ opacity: 1, height: 'auto', backgroundColor: 'rgba(16,185,129,0)' }}
+                  initial={{ opacity: 0, height: 0, backgroundColor: 'rgba(239,68,68,0.10)' }}
+                  animate={{ opacity: 1, height: 'auto', backgroundColor: 'rgba(239,68,68,0)' }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                   className="grid grid-cols-12 items-center px-6 py-4 border-b border-white/5 hover:bg-white/[0.025]"
                 >
                   <div className="col-span-1">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${entry.type === 'fuel' ? 'bg-emerald-500/15 border border-emerald-500/25' : 'bg-amber-500/15 border border-amber-500/25'}`}>
-                      {entry.type === 'fuel' ? <Fuel size={13} className="text-emerald-400" /> : <Church size={13} className="text-amber-400" />}
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${entry.type === 'fuel' ? 'bg-red-500/15 border border-red-500/25' : 'bg-amber-500/15 border border-amber-500/25'}`}>
+                      {entry.type === 'fuel' ? <Fuel size={13} className="text-red-400" /> : <Church size={13} className="text-amber-400" />}
                     </div>
                   </div>
                   <div className="col-span-4 pl-1">
                     <div className="text-sm font-semibold text-white/90 leading-tight">{entry.source}</div>
-                    <div className={`text-[11px] font-medium mt-0.5 ${entry.type === 'fuel' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                    <div className={`text-[11px] font-medium mt-0.5 ${entry.type === 'fuel' ? 'text-red-500' : 'text-amber-500'}`}>
                       {entry.type === 'fuel' ? t('ledger.optIn') : t('ledger.tithe')}
                     </div>
                   </div>
@@ -105,7 +105,7 @@ export default function Ledger({ showHeader = true }) {
                     <span className="text-sm text-white/45 truncate">{entry.location}</span>
                   </div>
                   <div className="col-span-2 text-right">
-                    <span className={`text-sm font-bold ${entry.amount < 10 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    <span className={`text-sm font-bold ${entry.amount < 10 ? 'text-red-400' : 'text-amber-400'}`}>
                       +${entry.amount.toFixed(2)}
                     </span>
                   </div>
@@ -121,7 +121,7 @@ export default function Ledger({ showHeader = true }) {
 
           <div className="px-6 py-4 bg-white/[0.02] flex items-center justify-between">
             <span className="text-xs text-white/30">{t('ledger.footerNote')}</span>
-            <button className="text-xs text-emerald-400 font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+            <button className="text-xs text-red-400 font-semibold flex items-center gap-1 hover:gap-2 transition-all">
               {t('ledger.fullLedger')} <ArrowRight size={11} />
             </button>
           </div>
@@ -137,7 +137,7 @@ export default function Ledger({ showHeader = true }) {
               transition={{ delay: i * 0.1 }}
               className="glass rounded-xl p-4 flex items-center gap-3"
             >
-              <Icon size={18} className="text-emerald-400 flex-shrink-0" />
+              <Icon size={18} className="text-red-400 flex-shrink-0" />
               <div>
                 <div className="text-xs font-semibold text-white/80">{trust[i].label}</div>
                 <div className="text-[11px] text-white/35">{trust[i].sub}</div>

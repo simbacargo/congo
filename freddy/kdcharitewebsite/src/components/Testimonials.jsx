@@ -43,7 +43,7 @@ export default function Testimonials({ showHeader = true }) {
         )}
 
         <div className="relative glass rounded-3xl p-8 md:p-12 border-glow overflow-hidden min-h-[340px] flex flex-col">
-          <Quote size={120} className="absolute -top-4 -left-2 text-emerald-500/[0.05]" />
+          <Quote size={120} className="absolute -top-4 -left-2 text-red-500/[0.05]" />
 
           <div className="relative flex-1 flex items-center">
             <AnimatePresence custom={dir} mode="wait">
@@ -68,7 +68,7 @@ export default function Testimonials({ showHeader = true }) {
                   "{story.quote}"
                 </p>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl glass-emerald flex items-center justify-center text-2xl">{person.avatar}</div>
+                  <div className="w-12 h-12 rounded-2xl glass-red flex items-center justify-center text-2xl">{person.avatar}</div>
                   <div>
                     <div className="text-sm font-bold text-white">{person.name}</div>
                     <div className="text-xs text-white/45">{story.role}</div>
@@ -85,7 +85,7 @@ export default function Testimonials({ showHeader = true }) {
                   key={i}
                   onClick={() => setState([i, i > index ? 1 : -1])}
                   aria-label={t('testimonials.goToStory', { n: i + 1 })}
-                  className={`h-2 rounded-full transition-all duration-300 ${i === index ? 'w-8 bg-emerald-400' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+                  className={`h-2 rounded-full transition-all duration-300 ${i === index ? 'w-8 bg-red-400' : 'w-2 bg-white/20 hover:bg-white/40'}`}
                 />
               ))}
             </div>
@@ -95,7 +95,7 @@ export default function Testimonials({ showHeader = true }) {
                   key={d}
                   onClick={() => paginate(d)}
                   aria-label={d > 0 ? t('testimonials.next') : t('testimonials.prev')}
-                  className="w-10 h-10 glass rounded-xl flex items-center justify-center text-white/50 hover:text-white hover:border-emerald-500/40 transition-colors"
+                  className="w-10 h-10 glass rounded-xl flex items-center justify-center text-white/50 hover:text-white hover:border-red-500/40 transition-colors"
                 >
                   <Icon size={18} />
                 </button>

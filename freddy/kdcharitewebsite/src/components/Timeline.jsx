@@ -50,7 +50,7 @@ export default function Timeline() {
         <div data-list className="relative pl-12 md:pl-0">
           {/* Spine */}
           <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2 bg-white/10">
-            <div data-spine className="absolute inset-0 origin-top bg-gradient-to-b from-emerald-500 via-emerald-400 to-amber-400" />
+            <div data-spine className="absolute inset-0 origin-top bg-gradient-to-b from-red-500 via-red-400 to-amber-400" />
           </div>
 
           <div className="space-y-10">
@@ -66,10 +66,10 @@ export default function Timeline() {
                 >
                   {/* Node */}
                   <div
-                    className={`absolute top-1.5 -left-[34px] md:left-auto ${side === 'right' ? 'md:-left-[9px]' : 'md:-right-[9px]'} w-4 h-4 rounded-full bg-emerald-400 border-4 border-slate-950 shadow-[0_0_12px_rgba(52,211,153,0.8)]`}
+                    className={`absolute top-1.5 -left-[34px] md:left-auto ${side === 'right' ? 'md:-left-[9px]' : 'md:-right-[9px]'} w-4 h-4 rounded-full bg-red-400 border-4 border-slate-950 shadow-[0_0_12px_rgba(248,113,113,0.8)]`}
                   />
-                  <div className="glass rounded-2xl p-6 hover:border-emerald-500/25 transition-colors">
-                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">{m.year}</span>
+                  <div className="glass rounded-2xl p-6 hover:border-red-500/25 transition-colors">
+                    <span className="text-xs font-bold text-red-400 uppercase tracking-widest">{m.year}</span>
                     <h3 className="text-lg font-bold text-white mt-1 mb-2">{item.title}</h3>
                     <p className="text-sm text-white/50 leading-relaxed">{item.body}</p>
                   </div>

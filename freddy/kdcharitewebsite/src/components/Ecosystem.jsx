@@ -52,7 +52,7 @@ export default function Ecosystem({ showHeader = true }) {
               {active === tab.key && (
                 <motion.span
                   layoutId="eco-tab"
-                  className="absolute inset-0 rounded-xl bg-emerald-600 shadow-lg shadow-emerald-900/50"
+                  className="absolute inset-0 rounded-xl bg-red-600 shadow-lg shadow-red-900/50"
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                 />
               )}
@@ -74,9 +74,9 @@ export default function Ecosystem({ showHeader = true }) {
                 </p>
                 <div className="space-y-4">
                   {FUEL_ICONS.map((Icon, i) => (
-                    <div key={i} className="flex gap-4 glass rounded-xl p-4 hover:border-emerald-500/30 transition-all">
-                      <div className="w-10 h-10 rounded-xl glass-emerald flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Icon size={16} className="text-emerald-400" />
+                    <div key={i} className="flex gap-4 glass rounded-xl p-4 hover:border-red-500/30 transition-all">
+                      <div className="w-10 h-10 rounded-xl glass-red flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Icon size={16} className="text-red-400" />
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-white mb-0.5">{fuelFeatures[i].title}</div>
@@ -90,7 +90,7 @@ export default function Ecosystem({ showHeader = true }) {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs text-white/40 uppercase tracking-widest">{t('ecosystem.fuel.livePartners')}</span>
-                  <span className="text-xs text-emerald-400 font-semibold">{t('ecosystem.fuel.active', { count: activeCount })}</span>
+                  <span className="text-xs text-red-400 font-semibold">{t('ecosystem.fuel.active', { count: activeCount })}</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {STATIONS_GRID.map((s, i) => (
@@ -100,16 +100,16 @@ export default function Ecosystem({ showHeader = true }) {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: i * 0.03 }}
                       whileHover={{ scale: 1.06 }}
-                      className={`glass rounded-xl p-3 text-center ${s.status === 'active' ? 'border-emerald-500/20' : 'opacity-50'}`}
+                      className={`glass rounded-xl p-3 text-center ${s.status === 'active' ? 'border-red-500/20' : 'opacity-50'}`}
                     >
-                      <div className={`w-2 h-2 rounded-full mx-auto mb-2 ${s.status === 'active' ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]' : 'bg-amber-400'}`} />
+                      <div className={`w-2 h-2 rounded-full mx-auto mb-2 ${s.status === 'active' ? 'bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.8)]' : 'bg-amber-400'}`} />
                       <div className="text-[11px] font-semibold text-white/80 leading-tight">{s.name}</div>
                       <div className="text-[10px] text-white/35 mt-0.5">{s.city}</div>
                     </motion.div>
                   ))}
                 </div>
                 <div className="flex gap-4 mt-4 text-xs text-white/35">
-                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" /> {t('ecosystem.fuel.legendActive')}</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" /> {t('ecosystem.fuel.legendActive')}</span>
                   <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" /> {t('ecosystem.fuel.legendOnboarding')}</span>
                 </div>
               </div>

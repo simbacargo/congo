@@ -13,13 +13,13 @@ function Item({ q, a, isOpen, onToggle }) {
         className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left group"
         aria-expanded={isOpen}
       >
-        <span className={`text-base font-semibold transition-colors ${isOpen ? 'text-emerald-400' : 'text-white group-hover:text-white/80'}`}>
+        <span className={`text-base font-semibold transition-colors ${isOpen ? 'text-red-400' : 'text-white group-hover:text-white/80'}`}>
           {q}
         </span>
         <motion.span
           animate={{ rotate: isOpen ? 45 : 0 }}
           transition={{ duration: 0.25 }}
-          className="flex-shrink-0 w-7 h-7 rounded-lg glass-emerald flex items-center justify-center text-emerald-400"
+          className="flex-shrink-0 w-7 h-7 rounded-lg glass-red flex items-center justify-center text-red-400"
         >
           <Plus size={15} />
         </motion.span>

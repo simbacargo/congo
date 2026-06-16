@@ -1,4 +1,4 @@
-import { Heart, Phone, Mail, MapPin, Share2, Rss, Send, Link2 } from 'lucide-react';
+import { Phone, Mail, MapPin, Share2, Rss, Send, Link2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
@@ -28,16 +28,16 @@ export default function Footer() {
   const legal = t('footer.legal', { returnObjects: true });
   return (
     <footer className="relative pt-20 pb-10 px-4 border-t border-white/10">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-950/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-red-950/20 pointer-events-none" />
       <div className="max-w-7xl mx-auto relative">
         <div className="grid lg:grid-cols-5 gap-12 mb-16">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-900/50">
-                <Heart size={16} className="text-white" fill="white" />
+              <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-white/15 shadow-lg shadow-black/40 bg-[#9c1a1a]">
+                <img src="/logo.jpg" alt="" className="w-full h-full object-cover scale-[1.06]" />
               </div>
               <span className="text-xl font-black text-white tracking-tight">
-                KD<span className="text-emerald-400">Charité</span>
+                KD<span className="text-red-400">Charité</span>
               </span>
             </div>
             <p className="text-sm text-white/45 leading-relaxed mb-7 max-w-xs">
@@ -46,7 +46,7 @@ export default function Footer() {
             <div className="space-y-3 mb-7">
               {CONTACT.map((c) => (
                 <div key={c.text} className="flex items-start gap-3">
-                  <c.icon size={14} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                  <c.icon size={14} className="text-red-400 mt-0.5 flex-shrink-0" />
                   <span className="text-xs text-white/50 whitespace-pre-line leading-relaxed">{c.text}</span>
                 </div>
               ))}
@@ -57,9 +57,9 @@ export default function Footer() {
                   key={s.label}
                   whileHover={{ y: -3 }}
                   aria-label={s.label}
-                  className="w-9 h-9 glass rounded-xl flex items-center justify-center hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-colors group"
+                  className="w-9 h-9 glass rounded-xl flex items-center justify-center hover:border-red-500/40 hover:bg-red-500/10 transition-colors group"
                 >
-                  <s.icon size={14} className="text-white/40 group-hover:text-emerald-400 transition-colors" />
+                  <s.icon size={14} className="text-white/40 group-hover:text-red-400 transition-colors" />
                 </motion.button>
               ))}
             </div>
@@ -71,7 +71,7 @@ export default function Footer() {
               <ul className="space-y-3">
                 {t(col.links, { returnObjects: true }).map((l) => (
                   <li key={l}>
-                    <a href="#" className="text-sm text-white/40 hover:text-emerald-400 transition-colors duration-200">{l}</a>
+                    <a href="#" className="text-sm text-white/40 hover:text-red-400 transition-colors duration-200">{l}</a>
                   </li>
                 ))}
               </ul>

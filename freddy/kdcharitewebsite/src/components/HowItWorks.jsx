@@ -54,7 +54,7 @@ export default function HowItWorks() {
 
   return (
     <section ref={scope} id="how" className="relative h-screen overflow-hidden grain">
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-emerald-950/20 to-slate-950" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-red-950/20 to-slate-950" />
 
       <div className="relative h-full flex flex-col justify-center max-w-7xl mx-auto px-4 w-full">
         <div className="mb-10">
@@ -67,7 +67,7 @@ export default function HowItWorks() {
 
         {/* Progress rail */}
         <div className="relative h-px w-full bg-white/10 mb-10 overflow-hidden">
-          <div data-progress className="absolute inset-0 origin-left scale-x-0 bg-gradient-to-r from-emerald-500 to-amber-400" />
+          <div data-progress className="absolute inset-0 origin-left scale-x-0 bg-gradient-to-r from-red-500 to-amber-400" />
         </div>
 
         {/* Horizontal track */}
@@ -78,10 +78,10 @@ export default function HowItWorks() {
                 key={s.n}
                 data-panel
                 className={`w-[80vw] md:w-[440px] flex-shrink-0 glass rounded-3xl p-9 border ${
-                  s.accent === 'emerald' ? 'border-emerald-500/20' : 'border-amber-500/20'
+                  s.accent === 'red' ? 'border-red-500/20' : 'border-amber-500/20'
                 }`}
               >
-                <div className={`text-7xl font-black mb-6 ${s.accent === 'emerald' ? 'text-emerald-500/30' : 'text-amber-500/30'}`}>
+                <div className={`text-7xl font-black mb-6 ${s.accent === 'red' ? 'text-red-500/30' : 'text-amber-500/30'}`}>
                   {s.n}
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">{steps[i].title}</h3>

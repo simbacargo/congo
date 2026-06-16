@@ -39,7 +39,7 @@ export default function Navbar() {
       }`}
     >
       <motion.div
-        className="absolute bottom-0 left-0 h-[2px] origin-left bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400"
+        className="absolute bottom-0 left-0 h-[2px] origin-left bg-gradient-to-r from-red-500 via-red-400 to-amber-400"
         style={{ scaleX: progress, width: '100%' }}
       />
 
@@ -48,12 +48,13 @@ export default function Navbar() {
           <motion.div
             whileHover={{ rotate: -12, scale: 1.08 }}
             transition={{ type: 'spring', stiffness: 400, damping: 12 }}
-            className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-900/50"
+            className="w-9 h-9 rounded-full overflow-hidden ring-1 ring-white/15 shadow-lg shadow-black/40 bg-[#9c1a1a]"
           >
-            <Heart size={15} className="text-white" fill="white" />
+            {/* object-cover + slight scale crops the logo's white square margin to its red disc */}
+            <img src="/logo.jpg" alt="" className="w-full h-full object-cover scale-[1.06]" />
           </motion.div>
           <span className="text-lg font-bold text-white tracking-tight">
-            KD<span className="text-emerald-400">Charité</span>
+            KD<span className="text-red-400">Charité</span>
           </span>
         </Link>
 
@@ -72,7 +73,7 @@ export default function Navbar() {
                 <>
                   {t(`nav.${l.key}`)}
                   <span
-                    className={`absolute -bottom-1 left-0 h-px bg-emerald-400 transition-all duration-300 ${
+                    className={`absolute -bottom-1 left-0 h-px bg-red-400 transition-all duration-300 ${
                       isActive ? 'w-full' : 'w-0 group-hover:w-full'
                     }`}
                   />
@@ -90,7 +91,7 @@ export default function Navbar() {
           <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}>
             <Link
               to="/donate"
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-5 py-2 rounded-xl shadow-lg shadow-emerald-900/40"
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold px-5 py-2 rounded-xl shadow-lg shadow-red-900/40"
             >
               <Heart size={13} fill="currentColor" /> {t('nav.donateNow')}
             </Link>
@@ -130,7 +131,7 @@ export default function Navbar() {
                     to={l.to}
                     onClick={() => setMenuOpen(false)}
                     className={({ isActive }) =>
-                      `block text-sm py-2.5 ${isActive ? 'text-emerald-400' : 'text-white/70 hover:text-white'}`
+                      `block text-sm py-2.5 ${isActive ? 'text-red-400' : 'text-white/70 hover:text-white'}`
                     }
                   >
                     {t(`nav.${l.key}`)}
@@ -140,7 +141,7 @@ export default function Navbar() {
               <Link
                 to="/donate"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl w-fit mt-3"
+                className="flex items-center gap-2 bg-red-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl w-fit mt-3"
               >
                 <Heart size={13} fill="currentColor" /> {t('nav.donateNow')}
               </Link>

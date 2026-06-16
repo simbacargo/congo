@@ -15,9 +15,9 @@ const NetworkGlobe = lazy(() => import('../components/Globe.jsx'));
 
 // Style/destination per card; title + desc come from home.cards[i].
 const EXPLORE = [
-  { to: '/how-it-works', icon: Workflow,      tone: 'emerald' },
+  { to: '/how-it-works', icon: Workflow,      tone: 'red' },
   { to: '/programs',     icon: Globe,         tone: 'amber' },
-  { to: '/impact',       icon: BarChart3,     tone: 'emerald' },
+  { to: '/impact',       icon: BarChart3,     tone: 'red' },
   { to: '/stories',      icon: MessageCircle, tone: 'amber' },
 ];
 
@@ -36,14 +36,14 @@ function ExploreCards() {
             <Reveal key={c.to} variants={fadeUp}>
               <Link
                 to={c.to}
-                className="block h-full glass rounded-2xl p-6 group hover:border-emerald-500/30 hover:-translate-y-1.5 transition-all duration-300"
+                className="block h-full glass rounded-2xl p-6 group hover:border-red-500/30 hover:-translate-y-1.5 transition-all duration-300"
               >
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${c.tone === 'emerald' ? 'glass-emerald' : 'glass-amber'} group-hover:scale-110 transition-transform`}>
-                  <c.icon size={20} className={c.tone === 'emerald' ? 'text-emerald-400' : 'text-amber-400'} />
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${c.tone === 'red' ? 'glass-red' : 'glass-amber'} group-hover:scale-110 transition-transform`}>
+                  <c.icon size={20} className={c.tone === 'red' ? 'text-red-400' : 'text-amber-400'} />
                 </div>
                 <h3 className="text-base font-bold text-white mb-2">{cards[i].title}</h3>
                 <p className="text-sm text-white/45 leading-relaxed mb-4">{cards[i].desc}</p>
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 group-hover:gap-2 transition-all">
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-400 group-hover:gap-2 transition-all">
                   {t('home.explore')} <ArrowRight size={12} />
                 </span>
               </Link>

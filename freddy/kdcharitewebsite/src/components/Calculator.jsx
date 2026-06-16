@@ -32,7 +32,7 @@ export default function Calculator() {
 
   return (
     <section id="calculator" className="py-28 px-4 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/20 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/20 to-transparent pointer-events-none" />
       <div className="max-w-5xl mx-auto relative">
         <SectionHeader
           badge={t('calculator.badge')}
@@ -57,7 +57,7 @@ export default function Calculator() {
 
             <div className="relative mb-8">
               <div
-                className="absolute top-0 left-0 h-[6px] rounded-l-full bg-gradient-to-r from-emerald-600 to-emerald-400 pointer-events-none"
+                className="absolute top-0 left-0 h-[6px] rounded-l-full bg-gradient-to-r from-red-600 to-red-400 pointer-events-none"
                 style={{ width: `${pct}%` }}
               />
               <input
@@ -75,11 +75,11 @@ export default function Calculator() {
                 <div
                   key={row.label}
                   className={`flex justify-between items-center rounded-xl px-4 py-3 ${
-                    row.highlight ? 'bg-emerald-500/15 border border-emerald-500/30' : 'bg-white/[0.03]'
+                    row.highlight ? 'bg-red-500/15 border border-red-500/30' : 'bg-white/[0.03]'
                   }`}
                 >
                   <span className="text-sm text-white/60">{row.label}</span>
-                  <span className={`text-lg font-bold ${row.highlight ? 'text-emerald-400' : 'text-white'}`}>
+                  <span className={`text-lg font-bold ${row.highlight ? 'text-red-400' : 'text-white'}`}>
                     <SpringMoney value={row.value} />
                   </span>
                 </div>
@@ -87,7 +87,7 @@ export default function Calculator() {
             </div>
 
             <div className="mt-5 flex items-center gap-2 text-xs text-white/30">
-              <CheckCircle2 size={12} className="text-emerald-500" />
+              <CheckCircle2 size={12} className="text-red-500" />
               {t('calculator.optIn')}
             </div>
           </motion.div>
@@ -98,10 +98,10 @@ export default function Calculator() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6 }}
-            className="glass-emerald rounded-3xl p-8 flex flex-col justify-between"
+            className="glass-red rounded-3xl p-8 flex flex-col justify-between"
           >
             <div>
-              <div className="text-xs text-emerald-400 uppercase tracking-widest font-semibold mb-6">
+              <div className="text-xs text-red-400 uppercase tracking-widest font-semibold mb-6">
                 {t('calculator.translatesTo', { amount: donation.toFixed(2) })}
               </div>
 
@@ -134,11 +134,11 @@ export default function Calculator() {
                     whileInView={{ height: `${h * 0.5}px` }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08, duration: 0.5, ease: 'easeOut' }}
-                    className="flex-1 rounded-sm bg-gradient-to-t from-emerald-700 to-emerald-400 opacity-80"
+                    className="flex-1 rounded-sm bg-gradient-to-t from-red-700 to-red-400 opacity-80"
                   />
                 ))}
               </div>
-              <div className="text-xs text-emerald-400 font-semibold mt-2">
+              <div className="text-xs text-red-400 font-semibold mt-2">
                 {t('calculator.cityRaised')}
               </div>
             </div>

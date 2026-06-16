@@ -11,9 +11,10 @@ import en from './locales/en.json';
 import fr from './locales/fr.json';
 import sw from './locales/sw.json';
 
+// French first — it is the site's primary language (see fallbackLng below).
 export const LANGUAGES = [
-  { code: 'en', label: 'English', short: 'EN' },
   { code: 'fr', label: 'Français', short: 'FR' },
+  { code: 'en', label: 'English', short: 'EN' },
   { code: 'sw', label: 'Kiswahili', short: 'SW' },
 ];
 
@@ -26,10 +27,14 @@ i18n
       fr: { translation: fr },
       sw: { translation: sw },
     },
-    fallbackLng: 'en',
+    // French is the primary language: it's the fallback for missing keys and the
+    // default for first-time visitors. Browser-language sniffing is intentionally
+    // omitted so the site lands in French unless a visitor explicitly switches
+    // (their choice is then cached in localStorage).
+    fallbackLng: 'fr',
     supportedLngs: LANGUAGES.map((l) => l.code),
     detection: {
-      order: ['localStorage', 'htmlTag', 'navigator'],
+      order: ['localStorage', 'htmlTag'],
       caches: ['localStorage'],
       lookupLocalStorage: 'kdc-lang',
     },
@@ -40,6 +45,6 @@ i18n
 i18n.on('languageChanged', (lng) => {
   document.documentElement.lang = lng;
 });
-document.documentElement.lang = i18n.language || 'en';
+document.documentElement.lang = i18n.language || 'fr';
 
 export default i18n;
