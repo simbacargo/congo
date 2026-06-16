@@ -8,7 +8,7 @@ const COLS = [
 ];
 
 const CONTACT = [
-  { icon: Phone, text: '+255 747 92 929 92 },
+  { icon: Phone, text: '+255 747 92 929 92' },
   { icon: Mail, text: 'impact@kdcharite.org' },
   { icon: MapPin, text: '742 Philanthropy Way, Mwanza City, MC 90210' },
 ];
