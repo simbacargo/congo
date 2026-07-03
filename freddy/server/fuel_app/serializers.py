@@ -9,7 +9,7 @@ from fuel_app.models import (
     Transaction,
     TransactionAuditLog,
 )
-from fuel_app.services import get_usd_to_cdf_rate
+from fuel_app.services import get_usd_to_cdf_rate, normalize_phone
 
 
 class ParentCompanySerializer(serializers.ModelSerializer):
@@ -47,12 +47,16 @@ class FuelTypeSerializer(serializers.ModelSerializer):
 class TransactionCreateSerializer(serializers.ModelSerializer):
     """Used by the mobile agent to post a new transaction."""
     sync_id = serializers.CharField(required=False, allow_blank=True)
+    driver_phone = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
 
     class Meta:
         model = Transaction
         fields = [
             "church", "fuel_type", "currency_used",
-            "amount_usd", "amount_cdf", "notes", "sync_id", "created_at",
+            "amount_usd", "amount_cdf", "notes", "driver_phone",
+            "sync_id", "created_at",
         ]
 
     def validate_created_at(self, value):
@@ -82,6 +86,9 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
         request = self.context["request"]
         agent = request.user
         rate = get_usd_to_cdf_rate()
+        validated_data["driver_phone"] = normalize_phone(
+            validated_data.get("driver_phone")
+        )
         tx = Transaction(
             agent=agent,
             station=agent.assigned_station,
@@ -107,7 +114,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             "fuel_type", "fuel_type_name", "currency_used",
             "amount_usd", "amount_cdf", "exchange_rate",
             "levy_amount_usd", "levy_amount_cdf",
-            "status", "notes", "sync_id", "created_at", "updated_at",
+            "status", "notes", "driver_phone", "sync_id", "created_at", "updated_at",
         ]
         read_only_fields = [
             "receipt_code", "levy_amount_usd", "levy_amount_cdf",

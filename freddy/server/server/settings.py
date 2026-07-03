@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-#+#t-asn)ni^jo!009l4rs02j*8p1#90e(kev1%y2-$%n8(#8&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["kdcharite.com","www.kdcharite.com","localhost","127.0.0.1"]
+ALLOWED_HOSTS = ["kdcharite.com","www.kdcharite.com","localhost","127.0.0.1","192.168.1.191"]
 
 CSRF_TRUSTED_ORIGINS = ["https://kdcharite.com","https://www.kdcharite.com"]
 
@@ -138,6 +138,8 @@ CORS_ALLOW_ALL_ORIGINS = True  # restrict to specific origins in production
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["knox.auth.TokenAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 25,
 }
 
 from datetime import timedelta

@@ -30,6 +30,7 @@ export async function getDb(): Promise<SQLite.SQLiteDatabase> {
   try { await _db.execAsync("ALTER TABLE queued_transactions ADD COLUMN receipt_code TEXT"); } catch {}
   try { await _db.execAsync("ALTER TABLE queued_transactions ADD COLUMN station_name TEXT"); } catch {}
   try { await _db.execAsync("ALTER TABLE queued_transactions ADD COLUMN company_name TEXT"); } catch {}
+  try { await _db.execAsync("ALTER TABLE queued_transactions ADD COLUMN driver_phone TEXT"); } catch {}
   return _db;
 }
 
@@ -47,6 +48,7 @@ export interface OfflineTx {
   amount_cdf: string;
   levy_preview: string;
   notes?: string;
+  driver_phone?: string;
   created_at: string;
   synced: 0 | 1;
   receipt_code?: string;
@@ -73,8 +75,8 @@ export async function saveOfflineTx(
     `INSERT OR IGNORE INTO queued_transactions
        (sync_id, church_id, church_name, station_name, company_name,
         fuel_type_id, fuel_type_name, currency_used, amount_usd, amount_cdf,
-        levy_preview, notes, created_at, synced)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+        levy_preview, notes, driver_phone, created_at, synced)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
     [
       tx.sync_id,
       tx.church_id,
@@ -88,6 +90,7 @@ export async function saveOfflineTx(
       tx.amount_cdf,
       tx.levy_preview,
       tx.notes ?? null,
+      tx.driver_phone ?? null,
       tx.created_at,
     ],
   );

@@ -36,6 +36,7 @@ export default function NewTransactionScreen() {
   const [currency, setCurrency] = useState<Currency>("USD");
   const [amountInput, setAmountInput] = useState("");
   const [notes, setNotes] = useState("");
+  const [driverPhone, setDriverPhone] = useState("");
 
   // Derived amounts
   const amount = parseFloat(amountInput) || 0;
@@ -76,6 +77,7 @@ export default function NewTransactionScreen() {
       amount_usd: amountUsd.toFixed(2),
       amount_cdf: amountCdf.toFixed(2),
       notes,
+      driver_phone: driverPhone.trim() || undefined,
       sync_id: syncId,
       created_at: createdAt,
     };
@@ -92,6 +94,7 @@ export default function NewTransactionScreen() {
       amount_cdf: amountCdf.toFixed(2),
       levy_preview: levyUsd.toFixed(4),
       notes,
+      driver_phone: driverPhone.trim() || undefined,
       created_at: createdAt,
       synced: 0,
     });
@@ -273,6 +276,18 @@ export default function NewTransactionScreen() {
 
             <TextInput
               style={[styles.amountInput, { fontSize: 14, marginTop: 16 }]}
+              placeholder="Driver phone (optional)"
+              placeholderTextColor="#475569"
+              keyboardType="phone-pad"
+              value={driverPhone}
+              onChangeText={setDriverPhone}
+            />
+            <Text style={styles.fieldHint}>
+              Links this levy to the driver so it shows in their history when scanned.
+            </Text>
+
+            <TextInput
+              style={[styles.amountInput, { fontSize: 14, marginTop: 16 }]}
               placeholder="Notes (optional)"
               placeholderTextColor="#475569"
               value={notes}
@@ -329,7 +344,7 @@ export default function NewTransactionScreen() {
                 {submitting ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={styles.nextBtnText}>Submit & Print</Text>
+                  <Text style={styles.nextBtnText}>Submit Transaction</Text>
                 )}
               </Pressable>
             </View>
@@ -371,6 +386,7 @@ const styles = StyleSheet.create({
 
   body: { flex: 1, paddingHorizontal: 20 },
   sectionTitle: { fontSize: 15, fontWeight: "700", color: "#cbd5e1", marginBottom: 12 },
+  fieldHint: { fontSize: 11, color: "#475569", marginTop: 6, lineHeight: 16 },
 
   chipGroup: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   chip: {

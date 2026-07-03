@@ -45,6 +45,11 @@ export default function RootLayout() {
           options={{ title: "Transaction Detail", headerBackTitle: "History" }}
         />
         <Stack.Screen name="verify" options={{ title: "Verify Receipt" }} />
+        <Stack.Screen name="settings/printer" options={{ title: "Thermal Printer" }} />
+        <Stack.Screen
+          name="driver/[id]"
+          options={{ title: "Driver", headerBackTitle: "Scan" }}
+        />
       </Stack>
     </ThemeProvider>
   );

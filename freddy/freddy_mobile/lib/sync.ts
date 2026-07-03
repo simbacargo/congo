@@ -13,6 +13,7 @@ export async function flushOfflineQueue(): Promise<{ synced: number; failed: num
     amount_usd: tx.amount_usd,
     amount_cdf: tx.amount_cdf,
     notes: tx.notes,
+    driver_phone: tx.driver_phone,
     created_at: tx.created_at,
   }));
 

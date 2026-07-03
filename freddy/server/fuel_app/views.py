@@ -1,17 +1,19 @@
 from decimal import Decimal
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST, require_http_methods
+from knox.models import AuthToken
 from rest_framework import status as drf_status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from authentication.models import ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER, ROLE_STATION_AGENT, User
@@ -29,7 +31,12 @@ from fuel_app.serializers import (
     TransactionAuditLogSerializer, TransactionCreateSerializer,
     TransactionSerializer, TransactionStatusUpdateSerializer,
 )
-from fuel_app.services import get_usd_to_cdf_rate, record_audit_log
+from fuel_app.services import (
+    build_drivers_excel, build_transactions_excel, build_transactions_pdf,
+    driver_card_number, driver_queryset, get_usd_to_cdf_rate, kpi_stats,
+    qr_data_uri, image_data_uri, barcode_data_uri, normalize_phone,
+    record_audit_log, tx_queryset, DRIVER_SORTABLE, CONSUMPTION_ORDER,
+)
 
 
 # ─── helpers ──────────────────────────────────────────────────────────────────
@@ -39,60 +46,11 @@ def _htmx(request):
 
 
 def _tx_queryset(request):
-    qs = Transaction.objects.select_related(
-        "station__company", "church", "agent", "fuel_type"
-    )
-    f = TransactionFilterForm(request.GET)
-    if f.is_valid():
-        d = f.cleaned_data
-        if d.get("search"):
-            qs = qs.filter(
-                Q(receipt_code__icontains=d["search"])
-                | Q(church__name__icontains=d["search"])
-                | Q(station__name__icontains=d["search"])
-                | Q(agent__username__icontains=d["search"])
-            )
-        if d.get("company"):
-            qs = qs.filter(station__company=d["company"])
-        if d.get("station"):
-            qs = qs.filter(station=d["station"])
-        if d.get("status"):
-            qs = qs.filter(status=d["status"])
-        if d.get("date_from"):
-            qs = qs.filter(created_at__date__gte=d["date_from"])
-        if d.get("date_to"):
-            qs = qs.filter(created_at__date__lte=d["date_to"])
-    return qs
+    return tx_queryset(request)
 
 
 def _kpi_stats():
-    today = timezone.now().date()
-    this_month = timezone.now().replace(day=1, hour=0, minute=0, second=0)
-    txs = Transaction.objects
-    return {
-        "today_levy": txs.filter(created_at__date=today).aggregate(t=Sum("levy_amount_usd"))["t"] or 0,
-        "today_count": txs.filter(created_at__date=today).count(),
-        "month_levy": txs.filter(created_at__gte=this_month).aggregate(t=Sum("levy_amount_usd"))["t"] or 0,
-        "month_count": txs.filter(created_at__gte=this_month).count(),
-        "total_levy": txs.aggregate(t=Sum("levy_amount_usd"))["t"] or 0,
-        "total_count": txs.count(),
-        "pending_count": txs.filter(status=Transaction.Status.PENDING).count(),
-        "verified_count": txs.filter(status=Transaction.Status.VERIFIED).count(),
-        "remitted_count": txs.filter(status=Transaction.Status.REMITTED).count(),
-        "total_disbursed": Disbursement.objects.filter(status=Disbursement.Status.PAID).aggregate(t=Sum("amount_usd"))["t"] or 0,
-        "pending_disburse": Disbursement.objects.filter(status=Disbursement.Status.SCHEDULED).count(),
-        "by_company": list(
-            txs.values("station__company__name", "station__company__id")
-            .annotate(total=Sum("levy_amount_usd"), count=Count("id"))
-            .order_by("-total")
-        ),
-        "by_fuel": list(
-            txs.values("fuel_type__name")
-            .annotate(total=Sum("levy_amount_usd"), count=Count("id"))
-            .order_by("-total")
-        ),
-        "recent": txs.order_by("-created_at").select_related("station__company", "church", "agent")[:8],
-    }
+    return kpi_stats()
 
 
 # ─── Dashboard ────────────────────────────────────────────────────────────────
@@ -345,32 +303,7 @@ def church_detail(request, pk):
 # ─── Drivers (OSS registrations) ──────────────────────────────────────────────
 
 def _driver_queryset(request):
-    """Apply the Drivers-page search/filters from the query string."""
-    qs = Driver.objects.all()
-    cur = {key: request.GET.get(key, "").strip() for key in
-           ("q", "commune", "vehicle_type", "fuel_type", "agent")}
-    if cur["q"]:
-        qs = qs.filter(
-            Q(full_name__icontains=cur["q"]) | Q(phone__icontains=cur["q"])
-            | Q(email__icontains=cur["q"]) | Q(quartier__icontains=cur["q"])
-        )
-    if cur["commune"]:
-        qs = qs.filter(commune=cur["commune"])
-    if cur["vehicle_type"]:
-        qs = qs.filter(vehicle_type=cur["vehicle_type"])
-    if cur["fuel_type"]:
-        qs = qs.filter(fuel_type=cur["fuel_type"])
-    if cur["agent"]:
-        qs = qs.filter(field_agent=cur["agent"])
-    return qs.order_by("full_name"), cur
-
-
-DRIVER_SORTABLE = {
-    "name": "full_name", "commune": "commune", "vehicle": "vehicle_type",
-    "fuel": "fuel_type", "consumption": "daily_fuel_consumption",
-    "agent": "field_agent", "registered": "registration_date",
-}
-CONSUMPTION_ORDER = ["1 à 4", "5 à 10", "11 à 20", "21 à 30", "31 à 45", "Autre"]
+    return driver_queryset(request)
 
 
 @login_required
@@ -464,57 +397,14 @@ def driver_detail(request, pk):
     return render(
         request,
         "fuel/drivers/detail.html",
-        {"driver": driver, "qr_code": _qr_data_uri(profile_url), "profile_url": profile_url},
+        {"driver": driver, "qr_code": qr_data_uri(profile_url), "profile_url": profile_url},
     )
-
-
-def _qr_data_uri(data):
-    """Render `data` as a QR code and return it as a base64 PNG data URI."""
-    import base64
-    import io
-
-    import qrcode
-
-    img = qrcode.make(data)
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    encoded = base64.b64encode(buf.getvalue()).decode("ascii")
-    return f"data:image/png;base64,{encoded}"
-
-
-def _barcode_data_uri(code):
-    """Render `code` as a Code128 barcode and return it as a base64 SVG data URI."""
-    import base64
-    import io
-
-    import barcode
-    from barcode.writer import SVGWriter
-
-    cls = barcode.get_barcode_class("code128")
-    buf = io.BytesIO()
-    cls(code, writer=SVGWriter()).write(
-        buf,
-        options={"write_text": False, "module_height": 12.0, "quiet_zone": 1.0},
-    )
-    encoded = base64.b64encode(buf.getvalue()).decode("ascii")
-    return f"data:image/svg+xml;base64,{encoded}"
-
-
-def _driver_card_number(driver):
-    """Stable 16-digit card number derived from the driver's UUID.
-
-    Returns ``(raw_digits, grouped)`` where ``grouped`` matches the card layout
-    (4-3-3-3-3, e.g. ``0001 004 550 650 111``).
-    """
-    raw = f"{driver.pk.int % 10 ** 16:016d}"
-    grouped = f"{raw[0:4]} {raw[4:7]} {raw[7:10]} {raw[10:13]} {raw[13:16]}"
-    return raw, grouped
 
 
 @login_required
 def driver_id_card(request, pk):
     driver = get_object_or_404(Driver, pk=pk)
-    raw, card_number = _driver_card_number(driver)
+    raw, card_number = driver_card_number(driver)
     profile_url = request.build_absolute_uri(
         reverse("fuel:driver-detail", args=[driver.pk])
     )
@@ -532,73 +422,20 @@ def driver_id_card(request, pk):
         {
             "driver": driver,
             "card_number": card_number,
-            "qr_code": _qr_data_uri(profile_url),
-            "barcode": _barcode_data_uri(raw),
-            "kd_logo": _image_data_uri(settings.BASE_DIR / "logo.jpg"),
-            "oss_logo": _image_data_uri(settings.BASE_DIR / "oss.png"),
+            "qr_code": qr_data_uri(profile_url),
+            "barcode": barcode_data_uri(raw),
+            "kd_logo": image_data_uri(settings.BASE_DIR / "logo.jpg"),
+            "oss_logo": image_data_uri(settings.BASE_DIR / "oss.png"),
             "delivery": delivery,
             "expiration": expiration,
         },
     )
 
 
-def _image_data_uri(path):
-    """Read an image file and return it as a base64 data URI (empty string if missing)."""
-    import base64
-    import mimetypes
-
-    try:
-        data = path.read_bytes()
-    except OSError:
-        return ""
-    mime = mimetypes.guess_type(str(path))[0] or "image/jpeg"
-    encoded = base64.b64encode(data).decode("ascii")
-    return f"data:{mime};base64,{encoded}"
-
-
 @login_required
 def export_drivers_excel(request):
-    import openpyxl
-    from openpyxl.styles import Alignment, Font, PatternFill
-
     qs, _ = _driver_queryset(request)
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Drivers"
-    hfill = PatternFill("solid", fgColor="1A3C5E")
-    hfont = Font(bold=True, color="FFFFFF")
-    headers = [
-        "Full Name", "Phone", "Email", "Gender", "Marital Status", "Commune",
-        "Quartier", "City/Country", "Vehicle Type", "Vehicle Color",
-        "Litres/day", "Fuel Type", "Health Coverage", "Care Difficulty",
-        "Dependents", "Field Agent", "Registered",
-    ]
-    for col, h in enumerate(headers, 1):
-        cell = ws.cell(row=1, column=col, value=h)
-        cell.font = hfont
-        cell.fill = hfill
-        cell.alignment = Alignment(horizontal="center")
-
-    def _yn(v):
-        return "" if v is None else ("Yes" if v else "No")
-
-    for row, d in enumerate(qs, 2):
-        values = [
-            d.full_name, d.phone, d.email, d.gender, d.marital_status, d.commune,
-            d.quartier, d.city_country, d.vehicle_type, d.vehicle_color,
-            d.daily_fuel_consumption, d.fuel_type, _yn(d.has_health_coverage),
-            _yn(d.has_care_access_difficulty), d.dependents, d.field_agent,
-            d.registration_date.strftime("%Y-%m-%d") if d.registration_date else "",
-        ]
-        for col, val in enumerate(values, 1):
-            ws.cell(row=row, column=col, value=val)
-    for col in ws.columns:
-        ws.column_dimensions[col[0].column_letter].width = 18
-
-    resp = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    resp["Content-Disposition"] = 'attachment; filename="LCI_drivers.xlsx"'
-    wb.save(resp)
-    return resp
+    return build_drivers_excel(qs)
 
 
 # ─── Agents / Users ───────────────────────────────────────────────────────────
@@ -807,82 +644,12 @@ def verify_receipt_page(request):
 
 @login_required
 def export_excel(request):
-    import openpyxl
-    from openpyxl.styles import Alignment, Font, PatternFill
-    qs = _tx_queryset(request)
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Transactions"
-    hfill = PatternFill("solid", fgColor="1A3C5E")
-    hfont = Font(bold=True, color="FFFFFF")
-    headers = ["Receipt Code", "Date", "Company", "Station", "Church", "Agent",
-               "Fuel Type", "Currency", "Amount USD", "Amount CDF", "Levy USD", "Levy CDF", "Status"]
-    for col, h in enumerate(headers, 1):
-        cell = ws.cell(row=1, column=col, value=h)
-        cell.font = hfont
-        cell.fill = hfill
-        cell.alignment = Alignment(horizontal="center")
-    for row, tx in enumerate(qs, 2):
-        ws.cell(row=row, column=1, value=tx.receipt_code)
-        ws.cell(row=row, column=2, value=tx.created_at.strftime("%Y-%m-%d %H:%M"))
-        ws.cell(row=row, column=3, value=tx.station.company.name)
-        ws.cell(row=row, column=4, value=tx.station.name)
-        ws.cell(row=row, column=5, value=tx.church.name)
-        ws.cell(row=row, column=6, value=tx.agent.username)
-        ws.cell(row=row, column=7, value=tx.fuel_type.name)
-        ws.cell(row=row, column=8, value=tx.currency_used)
-        ws.cell(row=row, column=9, value=float(tx.amount_usd))
-        ws.cell(row=row, column=10, value=float(tx.amount_cdf))
-        ws.cell(row=row, column=11, value=float(tx.levy_amount_usd))
-        ws.cell(row=row, column=12, value=float(tx.levy_amount_cdf))
-        ws.cell(row=row, column=13, value=tx.get_status_display())
-    for col in ws.columns:
-        ws.column_dimensions[col[0].column_letter].width = 18
-    resp = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    resp["Content-Disposition"] = 'attachment; filename="LCI_transactions.xlsx"'
-    wb.save(resp)
-    return resp
+    return build_transactions_excel(_tx_queryset(request))
 
 
 @login_required
 def export_pdf(request):
-    from reportlab.lib import colors
-    from reportlab.lib.pagesizes import A4, landscape
-    from reportlab.lib.styles import getSampleStyleSheet
-    from reportlab.lib.units import cm
-    from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-    qs = _tx_queryset(request)
-    resp = HttpResponse(content_type="application/pdf")
-    resp["Content-Disposition"] = 'attachment; filename="LCI_audit_report.pdf"'
-    doc = SimpleDocTemplate(resp, pagesize=landscape(A4), leftMargin=1*cm, rightMargin=1*cm)
-    styles = getSampleStyleSheet()
-    elements = [
-        Paragraph("Lubumbashi Charity Fuel Initiative — Audit Report", styles["Title"]),
-        Paragraph(f"Generated: {timezone.now():%Y-%m-%d %H:%M UTC}", styles["Normal"]),
-        Spacer(1, 0.5*cm),
-    ]
-    table_data = [["Receipt", "Date", "Company", "Station", "Church", "Levy USD", "Status"]]
-    for tx in qs[:500]:
-        table_data.append([
-            tx.receipt_code, tx.created_at.strftime("%Y-%m-%d"),
-            tx.station.company.name[:20], tx.station.name[:20], tx.church.name[:20],
-            f"${tx.levy_amount_usd:.2f}", tx.get_status_display(),
-        ])
-    t = Table(table_data, repeatRows=1)
-    t.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1A3C5E")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, -1), 8),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#EFF3F7")]),
-        ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("TOPPADDING", (0, 0), (-1, -1), 4),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-    ]))
-    elements.append(t)
-    doc.build(elements)
-    return resp
+    return build_transactions_pdf(_tx_queryset(request))
 
 
 # ─── REST API ──────────────────────────────────────────────────────────────────
@@ -953,6 +720,59 @@ def api_transaction_verify(request, receipt_code):
     })
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def api_driver_detail(request, pk):
+    """Driver profile + their levy history, for the mobile QR-scan lookup.
+
+    Transactions are matched loosely by normalized phone (see
+    ``normalize_phone``) because there is no hard FK from Transaction to
+    Driver. Visibility is scoped the same way as the transaction list so an
+    agent only sees levies from their own station.
+    """
+    driver = get_object_or_404(Driver, pk=pk)
+    phone = normalize_phone(driver.phone)
+
+    txs = Transaction.objects.none()
+    if phone:
+        txs = (
+            Transaction.objects.filter(driver_phone=phone)
+            .select_related("station__company", "church", "fuel_type", "agent")
+            .order_by("-created_at")
+        )
+        user = request.user
+        if user.role == ROLE_STATION_AGENT:
+            txs = txs.filter(station=user.assigned_station) if user.assigned_station else txs.none()
+        elif user.role == ROLE_COMPANY_MANAGER:
+            txs = txs.filter(station__company=user.managed_company) if user.managed_company else txs.none()
+
+    agg = txs.aggregate(
+        count=Count("id"),
+        total_levy_usd=Sum("levy_amount_usd"),
+        total_amount_usd=Sum("amount_usd"),
+    )
+
+    return Response({
+        "driver": {
+            "id": str(driver.id),
+            "full_name": driver.full_name,
+            "phone": driver.phone,
+            "gender": driver.gender,
+            "commune": driver.commune,
+            "quartier": driver.quartier,
+            "vehicle_type": driver.vehicle_type,
+            "vehicle_color": driver.vehicle_color,
+            "fuel_type": driver.fuel_type,
+        },
+        "transactions": TransactionSerializer(txs[:100], many=True).data,
+        "summary": {
+            "count": agg["count"] or 0,
+            "total_levy_usd": str(agg["total_levy_usd"] or 0),
+            "total_amount_usd": str(agg["total_amount_usd"] or 0),
+        },
+    })
+
+
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated, IsNGOAdmin])
 def api_transaction_status(request, pk):
@@ -993,6 +813,29 @@ def api_bulk_sync(request):
 def api_audit_log(request, pk):
     tx = get_object_or_404(Transaction, pk=pk)
     return Response(TransactionAuditLogSerializer(tx.audit_logs.all(), many=True).data)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def api_login(request):
+    """JSON username/password login for the mobile app.
+
+    Knox's bundled LoginView authenticates with the global
+    DEFAULT_AUTHENTICATION_CLASSES (here, token-only), so it can't accept a
+    username/password body. This endpoint authenticates the credentials and
+    issues a Knox token in the same ``{token, expiry}`` shape the app expects.
+    """
+    username = request.data.get("username", "")
+    password = request.data.get("password", "")
+    user = authenticate(request, username=username, password=password)
+    if user is None:
+        return Response({"detail": "Invalid username or password."},
+                        status=drf_status.HTTP_401_UNAUTHORIZED)
+    if not user.is_active:
+        return Response({"detail": "This account is inactive."},
+                        status=drf_status.HTTP_403_FORBIDDEN)
+    instance, token = AuthToken.objects.create(user)
+    return Response({"token": token, "expiry": instance.expiry})
 
 
 @api_view(["GET"])

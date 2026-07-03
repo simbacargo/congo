@@ -108,6 +108,12 @@ export default function ProfileScreen() {
           onPress={() => router.push("/verify")}
         />
         <ActionRow
+          icon="print"
+          label="Thermal Printer"
+          sub="Select the Bluetooth receipt printer"
+          onPress={() => router.push("/settings/printer")}
+        />
+        <ActionRow
           icon="cloud-upload"
           label="View Pending Transactions"
           sub="Records awaiting sync"

@@ -20,6 +20,7 @@ class MyUserAdmin(UserAdmin):
 		'is_active',
 		'is_staff',
 		'is_admin',
+        'role',
 		# 'is_admin',
      )
 

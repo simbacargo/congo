@@ -129,6 +129,15 @@ class Transaction(models.Model):
     )
     notes = models.TextField(null=True, blank=True)
 
+    # Loose link to the Driver who paid this levy. Stored as a normalized
+    # (digits-only) phone rather than a FK so field agents can record a driver
+    # without the driver having to be a pre-existing record. Matched against
+    # Driver.phone (also normalized) to surface a driver's transaction history.
+    driver_phone = models.CharField(
+        max_length=30, db_index=True, null=True, blank=True,
+        help_text="Normalized phone of the driver who paid this levy.",
+    )
+
     # Offline sync support
     sync_id = models.CharField(max_length=64, unique=True, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)

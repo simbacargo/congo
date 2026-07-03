@@ -1,8 +1,9 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { printReceipt } from "../../lib/print";
+import { NoPrinterError, printReceipt } from "../../lib/print";
 
 export default function SuccessScreen() {
   const params = useLocalSearchParams<{
@@ -20,23 +21,45 @@ export default function SuccessScreen() {
   }>();
 
   const isOffline = params.offline === "true";
+  const [printing, setPrinting] = useState(false);
 
   async function handlePrint() {
-    const agent = (await AsyncStorage.getItem("agent_username")) ?? "Agent";
-    await printReceipt({
-      receiptCode: params.receiptCode,
-      companyName: params.companyName,
-      stationName: params.stationName,
-      churchName: params.churchName,
-      fuelType: params.fuelType,
-      currencyUsed: params.currency,
-      amountUsd: params.amountUsd,
-      amountCdf: params.amountCdf,
-      levyUsd: params.levyUsd,
-      levyCdf: params.levyCdf,
-      agentName: agent,
-      date: new Date().toLocaleString(),
-    });
+    setPrinting(true);
+    try {
+      const agent = (await AsyncStorage.getItem("agent_username")) ?? "Agent";
+      await printReceipt({
+        receiptCode: params.receiptCode,
+        companyName: params.companyName,
+        stationName: params.stationName,
+        churchName: params.churchName,
+        fuelType: params.fuelType,
+        currencyUsed: params.currency,
+        amountUsd: params.amountUsd,
+        amountCdf: params.amountCdf,
+        levyUsd: params.levyUsd,
+        levyCdf: params.levyCdf,
+        agentName: agent,
+        date: new Date().toLocaleString(),
+      });
+    } catch (e) {
+      if (e instanceof NoPrinterError) {
+        Alert.alert(
+          "No Printer Selected",
+          "Choose your Bluetooth thermal printer, then print again.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Select Printer", onPress: () => router.push("/settings/printer") },
+          ],
+        );
+      } else {
+        Alert.alert(
+          "Print Failed",
+          (e as Error)?.message ?? "Could not reach the printer. Check it is on and in range.",
+        );
+      }
+    } finally {
+      setPrinting(false);
+    }
   }
 
   return (
@@ -85,9 +108,15 @@ export default function SuccessScreen() {
       </View>
 
       {/* Actions */}
-      <Pressable style={styles.printBtn} onPress={handlePrint}>
-        <FontAwesome name="print" size={16} color="#fff" />
-        <Text style={styles.printBtnText}>Print Receipt</Text>
+      <Pressable style={[styles.printBtn, printing && { opacity: 0.6 }]} onPress={handlePrint} disabled={printing}>
+        {printing ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <>
+            <FontAwesome name="print" size={16} color="#fff" />
+            <Text style={styles.printBtnText}>Print Receipt</Text>
+          </>
+        )}
       </Pressable>
 
       <Pressable style={styles.doneBtn} onPress={() => router.replace("/(tabs)")}>

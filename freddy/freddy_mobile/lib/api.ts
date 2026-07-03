@@ -34,6 +34,7 @@ export interface TransactionPayload {
   amount_usd: string;
   amount_cdf: string;
   notes?: string;
+  driver_phone?: string;
   sync_id: string;
   created_at?: string;
 }
@@ -61,16 +62,36 @@ async function getAuthHeader(): Promise<Record<string, string>> {
   return token ? { Authorization: `Token ${token}` } : {};
 }
 
+const REQUEST_TIMEOUT_MS = 15000;
+
 async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const authHeader = await getAuthHeader();
-  const resp = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader,
-      ...(options.headers as Record<string, string>),
-    },
-  });
+
+  // Abort the request if the server never responds (e.g. wrong apiBase or the
+  // phone isn't on the same network) so callers fail fast instead of spinning
+  // forever.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  let resp: Response;
+  try {
+    resp = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeader,
+        ...(options.headers as Record<string, string>),
+      },
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(`Couldn't reach the server at ${API_BASE}. Check the connection.`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!resp.ok) {
     if (resp.status === 401) {
@@ -127,6 +148,30 @@ export async function isSessionExpired(): Promise<boolean> {
   const expiry = await AsyncStorage.getItem("auth_token_expiry");
   if (!expiry) return false;
   return new Date(expiry) <= new Date();
+}
+
+export async function clearExpiredSession(): Promise<boolean> {
+  const expired = await isSessionExpired();
+  if (expired) {
+    await AsyncStorage.multiRemove([
+      "auth_token",
+      "auth_token_expiry",
+      "agent_username",
+      "agent_profile",
+    ]);
+    return true;
+  }
+  return false;
+}
+
+export async function validateSession(): Promise<boolean> {
+  const token = await AsyncStorage.getItem("auth_token");
+  if (!token) return false;
+
+  const wasCleared = await clearExpiredSession();
+  if (wasCleared) return false;
+
+  return true;
 }
 
 export async function fetchCurrencyRate(): Promise<number> {
@@ -191,6 +236,57 @@ export async function syncOfflineTransactions(transactions: TransactionPayload[]
 
 export async function verifyReceipt(receiptCode: string) {
   return apiFetch(`/api/verify/${receiptCode}/`);
+}
+
+export interface DriverInfo {
+  id: string;
+  full_name: string | null;
+  phone: string | null;
+  gender: string | null;
+  commune: string | null;
+  quartier: string | null;
+  vehicle_type: string | null;
+  vehicle_color: string | null;
+  fuel_type: string | null;
+}
+
+export interface DriverTransaction {
+  id: string;
+  receipt_code: string;
+  church_name: string;
+  station_name: string;
+  fuel_type_name: string;
+  currency_used: "USD" | "CDF";
+  amount_usd: string;
+  levy_amount_usd: string;
+  status: string;
+  created_at: string;
+}
+
+export interface DriverLookup {
+  driver: DriverInfo;
+  transactions: DriverTransaction[];
+  summary: {
+    count: number;
+    total_levy_usd: string;
+    total_amount_usd: string;
+  };
+}
+
+/**
+ * Extract a driver UUID from a scanned QR code. The driver ID card encodes
+ * the absolute driver-detail URL (e.g. ".../drivers/<uuid>/"), but we also
+ * accept a bare UUID in case the QR payload changes.
+ */
+export function parseDriverId(scanned: string): string | null {
+  const fromUrl = scanned.match(/drivers\/([0-9a-fA-F-]{36})/);
+  if (fromUrl) return fromUrl[1];
+  const bare = scanned.trim().match(/^[0-9a-fA-F-]{36}$/);
+  return bare ? bare[0] : null;
+}
+
+export async function fetchDriver(id: string): Promise<DriverLookup> {
+  return apiFetch(`/api/drivers/${id}/`);
 }
 
 export async function fetchProfile(): Promise<AgentProfile | null> {

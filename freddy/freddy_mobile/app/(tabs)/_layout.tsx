@@ -42,6 +42,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="scan"
+        options={{
+          title: "Scan",
+          headerTitle: "Scan Driver",
+          tabBarIcon: ({ color }) => <TabIcon name="qrcode" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="analytics"
         options={{
           title: "Analytics",
