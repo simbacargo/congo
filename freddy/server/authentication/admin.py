@@ -7,21 +7,24 @@ from .models import *
 admin.site.register(Subscription)
 
 class MyUserAdmin(UserAdmin):
-	list_display =	('id','username','email')
+	list_display =	('id','username','email','role','assigned_station')
 # 	search_fields =	('username','email')
 # 	# readonly_fields =	('username','email')
 # 	filter_horizontal=()
-# 	list_filter=()
+	list_filter=('role','assigned_station')
 	fieldsets=()
 	fields = (
 		'firstname',
 		'lastname',
 		'username',
+		'email',
+		'password',
 		'is_active',
 		'is_staff',
 		'is_admin',
         'role',
-		# 'is_admin',
+		'assigned_station',
+		'managed_company',
      )
 
 
