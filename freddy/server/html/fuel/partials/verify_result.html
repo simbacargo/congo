@@ -1,11 +1,11 @@
 {% load i18n %}
 {% if tx %}
-<div class="rounded-xl border overflow-hidden" style="border-color:#166534;">
-  <div class="px-5 py-3 flex items-center gap-2" style="background:#052e16;">
-    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-    <span class="font-semibold text-green-300">{% trans "Valid Receipt" %}</span>
+<div class="card overflow-hidden" style="border-color: #bbe5c8;">
+  <div class="px-5 py-3 flex items-center gap-2" style="background: var(--color-ok-soft);">
+    <svg class="w-5 h-5" style="color: var(--color-ok);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <span class="font-semibold" style="color: var(--color-ok);">{% trans "Valid Receipt" %}</span>
   </div>
-  <div class="p-5 grid grid-cols-2 gap-3 text-sm" style="background:var(--surface);">
+  <div class="p-5 grid grid-cols-2 gap-3 text-sm">
     {% include "fuel/partials/_detail_row.html" with label=_("Receipt Code") value=tx.receipt_code %}
     {% include "fuel/partials/_detail_row.html" with label=_("Company") value=tx.station.company.name %}
     {% include "fuel/partials/_detail_row.html" with label=_("Station") value=tx.station.name %}
@@ -13,9 +13,9 @@
     {% include "fuel/partials/_detail_row.html" with label=_("Fuel Type") value=tx.fuel_type.name %}
     {% include "fuel/partials/_detail_row.html" with label=_("Amount (USD)") value=tx.amount_usd %}
     {% include "fuel/partials/_detail_row.html" with label=_("Amount (CDF)") value=tx.amount_cdf %}
-    <div class="col-span-2 rounded-lg p-3 flex justify-between items-center" style="background:#052e16;">
-      <span class="text-sm font-semibold text-green-300">{% trans "2% Charity Levy" %}</span>
-      <span class="text-lg font-bold text-green-400">${{ tx.levy_amount_usd }}</span>
+    <div class="col-span-2 rounded-lg p-3 flex justify-between items-center" style="background: var(--color-ok-soft);">
+      <span class="text-sm font-semibold" style="color: var(--color-ok);">{% trans "2% Charity Levy" %}</span>
+      <span class="text-lg font-bold money">${{ tx.levy_amount_usd }}</span>
     </div>
     {% include "fuel/partials/_detail_row.html" with label=_("Status") value=tx.get_status_display %}
     {% include "fuel/partials/_detail_row.html" with label=_("Date") value=tx.created_at %}
@@ -23,9 +23,9 @@
   </div>
 </div>
 {% elif code %}
-<div class="rounded-xl border p-5 text-center" style="background:var(--surface); border-color:#7f1d1d;">
-  <svg class="w-8 h-8 text-red-400 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-  <p class="font-semibold text-red-300">{% trans "Receipt Not Found" %}</p>
-  <p class="text-xs mt-1" style="color:var(--muted);">{% blocktrans with code=code %}Code "{{ code }}" does not match any transaction.{% endblocktrans %}</p>
+<div class="card p-5 text-center" style="border-color: #f3c2c2;">
+  <svg class="w-8 h-8 text-danger mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+  <p class="font-semibold text-danger">{% trans "Receipt Not Found" %}</p>
+  <p class="text-xs mt-1 text-muted">{% blocktrans with code=code %}Code "{{ code }}" does not match any transaction.{% endblocktrans %}</p>
 </div>
 {% endif %}

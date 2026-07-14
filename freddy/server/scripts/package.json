@@ -1,0 +1,9 @@
+{
+  "name": "freddy-css-build",
+  "private": true,
+  "description": "Dev-only Tailwind build helper; run ../scripts/build_css.sh. Not needed at runtime.",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4",
+    "tailwindcss": "^4"
+  }
+}

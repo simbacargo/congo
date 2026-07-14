@@ -4,35 +4,34 @@
   Usage: {% include "fuel/partials/_form_page.html" with form=form title="…" back_url=back_url %}
 {% endcomment %}
 <div class="max-w-2xl mx-auto">
-  <div class="rounded-xl border overflow-hidden" style="border-color:var(--border);">
-    <div class="px-6 py-4 border-b" style="background:var(--surface); border-color:var(--border);">
-      <h2 class="font-semibold text-white">{{ title }}</h2>
+  <div class="card overflow-hidden">
+    <div class="px-6 py-4 border-b border-line bg-surface-2">
+      <h2 class="font-semibold">{{ title }}</h2>
     </div>
-    <div class="p-6" style="background:var(--surface);">
+    <div class="p-6">
       <form method="post" enctype="multipart/form-data" class="space-y-4">
         {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="alert alert-error"><div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div></div>
+        {% endif %}
         {% for field in form %}
         <div>
-          <label class="block text-xs font-medium mb-1 text-gray-400">
-            {{ field.label }}{% if field.field.required %}<span class="text-red-400 ml-0.5">*</span>{% endif %}
+          <label class="field-label" for="{{ field.id_for_label }}">
+            {{ field.label }}{% if field.field.required %}<span class="text-danger ml-0.5">*</span>{% endif %}
           </label>
           {{ field }}
           {% if field.errors %}
-          <p class="text-xs text-red-400 mt-1">{{ field.errors|join:", " }}</p>
+          <p class="text-xs text-danger mt-1">{{ field.errors|join:", " }}</p>
           {% endif %}
           {% if field.help_text %}
-          <p class="text-xs mt-1" style="color:var(--muted);">{{ field.help_text }}</p>
+          <p class="text-xs text-muted mt-1">{{ field.help_text }}</p>
           {% endif %}
         </div>
         {% endfor %}
         <div class="flex gap-3 pt-2">
-          <button type="submit"
-                  class="px-5 py-2 rounded-lg text-sm font-semibold text-white transition"
-                  style="background:var(--accent);">{% trans "Save" %}</button>
+          <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
           {% if back_url %}
-          <a href="{{ back_url }}"
-             class="px-5 py-2 rounded-lg text-sm font-medium transition"
-             style="background:var(--surface2); color:var(--muted);">{% trans "Cancel" %}</a>
+          <a href="{{ back_url }}" class="btn btn-quiet">{% trans "Cancel" %}</a>
           {% endif %}
         </div>
       </form>

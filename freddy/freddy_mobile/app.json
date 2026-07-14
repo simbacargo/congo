@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "freddy_mobile",
+    "name": "kd-charity",
     "slug": "freddy_mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "freddymobile",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -21,8 +20,6 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
       "package": "com.nsaro.freddy_mobile"
     },
     "web": {
@@ -44,7 +41,19 @@
           "peripheralUsageDescription": "Allow Freddy to connect to Bluetooth thermal printers to print receipts.",
           "alwaysUsageDescription": "Allow Freddy to connect to Bluetooth thermal printers to print receipts."
         }
-      ]
+      ],
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "buildToolsVersion": "36.0.0"
+          }
+        }
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

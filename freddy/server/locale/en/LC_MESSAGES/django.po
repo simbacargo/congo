@@ -1,6 +1,111 @@
 # English translations for LCI Office (source language)
 msgid ""
 msgstr ""
+"Language: en\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
+
+msgid "Apply filters"
+msgstr "Apply filters"
+
+msgid "Back to driver"
+msgstr "Back to driver"
+
+msgid "CARTE DE CONSOMMATION DE CARBURANT POUR LA SANTE"
+msgstr "CARTE DE CONSOMMATION DE CARBURANT POUR LA SANTE"
+
+msgid "Date d'expiration"
+msgstr "Date d'expiration"
+
+msgid "Date de livraison"
+msgstr "Date de livraison"
+
+msgid "Date range"
+msgstr "Date range"
+
+msgid "Dismiss"
+msgstr "Dismiss"
+
+msgid "ID Card"
+msgstr "ID Card"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Levy Trend (USD)"
+msgstr "Levy Trend (USD)"
+
+msgid "Loading…"
+msgstr "Loading…"
+
+msgid "Lubumbashi Charity Fuel Initiative"
+msgstr "Lubumbashi Charity Fuel Initiative"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "No churches linked."
+msgstr "No churches linked."
+
+msgid "No stations for this company."
+msgstr "No stations for this company."
+
+msgid "Nom du porteur de la carte"
+msgstr "Nom du porteur de la carte"
+
+msgid "Numéro de la carte"
+msgstr "Numéro de la carte"
+
+msgid "Pagination"
+msgstr "Pagination"
+
+msgid "Print card"
+msgstr "Print card"
+
+msgid "QR Code"
+msgstr "QR Code"
+
+msgid "QR code linking to this driver profile"
+msgstr "QR code linking to this driver profile"
+
+msgid "REPUBLIQUE DEMOCRATIQUE DU CONGO"
+msgstr "REPUBLIQUE DEMOCRATIQUE DU CONGO"
+
+msgid "Scan to open this driver's profile"
+msgstr "Scan to open this driver's profile"
+
+msgid "Showing %(start)s–%(end)s of %(total)s"
+msgstr "Showing %(start)s–%(end)s of %(total)s"
+
+msgid "Si vous ramassez cette carte, veuillez contacter"
+msgstr "Si vous ramassez cette carte, veuillez contacter"
+
+msgid "Top Stations This Month"
+msgstr "Top Stations This Month"
+
+msgid "User ID card"
+msgstr "User ID card"
+
+msgid "Users & Agents"
+msgstr "Users & Agents"
+
+msgid "View detail"
+msgstr "View detail"
+
+msgid "beneficiaries"
+msgstr "beneficiaries"
+
+msgid "churches"
+msgstr "churches"
+
+msgid "days"
+msgstr "days"
+
+msgid "levy"
+msgstr "levy"
+
+msgid "no target set"
+msgstr "no target set"
+
+msgid "of target"
+msgstr "of target"

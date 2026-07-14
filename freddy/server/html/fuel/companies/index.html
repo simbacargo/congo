@@ -4,63 +4,16 @@
 {% block page_title %}{% trans "Parent Companies" %}{% endblock %}
 {% block page_subtitle %}{{ companies|length }} {% trans "registered" %}{% endblock %}
 {% block header_actions %}
-<a href="{% url 'fuel:company-create' %}" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition" style="background:var(--accent);">+ {% trans "New Company" %}</a>
+<a href="{% url 'fuel:company-create' %}" class="btn btn-primary">+ {% trans "New Company" %}</a>
 {% endblock %}
 {% block content %}
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
   {% for c in companies %}
-  <div class="rounded-xl border p-5 flex flex-col gap-3" style="background:var(--surface); border-color:var(--border);">
-    <div class="flex items-start justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-blue-700 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
-          {{ c.code|slice:":2" }}
-        </div>
-        <div>
-          <p class="font-semibold text-white text-sm">{{ c.name }}</p>
-          <p class="text-xs" style="color:var(--muted);">{{ c.code }}</p>
-        </div>
-      </div>
-      <span class="text-xs px-2 py-0.5 rounded-full {% if c.is_active %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-400{% endif %}">
-        {% if c.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}
-      </span>
-    </div>
-
-    <div class="grid grid-cols-3 gap-2 text-center text-xs">
-      <div class="rounded-lg py-2" style="background:var(--surface2);">
-        <p class="font-bold text-white text-base">{{ c.station_count }}</p>
-        <p style="color:var(--muted);">{% trans "Stations" %}</p>
-      </div>
-      <div class="rounded-lg py-2" style="background:var(--surface2);">
-        <p class="font-bold text-white text-base">{{ c.tx_count }}</p>
-        <p style="color:var(--muted);">{% trans "Transactions" %}</p>
-      </div>
-      <div class="rounded-lg py-2" style="background:var(--surface2);">
-        <p class="font-bold text-green-400 text-base">${{ c.total_levy|default:0|floatformat:0 }}</p>
-        <p style="color:var(--muted);">{% trans "Levy" %}</p>
-      </div>
-    </div>
-
-    <div class="text-xs" style="color:var(--muted);">
-      {% if c.contact_email %}📧 {{ c.contact_email }}{% endif %}
-      {% if c.contact_phone %} · 📞 {{ c.contact_phone }}{% endif %}
-    </div>
-
-    <div class="flex gap-2 mt-auto">
-      <button class="flex-1 py-1.5 rounded-lg text-xs text-center transition hover:bg-blue-900/30"
-              style="background:var(--surface2); color:var(--text);"
-              hx-get="{% url 'fuel:company-detail' c.id %}"
-              hx-target="#drill-panel"
-              hx-swap="innerHTML">
-        {% trans "Drill-down" %}
-      </button>
-      <a href="{% url 'fuel:company-edit' c.id %}"
-         class="flex-1 py-1.5 rounded-lg text-xs text-center transition hover:bg-blue-900/30"
-         style="background:var(--surface2); color:var(--text);">{% trans "Edit" %}</a>
-    </div>
-  </div>
+  {% include "fuel/partials/company_row.html" with company=c %}
   {% empty %}
-  <div class="col-span-3 py-20 text-center" style="color:var(--muted);">
-    {% trans "No companies yet." %} <a href="{% url 'fuel:company-create' %}" class="text-blue-400 hover:underline">{% trans "Add one" %} →</a>
+  <div class="col-span-full">
+    {% url 'fuel:company-create' as create_url %}
+    {% include "fuel/partials/_empty_state.html" with message=_("No companies yet.") action_url=create_url action_label=_("Add one →") %}
   </div>
   {% endfor %}
 </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -15,8 +15,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchCurrencyRate, fetchProfile, AgentProfile } from "../../lib/api";
 import { flushOfflineQueue } from "../../lib/sync";
 import { getLocalStats, getRecentTxs, LocalStats, OfflineTx } from "../../lib/db";
+import { useTheme } from "../../lib/ThemeContext";
+import { useLanguage } from "../../lib/LanguageContext";
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+  const styles = getStyles(colors);
+
   const [profile, setProfile] = useState<AgentProfile | null>(null);
   const [rate, setRate] = useState<number | null>(null);
   const [stats, setStats] = useState<LocalStats | null>(null);
@@ -49,10 +55,10 @@ export default function HomeScreen() {
       const { synced, failed } = await flushOfflineQueue();
       await load();
       if (synced > 0 || failed > 0) {
-        Alert.alert("Sync Complete", `${synced} synced${failed > 0 ? `, ${failed} failed` : ""}.`);
+        Alert.alert(t("home.sync.complete"), `${synced} ${t("home.sync.synced")}${failed > 0 ? `, ${failed} ${t("home.sync.failed")}` : ""}.`);
       }
     } catch (e: any) {
-      Alert.alert("Sync Failed", e.message ?? "Network error");
+      Alert.alert(t("home.sync.failed.title"), e.message ?? "Network error");
     } finally {
       setSyncing(false);
     }
@@ -66,9 +72,9 @@ export default function HomeScreen() {
 
   const greeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 17) return "Good afternoon";
-    return "Good evening";
+    if (h < 12) return t("home.greeting.morning");
+    if (h < 17) return t("home.greeting.afternoon");
+    return t("home.greeting.evening");
   };
 
   const agentName = profile?.username ?? "Agent";
@@ -77,13 +83,13 @@ export default function HomeScreen() {
     <ScrollView
       style={styles.root}
       contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3b82f6" />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
     >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.logoCircle}>
-            <FontAwesome name="tint" size={18} color="#3b82f6" />
+            <FontAwesome name="tint" size={18} color={colors.primary} />
           </View>
           <View>
             <Text style={styles.greeting}>{greeting()},</Text>
@@ -98,14 +104,14 @@ export default function HomeScreen() {
         <Pressable style={styles.syncBanner} onPress={handleSync} disabled={syncing}>
           {syncing ? (
             <View style={styles.syncRow}>
-              <ActivityIndicator size="small" color="#fef3c7" />
-              <Text style={styles.syncText}>Syncing…</Text>
+              <ActivityIndicator size="small" color={colors.warning} />
+              <Text style={styles.syncText}>{t("home.syncing")}</Text>
             </View>
           ) : (
             <View style={styles.syncRow}>
-              <FontAwesome name="cloud-upload" size={14} color="#fef3c7" />
+              <FontAwesome name="cloud-upload" size={14} color={colors.warning} />
               <Text style={styles.syncText}>
-                {stats!.pendingCount} pending — Tap to sync
+                {stats!.pendingCount} {t("home.pending.tap")}
               </Text>
             </View>
           )}
@@ -116,40 +122,43 @@ export default function HomeScreen() {
       <View style={styles.statsRow}>
         <StatCard
           icon="calendar-o"
-          iconColor="#60a5fa"
+          iconColor={colors.primary}
           value={String(stats?.todayCount ?? 0)}
-          label="Today"
+          label={t("home.today")}
+          styles={styles}
         />
         <StatCard
           icon="dollar"
-          iconColor="#34d399"
+          iconColor={colors.success}
           value={`$${(stats?.todayLevyUsd ?? 0).toFixed(2)}`}
-          label="Today's Levy"
+          label={t("home.today.levy")}
+          styles={styles}
         />
         <StatCard
           icon="clock-o"
-          iconColor="#f59e0b"
+          iconColor={colors.warning}
           value={String(stats?.pendingCount ?? 0)}
-          label="Pending"
+          label={t("home.pending")}
+          styles={styles}
         />
       </View>
 
       {/* Exchange rate */}
       <View style={styles.rateCard}>
         <View style={styles.rateLeft}>
-          <Text style={styles.rateLabel}>LIVE RATE</Text>
+          <Text style={styles.rateLabel}>{t("home.live.rate")}</Text>
           {rate ? (
             <Text style={styles.rateValue}>1 USD = {rate.toLocaleString()} CDF</Text>
           ) : (
-            <Text style={[styles.rateValue, { color: "#475569", fontSize: 16 }]}>
-              Rate unavailable
+            <Text style={[styles.rateValue, { color: colors.textSecondary, fontSize: 16 }]}>
+              {t("home.rate.unavailable")}
             </Text>
           )}
         </View>
         <View style={[styles.rateBadge, online ? styles.rateBadgeOnline : styles.rateBadgeOffline]}>
-          <FontAwesome name={online ? "wifi" : "ban"} size={11} color={online ? "#4ade80" : "#94a3b8"} />
-          <Text style={[styles.rateBadgeText, { color: online ? "#4ade80" : "#94a3b8" }]}>
-            {online ? "Online" : "Offline"}
+          <FontAwesome name={online ? "wifi" : "ban"} size={11} color={online ? colors.success : colors.textSecondary} />
+          <Text style={[styles.rateBadgeText, { color: online ? colors.success : colors.textSecondary }]}>
+            {online ? t("online") : t("offline")}
           </Text>
         </View>
       </View>
@@ -158,40 +167,40 @@ export default function HomeScreen() {
       <Pressable style={styles.ctaBtn} onPress={() => router.push("/transaction/new")}>
         <View style={styles.ctaInner}>
           <View style={styles.ctaIconWrap}>
-            <FontAwesome name="plus" size={18} color="#fff" />
+            <FontAwesome name="plus" size={18} color={colors.onPrimary} />
           </View>
           <View>
-            <Text style={styles.ctaTitle}>New Transaction</Text>
-            <Text style={styles.ctaSub}>Record a fuel sale with 2% levy</Text>
+            <Text style={styles.ctaTitle}>{t("home.new.transaction")}</Text>
+            <Text style={styles.ctaSub}>{t("home.new.transaction.sub")}</Text>
           </View>
         </View>
-        <FontAwesome name="chevron-right" size={14} color="#93c5fd" />
+        <FontAwesome name="chevron-right" size={14} color={colors.onPrimary} />
       </Pressable>
 
       {/* Quick actions */}
       <View style={styles.quickRow}>
         <Pressable style={styles.quickCard} onPress={() => router.push("/verify")}>
-          <FontAwesome name="check-circle-o" size={20} color="#818cf8" />
-          <Text style={styles.quickLabel}>Verify Receipt</Text>
+          <FontAwesome name="check-circle-o" size={20} color={colors.accent} />
+          <Text style={styles.quickLabel}>{t("home.verify.receipt")}</Text>
         </Pressable>
         <Pressable style={styles.quickCard} onPress={() => router.push("/(tabs)/history")}>
-          <FontAwesome name="list-ul" size={20} color="#818cf8" />
-          <Text style={styles.quickLabel}>All History</Text>
+          <FontAwesome name="list-ul" size={20} color={colors.accent} />
+          <Text style={styles.quickLabel}>{t("home.all.history")}</Text>
         </Pressable>
         <Pressable style={styles.quickCard} onPress={() => router.push("/(tabs)/analytics")}>
-          <FontAwesome name="bar-chart" size={20} color="#818cf8" />
-          <Text style={styles.quickLabel}>Analytics</Text>
+          <FontAwesome name="bar-chart" size={20} color={colors.accent} />
+          <Text style={styles.quickLabel}>{t("nav.analytics")}</Text>
         </Pressable>
       </View>
 
       {/* Monthly summary */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>This Month</Text>
+        <Text style={styles.sectionTitle}>{t("home.this.month")}</Text>
         <View style={styles.monthGrid}>
-          <MonthStat label="Transactions" value={String(stats?.monthCount ?? 0)} />
-          <MonthStat label="Levy Collected" value={`$${(stats?.monthLevyUsd ?? 0).toFixed(2)}`} highlight />
-          <MonthStat label="Synced" value={String(stats?.syncedCount ?? 0)} />
-          <MonthStat label="Total All-Time" value={String(stats?.totalCount ?? 0)} />
+          <MonthStat label={t("home.transactions")} value={String(stats?.monthCount ?? 0)} styles={styles} />
+          <MonthStat label={t("home.levy.collected")} value={`$${(stats?.monthLevyUsd ?? 0).toFixed(2)}`} highlight styles={styles} colors={colors} />
+          <MonthStat label={t("home.synced")} value={String(stats?.syncedCount ?? 0)} styles={styles} />
+          <MonthStat label={t("home.total.alltime")} value={String(stats?.totalCount ?? 0)} styles={styles} />
         </View>
       </View>
 
@@ -199,9 +208,9 @@ export default function HomeScreen() {
       {recent.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent</Text>
+            <Text style={styles.sectionTitle}>{t("home.recent")}</Text>
             <Pressable onPress={() => router.push("/(tabs)/history")}>
-              <Text style={styles.sectionLink}>See all</Text>
+              <Text style={styles.sectionLink}>{t("home.see.all")}</Text>
             </Pressable>
           </View>
           {recent.map((tx) => (
@@ -217,7 +226,7 @@ export default function HomeScreen() {
               <View style={styles.recentRight}>
                 <Text style={styles.recentLevy}>${parseFloat(tx.levy_preview).toFixed(4)}</Text>
                 <View style={[styles.recentBadge, tx.synced ? styles.badgeSynced : styles.badgePending]}>
-                  <Text style={styles.recentBadgeText}>{tx.synced ? "Synced" : "Pending"}</Text>
+                  <Text style={styles.recentBadgeText}>{tx.synced ? t("synced") : t("pending")}</Text>
                 </View>
               </View>
             </Pressable>
@@ -227,14 +236,14 @@ export default function HomeScreen() {
 
       {/* Levy info footer */}
       <View style={styles.levyInfo}>
-        <FontAwesome name="info-circle" size={12} color="#334155" />
-        <Text style={styles.levyInfoText}>2% charity levy supports the LCI humanitarian fund</Text>
+        <FontAwesome name="info-circle" size={12} color={colors.textSecondary} />
+        <Text style={styles.levyInfoText}>{t("home.levy.footer")}</Text>
       </View>
     </ScrollView>
   );
 }
 
-function StatCard({ icon, iconColor, value, label }: { icon: string; iconColor: string; value: string; label: string }) {
+function StatCard({ icon, iconColor, value, label, styles }: { icon: string; iconColor: string; value: string; label: string; styles: any }) {
   return (
     <View style={styles.statCard}>
       <FontAwesome name={icon as any} size={16} color={iconColor} style={{ marginBottom: 6 }} />
@@ -244,114 +253,116 @@ function StatCard({ icon, iconColor, value, label }: { icon: string; iconColor: 
   );
 }
 
-function MonthStat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function MonthStat({ label, value, highlight, styles, colors }: { label: string; value: string; highlight?: boolean; styles: any; colors?: any }) {
   return (
     <View style={styles.monthStat}>
-      <Text style={[styles.monthValue, highlight && { color: "#34d399" }]}>{value}</Text>
+      <Text style={[styles.monthValue, highlight && { color: colors?.success }]}>{value}</Text>
       <Text style={styles.monthLabel}>{label}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0a0f1e" },
-  content: { paddingHorizontal: 20, paddingTop: 56, paddingBottom: 32 },
+function getStyles(colors: any) {
+  return StyleSheet.create({
+    root: { flex: 1, backgroundColor: colors.background },
+    content: { paddingHorizontal: 20, paddingTop: 56, paddingBottom: 32 },
 
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
-  headerLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
-  logoCircle: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: "#0f2040", borderWidth: 1, borderColor: "#1e3a5f",
-    justifyContent: "center", alignItems: "center",
-  },
-  greeting: { fontSize: 12, color: "#475569" },
-  agentName: { fontSize: 17, fontWeight: "700", color: "#f8fafc" },
-  statusDot: { width: 10, height: 10, borderRadius: 5 },
-  statusOnline: { backgroundColor: "#22c55e" },
-  statusOffline: { backgroundColor: "#475569" },
+    header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
+    headerLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
+    logoCircle: {
+      width: 40, height: 40, borderRadius: 20,
+      backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.border,
+      justifyContent: "center", alignItems: "center",
+    },
+    greeting: { fontSize: 12, color: colors.textSecondary },
+    agentName: { fontSize: 17, fontWeight: "700", color: colors.text },
+    statusDot: { width: 10, height: 10, borderRadius: 5 },
+    statusOnline: { backgroundColor: colors.success },
+    statusOffline: { backgroundColor: colors.textSecondary },
 
-  syncBanner: {
-    backgroundColor: "#451a03", borderWidth: 1, borderColor: "#78350f",
-    borderRadius: 12, padding: 12, marginBottom: 16,
-  },
-  syncRow: { flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center" },
-  syncText: { color: "#fef3c7", fontWeight: "600", fontSize: 13 },
+    syncBanner: {
+      backgroundColor: colors.warningBg, borderWidth: 1, borderColor: colors.warningBorder,
+      borderRadius: 12, padding: 12, marginBottom: 16,
+    },
+    syncRow: { flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center" },
+    syncText: { color: colors.warning, fontWeight: "600", fontSize: 13 },
 
-  statsRow: { flexDirection: "row", gap: 10, marginBottom: 16 },
-  statCard: {
-    flex: 1, backgroundColor: "#111827", borderRadius: 14,
-    padding: 14, alignItems: "center", borderWidth: 1, borderColor: "#1e2d45",
-  },
-  statValue: { fontSize: 20, fontWeight: "800", color: "#f8fafc" },
-  statLabel: { fontSize: 10, color: "#475569", marginTop: 2, textAlign: "center" },
+    statsRow: { flexDirection: "row", gap: 10, marginBottom: 16 },
+    statCard: {
+      flex: 1, backgroundColor: colors.surface, borderRadius: 14,
+      padding: 14, alignItems: "center", borderWidth: 1, borderColor: colors.border,
+    },
+    statValue: { fontSize: 20, fontWeight: "800", color: colors.text },
+    statLabel: { fontSize: 10, color: colors.textSecondary, marginTop: 2, textAlign: "center" },
 
-  rateCard: {
-    backgroundColor: "#111827", borderRadius: 14, padding: 16,
-    borderWidth: 1, borderColor: "#1e2d45", marginBottom: 16,
-    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-  },
-  rateLeft: {},
-  rateLabel: { fontSize: 10, color: "#334155", letterSpacing: 1.5, marginBottom: 4 },
-  rateValue: { fontSize: 20, fontWeight: "700", color: "#34d399" },
-  rateBadge: {
-    flexDirection: "row", alignItems: "center", gap: 4,
-    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, borderWidth: 1,
-  },
-  rateBadgeOnline: { backgroundColor: "#052e16", borderColor: "#166534" },
-  rateBadgeOffline: { backgroundColor: "#1e293b", borderColor: "#334155" },
-  rateBadgeText: { fontSize: 11, fontWeight: "600" },
+    rateCard: {
+      backgroundColor: colors.surface, borderRadius: 14, padding: 16,
+      borderWidth: 1, borderColor: colors.border, marginBottom: 16,
+      flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+    },
+    rateLeft: {},
+    rateLabel: { fontSize: 10, color: colors.textSecondary, letterSpacing: 1.5, marginBottom: 4 },
+    rateValue: { fontSize: 20, fontWeight: "700", color: colors.success },
+    rateBadge: {
+      flexDirection: "row", alignItems: "center", gap: 4,
+      paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, borderWidth: 1,
+    },
+    rateBadgeOnline: { backgroundColor: colors.successBg, borderColor: colors.successBorder },
+    rateBadgeOffline: { backgroundColor: colors.surfaceAlt, borderColor: colors.border },
+    rateBadgeText: { fontSize: 11, fontWeight: "600" },
 
-  ctaBtn: {
-    backgroundColor: "#1d4ed8", borderRadius: 16, padding: 18, marginBottom: 16,
-    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-    borderWidth: 1, borderColor: "#2563eb",
-  },
-  ctaInner: { flexDirection: "row", alignItems: "center", gap: 14 },
-  ctaIconWrap: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: "#2563eb", justifyContent: "center", alignItems: "center",
-  },
-  ctaTitle: { fontSize: 16, fontWeight: "700", color: "#fff" },
-  ctaSub: { fontSize: 11, color: "#93c5fd", marginTop: 2 },
+    ctaBtn: {
+      backgroundColor: colors.primary, borderRadius: 16, padding: 18, marginBottom: 16,
+      flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+      borderWidth: 1, borderColor: colors.primary,
+    },
+    ctaInner: { flexDirection: "row", alignItems: "center", gap: 14 },
+    ctaIconWrap: {
+      width: 40, height: 40, borderRadius: 20,
+      backgroundColor: "rgba(255,255,255,0.2)", justifyContent: "center", alignItems: "center",
+    },
+    ctaTitle: { fontSize: 16, fontWeight: "700", color: colors.onPrimary },
+    ctaSub: { fontSize: 11, color: colors.onPrimary, opacity: 0.8, marginTop: 2 },
 
-  quickRow: { flexDirection: "row", gap: 10, marginBottom: 20 },
-  quickCard: {
-    flex: 1, backgroundColor: "#111827", borderRadius: 14,
-    padding: 14, alignItems: "center", gap: 8, borderWidth: 1, borderColor: "#1e2d45",
-  },
-  quickLabel: { fontSize: 10, color: "#64748b", fontWeight: "600", textAlign: "center" },
+    quickRow: { flexDirection: "row", gap: 10, marginBottom: 20 },
+    quickCard: {
+      flex: 1, backgroundColor: colors.surface, borderRadius: 14,
+      padding: 14, alignItems: "center", gap: 8, borderWidth: 1, borderColor: colors.border,
+    },
+    quickLabel: { fontSize: 10, color: colors.textSecondary, fontWeight: "600", textAlign: "center" },
 
-  section: { marginBottom: 20 },
-  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
-  sectionTitle: { fontSize: 13, fontWeight: "700", color: "#64748b", letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 12 },
-  sectionLink: { fontSize: 12, color: "#3b82f6", fontWeight: "600" },
+    section: { marginBottom: 20 },
+    sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
+    sectionTitle: { fontSize: 13, fontWeight: "700", color: colors.textSecondary, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 12 },
+    sectionLink: { fontSize: 12, color: colors.primary, fontWeight: "600" },
 
-  monthGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  monthStat: {
-    width: "47%", backgroundColor: "#111827", borderRadius: 12,
-    padding: 14, borderWidth: 1, borderColor: "#1e2d45",
-  },
-  monthValue: { fontSize: 18, fontWeight: "700", color: "#f8fafc" },
-  monthLabel: { fontSize: 11, color: "#475569", marginTop: 4 },
+    monthGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+    monthStat: {
+      width: "47%", backgroundColor: colors.surface, borderRadius: 12,
+      padding: 14, borderWidth: 1, borderColor: colors.border,
+    },
+    monthValue: { fontSize: 18, fontWeight: "700", color: colors.text },
+    monthLabel: { fontSize: 11, color: colors.textSecondary, marginTop: 4 },
 
-  recentRow: {
-    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-    backgroundColor: "#111827", borderRadius: 12, padding: 14, marginBottom: 8,
-    borderWidth: 1, borderColor: "#1e2d45",
-  },
-  recentLeft: { flex: 1, marginRight: 12 },
-  recentRight: { alignItems: "flex-end" },
-  recentChurch: { fontSize: 13, fontWeight: "600", color: "#f8fafc" },
-  recentMeta: { fontSize: 11, color: "#475569", marginTop: 2 },
-  recentLevy: { fontSize: 14, fontWeight: "700", color: "#34d399" },
-  recentBadge: { marginTop: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 20 },
-  badgeSynced: { backgroundColor: "#14532d" },
-  badgePending: { backgroundColor: "#451a03" },
-  recentBadgeText: { fontSize: 9, color: "#fff", fontWeight: "700" },
+    recentRow: {
+      flexDirection: "row", justifyContent: "space-between", alignItems: "center",
+      backgroundColor: colors.surface, borderRadius: 12, padding: 14, marginBottom: 8,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    recentLeft: { flex: 1, marginRight: 12 },
+    recentRight: { alignItems: "flex-end" },
+    recentChurch: { fontSize: 13, fontWeight: "600", color: colors.text },
+    recentMeta: { fontSize: 11, color: colors.textSecondary, marginTop: 2 },
+    recentLevy: { fontSize: 14, fontWeight: "700", color: colors.success },
+    recentBadge: { marginTop: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 20 },
+    badgeSynced: { backgroundColor: colors.successBorder },
+    badgePending: { backgroundColor: colors.warningBorder },
+    recentBadgeText: { fontSize: 9, color: colors.text, fontWeight: "700" },
 
-  levyInfo: {
-    flexDirection: "row", alignItems: "center", gap: 6,
-    justifyContent: "center", marginTop: 8,
-  },
-  levyInfoText: { fontSize: 11, color: "#334155" },
-});
+    levyInfo: {
+      flexDirection: "row", alignItems: "center", gap: 6,
+      justifyContent: "center", marginTop: 8,
+    },
+    levyInfoText: { fontSize: 11, color: colors.textSecondary },
+  });
+}

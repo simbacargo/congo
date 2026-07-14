@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     "django_htmx",
     "authentication",
     "knox",
-    "home",
     "fuel_app",
 ]
 
@@ -117,11 +116,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_DIRS = [
-    BASE_DIR / 'static/',
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
 ]
 
-STATIC_ROOT = BASE_DIR / 'static'
+# collectstatic output; must not overlap STATICFILES_DIRS
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 AUTH_USER_MODEL = "authentication.User"
 

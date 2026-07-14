@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.auth.views import LogoutView, LoginView
 from django.urls import include, path
 from django.views.i18n import set_language
@@ -20,4 +21,4 @@ urlpatterns = [
     path("api/admin/", include("fuel_app.admin_urls")),
     path("", include("fuel_app.urls", namespace="fuel")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
-  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+  + staticfiles_urlpatterns()

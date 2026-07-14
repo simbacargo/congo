@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,8 +12,14 @@ import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getTxBySyncId, OfflineTx } from "../../lib/db";
 import { printReceipt } from "../../lib/print";
+import { useTheme } from "../../lib/ThemeContext";
+import { useLanguage } from "../../lib/LanguageContext";
 
 export default function TransactionDetailScreen() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+  const styles = getStyles(colors);
+
   const { syncId } = useLocalSearchParams<{ syncId: string }>();
   const [tx, setTx] = useState<OfflineTx | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,7 +59,7 @@ export default function TransactionDetailScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -62,10 +67,10 @@ export default function TransactionDetailScreen() {
   if (!tx) {
     return (
       <View style={styles.center}>
-        <FontAwesome name="exclamation-circle" size={40} color="#475569" />
-        <Text style={styles.notFound}>Transaction not found</Text>
+        <FontAwesome name="exclamation-circle" size={40} color={colors.textSecondary} />
+        <Text style={styles.notFound}>{t("detail.not.found")}</Text>
         <Pressable onPress={() => router.back()} style={styles.backLink}>
-          <Text style={styles.backLinkText}>Go Back</Text>
+          <Text style={styles.backLinkText}>{t("detail.go.back")}</Text>
         </Pressable>
       </View>
     );
@@ -81,78 +86,78 @@ export default function TransactionDetailScreen() {
         <FontAwesome
           name={tx.synced ? "check-circle" : "clock-o"}
           size={16}
-          color={tx.synced ? "#4ade80" : "#fbbf24"}
+          color={tx.synced ? colors.success : colors.warning}
         />
-        <Text style={[styles.statusText, { color: tx.synced ? "#4ade80" : "#fbbf24" }]}>
-          {tx.synced ? "Synced to server" : "Pending sync — will upload when online"}
+        <Text style={[styles.statusText, { color: tx.synced ? colors.success : colors.warning }]}>
+          {tx.synced ? t("detail.synced") : t("detail.pending")}
         </Text>
       </View>
 
       {/* Receipt code */}
       {tx.receipt_code ? (
         <View style={styles.receiptBox}>
-          <Text style={styles.receiptLabel}>RECEIPT CODE</Text>
+          <Text style={styles.receiptLabel}>{t("receipt.code")}</Text>
           <Text style={styles.receiptCode}>{tx.receipt_code}</Text>
-          <Text style={styles.receiptHint}>Present to NGO for verification</Text>
+          <Text style={styles.receiptHint}>{t("receipt.verify")}</Text>
         </View>
       ) : (
         <View style={[styles.receiptBox, styles.receiptBoxOffline]}>
-          <Text style={styles.receiptLabel}>LOCAL REFERENCE</Text>
-          <Text style={[styles.receiptCode, { color: "#fbbf24", fontSize: 14 }]}>
+          <Text style={styles.receiptLabel}>{t("receipt.local")}</Text>
+          <Text style={[styles.receiptCode, { color: colors.warning, fontSize: 14 }]}>
             {`OFFLINE-${tx.sync_id.slice(0, 8).toUpperCase()}`}
           </Text>
-          <Text style={styles.receiptHint}>Receipt code assigned after sync</Text>
+          <Text style={styles.receiptHint}>{t("receipt.sync.msg")}</Text>
         </View>
       )}
 
       {/* Main details */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Transaction Details</Text>
-        <Row label="Church" value={tx.church_name} />
-        {tx.station_name ? <Row label="Station" value={tx.station_name} /> : null}
-        {tx.company_name ? <Row label="Company" value={tx.company_name} /> : null}
-        <Row label="Fuel Type" value={tx.fuel_type_name} />
-        <Row label="Currency" value={tx.currency_used} />
-        <Row label="Amount (USD)" value={`$${parseFloat(tx.amount_usd).toFixed(2)}`} />
-        <Row label="Amount (CDF)" value={`${parseFloat(tx.amount_cdf).toFixed(0)} FC`} />
+        <Text style={styles.cardTitle}>{t("detail.transaction.details")}</Text>
+        <Row label={t("church")} value={tx.church_name} styles={styles} />
+        {tx.station_name ? <Row label={t("station")} value={tx.station_name} styles={styles} /> : null}
+        {tx.company_name ? <Row label={t("company")} value={tx.company_name} styles={styles} /> : null}
+        <Row label={t("fuel.type")} value={tx.fuel_type_name} styles={styles} />
+        <Row label={t("newtx.currency")} value={tx.currency_used} styles={styles} />
+        <Row label={t("amount.usd")} value={`$${parseFloat(tx.amount_usd).toFixed(2)}`} styles={styles} />
+        <Row label={t("amount.cdf")} value={`${parseFloat(tx.amount_cdf).toFixed(0)} FC`} styles={styles} />
         <View style={styles.levyRow}>
-          <Text style={styles.levyLabel}>2% Charity Levy</Text>
+          <Text style={styles.levyLabel}>{t("levy")}</Text>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={styles.levyValue}>${levy.toFixed(4)}</Text>
-            <Text style={styles.levyCdf}>{(levy * cachedRate).toFixed(2)} FC (est.)</Text>
+            <Text style={styles.levyCdf}>{(levy * cachedRate).toFixed(2)} FC ({t("detail.est")})</Text>
           </View>
         </View>
       </View>
 
       {/* Timestamp */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Timestamp</Text>
-        <Row label="Date" value={date.toLocaleDateString()} />
-        <Row label="Time" value={date.toLocaleTimeString()} last />
+        <Text style={styles.cardTitle}>{t("detail.timestamp")}</Text>
+        <Row label={t("detail.date")} value={date.toLocaleDateString()} styles={styles} />
+        <Row label={t("detail.time")} value={date.toLocaleTimeString()} styles={styles} last />
       </View>
 
       {/* Notes */}
       {tx.notes ? (
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Notes</Text>
+          <Text style={styles.cardTitle}>{t("newtx.notes")}</Text>
           <Text style={styles.notesText}>{tx.notes}</Text>
         </View>
       ) : null}
 
       {/* Actions */}
       <Pressable style={styles.printBtn} onPress={handlePrint}>
-        <FontAwesome name="print" size={16} color="#fff" />
-        <Text style={styles.printBtnText}>Print Receipt</Text>
+        <FontAwesome name="print" size={16} color={colors.onPrimary} />
+        <Text style={styles.printBtnText}>{t("receipt.print")}</Text>
       </Pressable>
 
       <Pressable style={styles.backBtn} onPress={() => router.back()}>
-        <Text style={styles.backBtnText}>Back to History</Text>
+        <Text style={styles.backBtnText}>{t("detail.back.history")}</Text>
       </Pressable>
     </ScrollView>
   );
 }
 
-function Row({ label, value, last }: { label: string; value: string; last?: boolean }) {
+function Row({ label, value, last, styles }: { label: string; value: string; last?: boolean; styles: any }) {
   return (
     <View style={[styles.row, !last && styles.rowBorder]}>
       <Text style={styles.rowLabel}>{label}</Text>
@@ -161,62 +166,64 @@ function Row({ label, value, last }: { label: string; value: string; last?: bool
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0a0f1e" },
-  content: { padding: 20, paddingBottom: 40 },
-  center: { flex: 1, backgroundColor: "#0a0f1e", justifyContent: "center", alignItems: "center", gap: 16 },
-  notFound: { color: "#64748b", fontSize: 16, fontWeight: "600" },
-  backLink: { padding: 12 },
-  backLinkText: { color: "#3b82f6", fontWeight: "600" },
+function getStyles(colors: any) {
+  return StyleSheet.create({
+    root: { flex: 1, backgroundColor: colors.background },
+    content: { padding: 20, paddingBottom: 40 },
+    center: { flex: 1, backgroundColor: colors.background, justifyContent: "center", alignItems: "center", gap: 16 },
+    notFound: { color: colors.textSecondary, fontSize: 16, fontWeight: "600" },
+    backLink: { padding: 12 },
+    backLinkText: { color: colors.primary, fontWeight: "600" },
 
-  statusBanner: {
-    flexDirection: "row", alignItems: "center", gap: 8,
-    borderRadius: 12, padding: 12, marginBottom: 14, borderWidth: 1,
-  },
-  bannerSynced: { backgroundColor: "#052e16", borderColor: "#166534" },
-  bannerPending: { backgroundColor: "#451a03", borderColor: "#78350f" },
-  statusText: { fontSize: 13, fontWeight: "600" },
+    statusBanner: {
+      flexDirection: "row", alignItems: "center", gap: 8,
+      borderRadius: 12, padding: 12, marginBottom: 14, borderWidth: 1,
+    },
+    bannerSynced: { backgroundColor: colors.successBg, borderColor: colors.successBorder },
+    bannerPending: { backgroundColor: colors.warningBg, borderColor: colors.warningBorder },
+    statusText: { fontSize: 13, fontWeight: "600" },
 
-  receiptBox: {
-    backgroundColor: "#111827", borderRadius: 14, padding: 18,
-    alignItems: "center", marginBottom: 14, borderWidth: 1, borderColor: "#1e3a5f",
-  },
-  receiptBoxOffline: { borderColor: "#78350f" },
-  receiptLabel: { fontSize: 10, color: "#334155", letterSpacing: 1.5, marginBottom: 8 },
-  receiptCode: { fontSize: 18, fontWeight: "700", color: "#60a5fa", letterSpacing: 2, fontFamily: "monospace" },
-  receiptHint: { fontSize: 11, color: "#475569", marginTop: 6 },
+    receiptBox: {
+      backgroundColor: colors.surface, borderRadius: 14, padding: 18,
+      alignItems: "center", marginBottom: 14, borderWidth: 1, borderColor: colors.border,
+    },
+    receiptBoxOffline: { borderColor: colors.warningBorder },
+    receiptLabel: { fontSize: 10, color: colors.textSecondary, letterSpacing: 1.5, marginBottom: 8 },
+    receiptCode: { fontSize: 18, fontWeight: "700", color: colors.primary, letterSpacing: 2, fontFamily: "monospace" },
+    receiptHint: { fontSize: 11, color: colors.textSecondary, marginTop: 6 },
 
-  card: {
-    backgroundColor: "#111827", borderRadius: 14, padding: 16,
-    marginBottom: 14, borderWidth: 1, borderColor: "#1e2d45",
-  },
-  cardTitle: {
-    fontSize: 11, fontWeight: "700", color: "#334155",
-    letterSpacing: 1, textTransform: "uppercase", marginBottom: 12,
-  },
-  row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 },
-  rowBorder: { borderBottomWidth: 1, borderBottomColor: "#0a0f1e" },
-  rowLabel: { color: "#64748b", fontSize: 13 },
-  rowValue: { color: "#f8fafc", fontWeight: "600", fontSize: 13, textAlign: "right", flex: 1, marginLeft: 12 },
+    card: {
+      backgroundColor: colors.surface, borderRadius: 14, padding: 16,
+      marginBottom: 14, borderWidth: 1, borderColor: colors.border,
+    },
+    cardTitle: {
+      fontSize: 11, fontWeight: "700", color: colors.textSecondary,
+      letterSpacing: 1, textTransform: "uppercase", marginBottom: 12,
+    },
+    row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 },
+    rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.background },
+    rowLabel: { color: colors.textSecondary, fontSize: 13 },
+    rowValue: { color: colors.text, fontWeight: "600", fontSize: 13, textAlign: "right", flex: 1, marginLeft: 12 },
 
-  levyRow: {
-    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-    backgroundColor: "#052e16", borderRadius: 8, padding: 12, marginTop: 8,
-  },
-  levyLabel: { color: "#4ade80", fontWeight: "700", fontSize: 13 },
-  levyValue: { color: "#34d399", fontWeight: "700", fontSize: 15 },
-  levyCdf: { color: "#86efac", fontSize: 11 },
+    levyRow: {
+      flexDirection: "row", justifyContent: "space-between", alignItems: "center",
+      backgroundColor: colors.successBg, borderRadius: 8, padding: 12, marginTop: 8,
+    },
+    levyLabel: { color: colors.success, fontWeight: "700", fontSize: 13 },
+    levyValue: { color: colors.success, fontWeight: "700", fontSize: 15 },
+    levyCdf: { color: colors.success, fontSize: 11 },
 
-  notesText: { color: "#94a3b8", fontSize: 13, lineHeight: 20 },
+    notesText: { color: colors.textSecondary, fontSize: 13, lineHeight: 20 },
 
-  printBtn: {
-    flexDirection: "row", alignItems: "center", justifyContent: "center",
-    gap: 10, backgroundColor: "#1e40af", borderRadius: 12, padding: 16, marginBottom: 10,
-  },
-  printBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
-  backBtn: {
-    backgroundColor: "#111827", borderRadius: 12, padding: 16,
-    alignItems: "center", borderWidth: 1, borderColor: "#1e2d45",
-  },
-  backBtnText: { color: "#64748b", fontWeight: "600", fontSize: 14 },
-});
+    printBtn: {
+      flexDirection: "row", alignItems: "center", justifyContent: "center",
+      gap: 10, backgroundColor: colors.primary, borderRadius: 12, padding: 16, marginBottom: 10,
+    },
+    printBtnText: { color: colors.onPrimary, fontWeight: "700", fontSize: 16 },
+    backBtn: {
+      backgroundColor: colors.surface, borderRadius: 12, padding: 16,
+      alignItems: "center", borderWidth: 1, borderColor: colors.border,
+    },
+    backBtnText: { color: colors.textSecondary, fontWeight: "600", fontSize: 14 },
+  });
+}

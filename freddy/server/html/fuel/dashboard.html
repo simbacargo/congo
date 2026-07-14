@@ -1,8 +1,13 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 {% block page_title %}{% trans "Dashboard" %}{% endblock %}
 {% block page_subtitle %}{% trans "Live overview · auto-refreshes every 20 s" %}{% endblock %}
+
+{% block chart_lib %}
+<script src="{% static 'vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/charts.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 <!-- KPI Cards (HTMX live-poll) -->
@@ -13,154 +18,200 @@
      hx-indicator="#stats-spinner">
   {% include "fuel/partials/stats_cards.html" %}
 </div>
-<span id="stats-spinner" class="htmx-indicator text-xs text-blue-400 ml-2">↻ {% trans "refreshing…" %}</span>
+<span id="stats-spinner" class="htmx-indicator text-xs text-accent ml-2">↻ {% trans "refreshing…" %}</span>
 
-<!-- Charts row -->
+<!-- Charts row 1: trend + status -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
 
-  <!-- 30-day levy trend -->
-  <div class="lg:col-span-2 rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
-    <h3 class="text-sm font-semibold text-white mb-4">{% trans "30-Day Levy Trend (USD)" %}</h3>
+  <div class="lg:col-span-2 card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-sm font-semibold">{% trans "Levy Trend (USD)" %}</h3>
+      <div class="flex items-center gap-1" id="trend-presets">
+        <button type="button" data-days="7"  class="btn btn-quiet !px-2 !py-1 !text-xs">7 {% trans "days" %}</button>
+        <button type="button" data-days="30" class="btn btn-quiet !px-2 !py-1 !text-xs !bg-accent-soft !text-accent">30 {% trans "days" %}</button>
+        <button type="button" data-days="90" class="btn btn-quiet !px-2 !py-1 !text-xs">90 {% trans "days" %}</button>
+      </div>
+    </div>
     <canvas id="trendChart" height="100"></canvas>
   </div>
 
-  <!-- Levy by company -->
-  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
-    <h3 class="text-sm font-semibold text-white mb-4">{% trans "Levy by Company" %}</h3>
-    <canvas id="companyChart" height="180"></canvas>
-  </div>
-
-  <!-- Levy by fuel type -->
-  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
-    <h3 class="text-sm font-semibold text-white mb-4">{% trans "By Fuel Type" %}</h3>
-    <canvas id="fuelChart" height="160"></canvas>
-  </div>
-
-  <!-- Status breakdown -->
-  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
-    <h3 class="text-sm font-semibold text-white mb-4">{% trans "Transaction Status" %}</h3>
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Transaction Status" %}</h3>
     <canvas id="statusChart" height="160"></canvas>
   </div>
 
-  <!-- Company drill-down (HTMX) -->
-  <div class="rounded-xl border p-5" style="background:var(--surface); border-color:var(--border);">
-    <h3 class="text-sm font-semibold text-white mb-3">{% trans "Company Drill-Down" %}</h3>
-    <div class="space-y-2">
-      {% for company in companies %}
-      <button class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition hover:bg-blue-900/30 text-left"
-              style="background:var(--surface2);"
-              hx-get="{% url 'fuel:company-detail' company.id %}"
-              hx-target="#drill-panel"
-              hx-swap="innerHTML">
-        <span class="text-white font-medium truncate">{{ company.name }}</span>
-        <svg class="w-4 h-4 flex-shrink-0" style="color:var(--muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-      </button>
-      {% empty %}<p class="text-sm" style="color:var(--muted);">{% trans "No companies yet." %}</p>{% endfor %}
+</div>
+
+<!-- Charts row 2: company + fuel + top stations -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Levy by Company" %}</h3>
+    <canvas id="companyChart" height="180"></canvas>
+  </div>
+
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "By Fuel Type" %}</h3>
+    <canvas id="fuelChart" height="180"></canvas>
+  </div>
+
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Top Stations This Month" %}</h3>
+    <div class="space-y-3">
+      {% for st in top_stations %}
+      <div>
+        <div class="flex items-baseline justify-between gap-2">
+          <p class="text-sm font-medium truncate">{{ st.name }}</p>
+          <p class="text-xs money flex-shrink-0">${{ st.month_levy|floatformat:2 }}</p>
+        </div>
+        {% if st.target_pct is not None %}
+        <div class="mt-1 h-1.5 rounded-full bg-surface-2 overflow-hidden">
+          <div class="h-full rounded-full {% if st.target_pct >= 100 %}bg-ok{% else %}bg-accent{% endif %}" style="width: {{ st.target_pct }}%;"></div>
+        </div>
+        <p class="text-[10px] text-muted mt-0.5">{{ st.target_pct }}% {% trans "of target" %} ${{ st.target_usd|floatformat:0 }}</p>
+        {% else %}
+        <p class="text-[10px] text-muted mt-0.5">{{ st.company.name }} · {% trans "no target set" %}</p>
+        {% endif %}
+      </div>
+      {% empty %}<p class="text-sm text-muted">{% trans "No stations yet." %}</p>{% endfor %}
     </div>
   </div>
 
+</div>
+
+<!-- Company drill-down -->
+<div class="card p-5 mt-4">
+  <h3 class="text-sm font-semibold mb-3">{% trans "Company Drill-Down" %}</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+    {% for company in companies %}
+    <button class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-left bg-surface-2 hover:bg-accent-soft transition"
+            hx-get="{% url 'fuel:company-detail' company.id %}"
+            hx-target="#drill-panel"
+            hx-swap="innerHTML">
+      <span class="font-medium truncate">{{ company.name }}</span>
+      <svg class="w-4 h-4 flex-shrink-0 text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    {% empty %}<p class="text-sm text-muted">{% trans "No companies yet." %}</p>{% endfor %}
+  </div>
 </div>
 
 <!-- Drill-down panel -->
 <div id="drill-panel" class="mt-4"></div>
 
 <!-- Recent Transactions -->
-<div class="mt-6 rounded-xl border overflow-hidden" style="border-color:var(--border);">
-  <div class="flex items-center justify-between px-5 py-3 border-b" style="background:var(--surface); border-color:var(--border);">
-    <h3 class="text-sm font-semibold text-white">{% trans "Recent Transactions" %}</h3>
-    <a href="{% url 'fuel:transactions' %}" class="text-xs text-blue-400 hover:underline">{% trans "View all" %} →</a>
+<div class="card mt-4 overflow-hidden">
+  <div class="flex items-center justify-between px-5 py-3 border-b border-line">
+    <h3 class="text-sm font-semibold">{% trans "Recent Transactions" %}</h3>
+    <a href="{% url 'fuel:transactions' %}" class="text-xs text-accent hover:underline">{% trans "View all" %} →</a>
   </div>
-  <div class="overflow-x-auto" style="background:var(--surface);">
-    <table class="w-full text-xs">
-      <thead style="background:var(--surface2);">
-        <tr class="text-left" style="color:var(--muted);">
-          <th class="px-4 py-2 font-medium">{% trans "Receipt" %}</th>
-          <th class="px-4 py-2 font-medium">{% trans "Station" %}</th>
-          <th class="px-4 py-2 font-medium">{% trans "Church" %}</th>
-          <th class="px-4 py-2 font-medium text-right">{% trans "Levy USD" %}</th>
-          <th class="px-4 py-2 font-medium">{% trans "Status" %}</th>
-          <th class="px-4 py-2 font-medium">{% trans "Date" %}</th>
+  <div class="overflow-x-auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>{% trans "Receipt" %}</th>
+          <th>{% trans "Station" %}</th>
+          <th>{% trans "Church" %}</th>
+          <th class="!text-right">{% trans "Levy USD" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th>{% trans "Date" %}</th>
         </tr>
       </thead>
-      <tbody class="divide-y" style="border-color:var(--border);">
+      <tbody>
         {% for tx in stats.recent %}
-        <tr class="hover:bg-blue-900/10 transition">
-          <td class="px-4 py-2.5 font-mono text-blue-400">{{ tx.receipt_code }}</td>
-          <td class="px-4 py-2.5 text-gray-300">{{ tx.station.name }}</td>
-          <td class="px-4 py-2.5 text-gray-300">{{ tx.church.name }}</td>
-          <td class="px-4 py-2.5 text-green-400 text-right font-medium">${{ tx.levy_amount_usd }}</td>
-          <td class="px-4 py-2.5">
-            <span class="px-2 py-0.5 rounded text-xs font-medium status-{{ tx.status }}">{{ tx.get_status_display }}</span>
-          </td>
-          <td class="px-4 py-2.5" style="color:var(--muted);">{{ tx.created_at|date:"M d, H:i" }}</td>
+        <tr>
+          <td><a href="{% url 'fuel:tx-detail' tx.id %}" class="receipt-code text-accent hover:underline">{{ tx.receipt_code }}</a></td>
+          <td>{{ tx.station.name }}</td>
+          <td>{{ tx.church.name }}</td>
+          <td class="cell-num money">${{ tx.levy_amount_usd }}</td>
+          <td>{% include "fuel/partials/_status_badge.html" with status=tx.status label=tx.get_status_display %}</td>
+          <td class="text-muted whitespace-nowrap">{{ tx.created_at|date:"M d, H:i" }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="6" class="px-4 py-8 text-center" style="color:var(--muted);">{% trans "No transactions yet." %}</td></tr>
+        <tr><td colspan="6" class="px-4 py-8 text-center text-muted">{% trans "No transactions yet." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
 
+{{ stats.by_company|json_script:"byCompanyData" }}
+{{ stats.by_fuel|json_script:"byFuelData" }}
+{% endblock %}
+
+{% block scripts %}
 <script>
-const CHART_DEFAULTS = {
-  responsive: true, maintainAspectRatio: true,
-  plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
-  scales: {
-    x: { ticks: { color: '#64748b', font:{size:10} }, grid: { color: '#1e3448' } },
-    y: { ticks: { color: '#64748b', font:{size:10} }, grid: { color: '#1e3448' } },
-  }
-};
+const trendUrl = "{% url 'fuel:dashboard-chart-data' %}";
+let trendChart;
 
-// 30-day trend
-fetch("{% url 'fuel:dashboard-chart-data' %}")
-  .then(r => r.json())
-  .then(({ data }) => {
-    new Chart(document.getElementById('trendChart'), {
-      type: 'line',
-      data: {
-        labels: data.map(d => d.date),
-        datasets: [{ label: '{% trans "Levy (USD)" %}', data: data.map(d => d.amount),
-          borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)',
-          tension: 0.4, fill: true, pointRadius: 2 }]
-      },
-      options: CHART_DEFAULTS
+function loadTrend(days) {
+  fetch(`${trendUrl}?days=${days}`)
+    .then(r => r.json())
+    .then(({ data }) => {
+      const labels = data.map(d => d.date);
+      const values = data.map(d => d.amount);
+      if (trendChart) {
+        trendChart.data.labels = labels;
+        trendChart.data.datasets[0].data = values;
+        trendChart.update();
+        return;
+      }
+      trendChart = new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{ label: '{% trans "Levy (USD)" %}', data: values,
+            borderColor: LCI.accent, backgroundColor: LCI.accentSoft,
+            tension: 0.35, fill: true, pointRadius: 2, pointBackgroundColor: LCI.accent }]
+        },
+        options: { ...LCI.defaults, plugins: { legend: { display: false } } }
+      });
     });
+}
+loadTrend(30);
+
+document.querySelectorAll('#trend-presets button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#trend-presets button').forEach(b =>
+      b.classList.remove('!bg-accent-soft', '!text-accent'));
+    btn.classList.add('!bg-accent-soft', '!text-accent');
+    loadTrend(btn.dataset.days);
   });
-
-// Company bar
-const companyData = {{ stats.by_company|safe }};
-new Chart(document.getElementById('companyChart'), {
-  type: 'bar',
-  data: {
-    labels: companyData.map(d => d.station__company__name),
-    datasets: [{ label: '{% trans "Levy USD" %}', data: companyData.map(d => parseFloat(d.total || 0)),
-      backgroundColor: '#2563eb', borderRadius: 4 }]
-  },
-  options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } }
 });
 
-// Fuel type doughnut
-const fuelData = {{ stats.by_fuel|safe }};
-new Chart(document.getElementById('fuelChart'), {
-  type: 'doughnut',
-  data: {
-    labels: fuelData.map(d => d.fuel_type__name),
-    datasets: [{ data: fuelData.map(d => parseFloat(d.total || 0)),
-      backgroundColor: ['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899'] }]
-  },
-  options: { responsive:true, plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}},position:'bottom'}} }
-});
-
-// Status pie
+// Status doughnut
 new Chart(document.getElementById('statusChart'), {
   type: 'doughnut',
   data: {
     labels: ['{% trans "Pending" %}', '{% trans "Verified" %}', '{% trans "Remitted" %}'],
     datasets: [{ data: [{{ stats.pending_count }}, {{ stats.verified_count }}, {{ stats.remitted_count }}],
-      backgroundColor: ['#92400e','#1e3a5f','#14532d'] }]
+      backgroundColor: [LCI.statusColors.PENDING, LCI.statusColors.VERIFIED, LCI.statusColors.REMITTED],
+      ...LCI.doughnutSegment }]
   },
-  options: { responsive:true, plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}},position:'bottom'}} }
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// Company bar
+const companyData = JSON.parse(document.getElementById('byCompanyData').textContent);
+new Chart(document.getElementById('companyChart'), {
+  type: 'bar',
+  data: {
+    labels: companyData.map(d => d.station__company__name),
+    datasets: [{ label: '{% trans "Levy USD" %}', data: companyData.map(d => parseFloat(d.total || 0)),
+      backgroundColor: LCI.accent, borderRadius: 4 }]
+  },
+  options: { ...LCI.defaults, plugins: { legend: { display: false } } }
+});
+
+// Fuel type doughnut
+const fuelData = JSON.parse(document.getElementById('byFuelData').textContent);
+new Chart(document.getElementById('fuelChart'), {
+  type: 'doughnut',
+  data: {
+    labels: fuelData.map(d => d.fuel_type__name),
+    datasets: [{ data: fuelData.map(d => parseFloat(d.total || 0)),
+      backgroundColor: LCI.palette, ...LCI.doughnutSegment }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
 });
 </script>
 {% endblock %}

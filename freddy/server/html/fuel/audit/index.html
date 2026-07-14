@@ -4,44 +4,42 @@
 {% block page_title %}{% trans "Audit Trail" %}{% endblock %}
 {% block page_subtitle %}{% trans "Immutable record of all field changes" %}{% endblock %}
 {% block content %}
-<div class="rounded-xl border overflow-hidden" style="border-color:var(--border);">
-  <table class="w-full text-xs">
-    <thead style="background:var(--surface2);">
-      <tr class="text-left font-medium" style="color:var(--muted);">
-        <th class="px-4 py-3">{% trans "Time" %}</th>
-        <th class="px-4 py-3">{% trans "Transaction" %}</th>
-        <th class="px-4 py-3">{% trans "Company" %}</th>
-        <th class="px-4 py-3">{% trans "Field" %}</th>
-        <th class="px-4 py-3">{% trans "Old Value" %}</th>
-        <th class="px-4 py-3">{% trans "New Value" %}</th>
-        <th class="px-4 py-3">{% trans "Changed By" %}</th>
-        <th class="px-4 py-3">{% trans "IP" %}</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y" style="background:var(--surface); border-color:var(--border);">
-      {% for log in logs %}
-      <tr class="hover:bg-blue-900/10">
-        <td class="px-4 py-2.5" style="color:var(--muted);">{{ log.changed_at|date:"M d, y H:i" }}</td>
-        <td class="px-4 py-2.5">
-          <a href="{% url 'fuel:tx-detail' log.transaction.pk %}" class="font-mono text-blue-400 hover:underline">
-            {{ log.transaction.receipt_code }}
-          </a>
-        </td>
-        <td class="px-4 py-2.5 text-gray-300">{{ log.transaction.station.company.name }}</td>
-        <td class="px-4 py-2.5 font-mono text-yellow-300">{{ log.field_name }}</td>
-        <td class="px-4 py-2.5">
-          <span class="px-1.5 py-0.5 rounded" style="background:#3f1f1f; color:#fca5a5;">{{ log.old_value|default:"—" }}</span>
-        </td>
-        <td class="px-4 py-2.5">
-          <span class="px-1.5 py-0.5 rounded" style="background:#052e16; color:#86efac;">{{ log.new_value|default:"—" }}</span>
-        </td>
-        <td class="px-4 py-2.5 text-gray-300">{{ log.changed_by.username|default:"—" }}</td>
-        <td class="px-4 py-2.5" style="color:var(--muted);">{{ log.ip_address|default:"—" }}</td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="8" class="px-4 py-10 text-center" style="color:var(--muted);">{% trans "No audit entries yet." %}</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>{% trans "Time" %}</th>
+          <th>{% trans "Transaction" %}</th>
+          <th>{% trans "Company" %}</th>
+          <th>{% trans "Field" %}</th>
+          <th>{% trans "Old Value" %}</th>
+          <th>{% trans "New Value" %}</th>
+          <th>{% trans "Changed By" %}</th>
+          <th>{% trans "IP" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td class="text-muted whitespace-nowrap text-xs">{{ log.changed_at|date:"M d, y H:i" }}</td>
+          <td>
+            <a href="{% url 'fuel:tx-detail' log.transaction.pk %}" class="receipt-code text-xs text-accent hover:underline">
+              {{ log.transaction.receipt_code }}
+            </a>
+          </td>
+          <td>{{ log.transaction.station.company.name }}</td>
+          <td class="receipt-code text-xs" style="color: var(--color-warn);">{{ log.field_name }}</td>
+          <td><span class="px-1.5 py-0.5 rounded text-xs bg-danger-soft text-danger">{{ log.old_value|default:"—" }}</span></td>
+          <td><span class="px-1.5 py-0.5 rounded text-xs bg-ok-soft text-ok">{{ log.new_value|default:"—" }}</span></td>
+          <td>{{ log.changed_by.username|default:"—" }}</td>
+          <td class="text-muted num text-xs">{{ log.ip_address|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">{% include "fuel/partials/_empty_state.html" with message=_("No audit entries yet.") %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

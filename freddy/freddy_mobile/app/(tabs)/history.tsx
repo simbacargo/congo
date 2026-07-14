@@ -11,16 +11,21 @@ import {
 import { router, useFocusEffect } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { getRecentTxs, OfflineTx } from "../../lib/db";
+import { useTheme } from "../../lib/ThemeContext";
+import { useLanguage } from "../../lib/LanguageContext";
 
 type Filter = "all" | "synced" | "pending";
 
 function TxRow({ item, onPress }: { item: OfflineTx; onPress: () => void }) {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+  const styles = getStyles(colors);
   const date = new Date(item.created_at);
   const levy = parseFloat(item.levy_preview);
   return (
     <Pressable style={styles.row} onPress={onPress}>
       <View style={styles.rowIconWrap}>
-        <FontAwesome name="tint" size={14} color="#3b82f6" />
+        <FontAwesome name="tint" size={14} color={colors.primary} />
       </View>
       <View style={styles.rowBody}>
         <Text style={styles.church} numberOfLines={1}>{item.church_name}</Text>
@@ -34,9 +39,9 @@ function TxRow({ item, onPress }: { item: OfflineTx; onPress: () => void }) {
       </View>
       <View style={styles.rowRight}>
         <Text style={styles.levy}>${levy.toFixed(4)}</Text>
-        <Text style={styles.levyLabel}>levy</Text>
+        <Text style={styles.levyLabel}>{t("history.levy")}</Text>
         <View style={[styles.badge, item.synced ? styles.badgeSynced : styles.badgePending]}>
-          <Text style={styles.badgeText}>{item.synced ? "Synced" : "Pending"}</Text>
+          <Text style={styles.badgeText}>{item.synced ? t("synced") : t("pending")}</Text>
         </View>
       </View>
     </Pressable>
@@ -44,6 +49,10 @@ function TxRow({ item, onPress }: { item: OfflineTx; onPress: () => void }) {
 }
 
 export default function HistoryScreen() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+  const styles = getStyles(colors);
+
   const [allTxs, setAllTxs] = useState<OfflineTx[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
@@ -77,15 +86,21 @@ export default function HistoryScreen() {
       return true;
     });
 
+  const filterLabels: Record<Filter, string> = {
+    all: t("history.filter.all"),
+    synced: t("history.filter.synced"),
+    pending: t("history.filter.pending"),
+  };
+
   return (
     <View style={styles.container}>
       {/* Search bar */}
       <View style={styles.searchWrap}>
-        <FontAwesome name="search" size={13} color="#475569" style={styles.searchIcon} />
+        <FontAwesome name="search" size={13} color={colors.textSecondary} style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search church, fuel, receipt…"
-          placeholderTextColor="#334155"
+          placeholder={t("history.search.placeholder")}
+          placeholderTextColor={colors.textSecondary}
           value={search}
           onChangeText={setSearch}
           autoCorrect={false}
@@ -93,7 +108,7 @@ export default function HistoryScreen() {
         />
         {search.length > 0 && (
           <Pressable onPress={() => setSearch("")} style={styles.clearBtn}>
-            <FontAwesome name="times-circle" size={14} color="#475569" />
+            <FontAwesome name="times-circle" size={14} color={colors.textSecondary} />
           </Pressable>
         )}
       </View>
@@ -107,11 +122,11 @@ export default function HistoryScreen() {
             onPress={() => setFilter(f)}
           >
             <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>
-              {f.charAt(0).toUpperCase() + f.slice(1)}
+              {filterLabels[f]}
             </Text>
           </Pressable>
         ))}
-        <Text style={styles.countText}>{displayed.length} records</Text>
+        <Text style={styles.countText}>{displayed.length} {t("history.records")}</Text>
       </View>
 
       <FlatList
@@ -123,16 +138,16 @@ export default function HistoryScreen() {
             onPress={() => router.push({ pathname: "/transaction/detail", params: { syncId: item.sync_id } })}
           />
         )}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3b82f6" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
         contentContainerStyle={displayed.length === 0 ? styles.empty : { paddingBottom: 20 }}
         ListEmptyComponent={
           <View style={styles.emptyInner}>
-            <FontAwesome name="inbox" size={40} color="#1e2d45" />
+            <FontAwesome name="inbox" size={40} color={colors.border} />
             <Text style={styles.emptyText}>
-              {search || filter !== "all" ? "No matching transactions" : "No transactions yet"}
+              {search || filter !== "all" ? t("history.empty.nomatch") : t("history.empty.none")}
             </Text>
             <Text style={styles.emptySubtext}>
-              {search || filter !== "all" ? "Try adjusting your search or filter" : "Your first sale will appear here"}
+              {search || filter !== "all" ? t("history.empty.nomatch.sub") : t("history.empty.none.sub")}
             </Text>
           </View>
         }
@@ -141,59 +156,61 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0a0f1e" },
+function getStyles(colors: any) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
 
-  searchWrap: {
-    flexDirection: "row", alignItems: "center",
-    backgroundColor: "#111827", borderWidth: 1, borderColor: "#1e2d45",
-    borderRadius: 12, marginHorizontal: 16, marginTop: 12, marginBottom: 8,
-    paddingHorizontal: 12,
-  },
-  searchIcon: { marginRight: 8 },
-  searchInput: { flex: 1, color: "#f8fafc", fontSize: 14, paddingVertical: 12 },
-  clearBtn: { padding: 4 },
+    searchWrap: {
+      flexDirection: "row", alignItems: "center",
+      backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
+      borderRadius: 12, marginHorizontal: 16, marginTop: 12, marginBottom: 8,
+      paddingHorizontal: 12,
+    },
+    searchIcon: { marginRight: 8 },
+    searchInput: { flex: 1, color: colors.text, fontSize: 14, paddingVertical: 12 },
+    clearBtn: { padding: 4 },
 
-  filterRow: {
-    flexDirection: "row", alignItems: "center",
-    paddingHorizontal: 16, marginBottom: 8, gap: 8,
-  },
-  chip: {
-    paddingHorizontal: 12, paddingVertical: 6,
-    borderRadius: 20, borderWidth: 1, borderColor: "#1e2d45", backgroundColor: "#111827",
-  },
-  chipActive: { backgroundColor: "#1d4ed8", borderColor: "#2563eb" },
-  chipText: { fontSize: 12, color: "#475569", fontWeight: "600" },
-  chipTextActive: { color: "#fff" },
-  countText: { marginLeft: "auto", fontSize: 11, color: "#334155" },
+    filterRow: {
+      flexDirection: "row", alignItems: "center",
+      paddingHorizontal: 16, marginBottom: 8, gap: 8,
+    },
+    chip: {
+      paddingHorizontal: 12, paddingVertical: 6,
+      borderRadius: 20, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface,
+    },
+    chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+    chipText: { fontSize: 12, color: colors.textSecondary, fontWeight: "600" },
+    chipTextActive: { color: colors.onPrimary },
+    countText: { marginLeft: "auto", fontSize: 11, color: colors.textSecondary },
 
-  row: {
-    flexDirection: "row", alignItems: "flex-start",
-    backgroundColor: "#111827", marginHorizontal: 16, marginVertical: 4,
-    borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#1e2d45",
-  },
-  rowIconWrap: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: "#0f2040", borderWidth: 1, borderColor: "#1e3a5f",
-    justifyContent: "center", alignItems: "center", marginRight: 12, marginTop: 2,
-  },
-  rowBody: { flex: 1, marginRight: 8 },
-  rowRight: { alignItems: "flex-end" },
+    row: {
+      flexDirection: "row", alignItems: "flex-start",
+      backgroundColor: colors.surface, marginHorizontal: 16, marginVertical: 4,
+      borderRadius: 14, padding: 14, borderWidth: 1, borderColor: colors.border,
+    },
+    rowIconWrap: {
+      width: 32, height: 32, borderRadius: 16,
+      backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.border,
+      justifyContent: "center", alignItems: "center", marginRight: 12, marginTop: 2,
+    },
+    rowBody: { flex: 1, marginRight: 8 },
+    rowRight: { alignItems: "flex-end" },
 
-  church: { fontWeight: "700", color: "#f8fafc", fontSize: 14 },
-  meta: { color: "#64748b", fontSize: 12, marginTop: 2 },
-  date: { color: "#334155", fontSize: 11, marginTop: 3 },
-  receipt: { fontSize: 10, color: "#3b82f6", fontFamily: "monospace", marginTop: 3 },
+    church: { fontWeight: "700", color: colors.text, fontSize: 14 },
+    meta: { color: colors.textSecondary, fontSize: 12, marginTop: 2 },
+    date: { color: colors.textSecondary, fontSize: 11, marginTop: 3 },
+    receipt: { fontSize: 10, color: colors.primary, fontFamily: "monospace", marginTop: 3 },
 
-  levy: { fontWeight: "700", color: "#34d399", fontSize: 15 },
-  levyLabel: { fontSize: 10, color: "#475569", textAlign: "right" },
-  badge: { marginTop: 6, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
-  badgeSynced: { backgroundColor: "#14532d" },
-  badgePending: { backgroundColor: "#451a03" },
-  badgeText: { fontSize: 9, color: "#fff", fontWeight: "700" },
+    levy: { fontWeight: "700", color: colors.success, fontSize: 15 },
+    levyLabel: { fontSize: 10, color: colors.textSecondary, textAlign: "right" },
+    badge: { marginTop: 6, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
+    badgeSynced: { backgroundColor: colors.successBorder },
+    badgePending: { backgroundColor: colors.warningBorder },
+    badgeText: { fontSize: 9, color: colors.text, fontWeight: "700" },
 
-  empty: { flex: 1, justifyContent: "center" },
-  emptyInner: { alignItems: "center", paddingTop: 80, gap: 10 },
-  emptyText: { color: "#475569", fontSize: 16, fontWeight: "600" },
-  emptySubtext: { color: "#1e2d45", fontSize: 13 },
-});
+    empty: { flex: 1, justifyContent: "center" },
+    emptyInner: { alignItems: "center", paddingTop: 80, gap: 10 },
+    emptyText: { color: colors.textSecondary, fontSize: 16, fontWeight: "600" },
+    emptySubtext: { color: colors.textSecondary, fontSize: 13 },
+  });
+}

@@ -4,8 +4,14 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { router, useFocusEffect } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { parseDriverId } from "../../lib/api";
+import { useTheme } from "../../lib/ThemeContext";
+import { useLanguage } from "../../lib/LanguageContext";
 
 export default function ScanScreen() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+  const styles = getStyles(colors);
+
   const [permission, requestPermission] = useCameraPermissions();
   const [active, setActive] = useState(false);
   // Guards against the camera firing onBarcodeScanned dozens of times for the
@@ -38,15 +44,12 @@ export default function ScanScreen() {
     return (
       <View style={[styles.root, styles.center]}>
         <View style={styles.iconWrap}>
-          <FontAwesome name="camera" size={30} color="#818cf8" />
+          <FontAwesome name="camera" size={30} color={colors.accent} />
         </View>
-        <Text style={styles.title}>Camera access needed</Text>
-        <Text style={styles.subtitle}>
-          Freddy uses the camera to scan a driver&apos;s ID card QR code and pull
-          up their levy history.
-        </Text>
+        <Text style={styles.title}>{t("scan.permission.title")}</Text>
+        <Text style={styles.subtitle}>{t("scan.permission.subtitle")}</Text>
         <Pressable style={styles.btn} onPress={requestPermission}>
-          <Text style={styles.btnText}>Grant permission</Text>
+          <Text style={styles.btnText}>{t("scan.permission.grant")}</Text>
         </Pressable>
       </View>
     );
@@ -66,35 +69,37 @@ export default function ScanScreen() {
       {/* Framing overlay */}
       <View style={styles.overlay} pointerEvents="none">
         <View style={styles.frame} />
-        <Text style={styles.hint}>Point the camera at the driver&apos;s QR code</Text>
+        <Text style={styles.hint}>{t("scan.hint")}</Text>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0a0f1e" },
-  center: { justifyContent: "center", alignItems: "center", padding: 28 },
+function getStyles(colors: any) {
+  return StyleSheet.create({
+    root: { flex: 1, backgroundColor: colors.background },
+    center: { justifyContent: "center", alignItems: "center", padding: 28 },
 
-  iconWrap: {
-    width: 64, height: 64, borderRadius: 32,
-    backgroundColor: "#1e1a3a", borderWidth: 1, borderColor: "#312e81",
-    justifyContent: "center", alignItems: "center", marginBottom: 18,
-  },
-  title: { fontSize: 18, fontWeight: "700", color: "#f8fafc", marginBottom: 8, textAlign: "center" },
-  subtitle: { fontSize: 13, color: "#64748b", textAlign: "center", lineHeight: 20, marginBottom: 24 },
-  btn: { backgroundColor: "#4f46e5", borderRadius: 14, paddingVertical: 14, paddingHorizontal: 28 },
-  btnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+    iconWrap: {
+      width: 64, height: 64, borderRadius: 32,
+      backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.border,
+      justifyContent: "center", alignItems: "center", marginBottom: 18,
+    },
+    title: { fontSize: 18, fontWeight: "700", color: colors.text, marginBottom: 8, textAlign: "center" },
+    subtitle: { fontSize: 13, color: colors.textSecondary, textAlign: "center", lineHeight: 20, marginBottom: 24 },
+    btn: { backgroundColor: colors.accent, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 28 },
+    btnText: { color: colors.onPrimary, fontWeight: "700", fontSize: 15 },
 
-  overlay: { ...StyleSheet.absoluteFillObject, justifyContent: "center", alignItems: "center" },
-  frame: {
-    width: 240, height: 240, borderRadius: 24,
-    borderWidth: 3, borderColor: "rgba(129,140,248,0.9)",
-    backgroundColor: "transparent",
-  },
-  hint: {
-    marginTop: 24, color: "#e2e8f0", fontSize: 14, fontWeight: "600",
-    backgroundColor: "rgba(10,15,30,0.7)", paddingHorizontal: 14, paddingVertical: 8,
-    borderRadius: 999, overflow: "hidden",
-  },
-});
+    overlay: { ...StyleSheet.absoluteFillObject, justifyContent: "center", alignItems: "center" },
+    frame: {
+      width: 240, height: 240, borderRadius: 24,
+      borderWidth: 3, borderColor: colors.accent,
+      backgroundColor: "transparent",
+    },
+    hint: {
+      marginTop: 24, color: "#e2e8f0", fontSize: 14, fontWeight: "600",
+      backgroundColor: "rgba(10,15,30,0.7)", paddingHorizontal: 14, paddingVertical: 8,
+      borderRadius: 999, overflow: "hidden",
+    },
+  });
+}

@@ -4,53 +4,57 @@
 {% block page_title %}{% trans "Churches & Beneficiaries" %}{% endblock %}
 {% block page_subtitle %}{{ churches|length }} {% trans "churches registered" %}{% endblock %}
 {% block header_actions %}
-<a href="{% url 'fuel:church-create' %}" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition" style="background:var(--accent);">+ {% trans "New Church" %}</a>
+<a href="{% url 'fuel:church-create' %}" class="btn btn-primary">+ {% trans "New Church" %}</a>
 {% endblock %}
 {% block content %}
-<div class="rounded-xl border overflow-hidden" style="border-color:var(--border);">
-  <table class="w-full text-sm">
-    <thead style="background:var(--surface2);">
-      <tr class="text-left text-xs font-medium" style="color:var(--muted);">
-        <th class="px-4 py-3">{% trans "Church" %}</th>
-        <th class="px-4 py-3">{% trans "Station" %}</th>
-        <th class="px-4 py-3">{% trans "Company" %}</th>
-        <th class="px-4 py-3">{% trans "Contact" %}</th>
-        <th class="px-4 py-3 text-center">{% trans "Beneficiaries" %}</th>
-        <th class="px-4 py-3 text-right">{% trans "Levy (USD)" %}</th>
-        <th class="px-4 py-3 text-center">{% trans "Tx Count" %}</th>
-        <th class="px-4 py-3">{% trans "Status" %}</th>
-        <th class="px-4 py-3"></th>
-      </tr>
-    </thead>
-    <tbody class="divide-y" style="background:var(--surface); border-color:var(--border);">
-      {% for ch in churches %}
-      <tr class="hover:bg-blue-900/10 transition">
-        <td class="px-4 py-3 font-medium text-white">{{ ch.name }}</td>
-        <td class="px-4 py-3 text-gray-300">{{ ch.station.name }}</td>
-        <td class="px-4 py-3 text-gray-300">{{ ch.station.company.name }}</td>
-        <td class="px-4 py-3 text-xs" style="color:var(--muted);">
-          {% if ch.contact_person %}{{ ch.contact_person }}{% endif %}
-          {% if ch.contact_phone %}<br>{{ ch.contact_phone }}{% endif %}
-        </td>
-        <td class="px-4 py-3 text-center text-gray-200">{{ ch.beneficiary_count }}</td>
-        <td class="px-4 py-3 text-right text-green-400 font-medium">${{ ch.total_levy|default:0|floatformat:2 }}</td>
-        <td class="px-4 py-3 text-center text-gray-300">{{ ch.tx_count }}</td>
-        <td class="px-4 py-3">
-          <span class="px-2 py-0.5 rounded text-xs {% if ch.is_active %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-400{% endif %}">
-            {% if ch.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}
-          </span>
-        </td>
-        <td class="px-4 py-3">
-          <div class="flex gap-2 text-xs">
-            <a href="{% url 'fuel:church-detail' ch.id %}" class="text-blue-400 hover:underline">{% trans "View" %}</a>
-            <a href="{% url 'fuel:church-edit' ch.id %}" class="text-gray-400 hover:text-white">{% trans "Edit" %}</a>
-          </div>
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="9" class="px-4 py-8 text-center" style="color:var(--muted);">{% trans "No churches yet." %}</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>{% trans "Church" %}</th>
+          <th>{% trans "Station" %}</th>
+          <th>{% trans "Company" %}</th>
+          <th>{% trans "Contact" %}</th>
+          <th class="!text-center">{% trans "Beneficiaries" %}</th>
+          <th class="!text-right">{% trans "Levy (USD)" %}</th>
+          <th class="!text-center">{% trans "Tx Count" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ch in churches %}
+        <tr>
+          <td class="font-medium">{{ ch.name }}</td>
+          <td>{{ ch.station.name }}</td>
+          <td>{{ ch.station.company.name }}</td>
+          <td class="text-xs text-muted">
+            {% if ch.contact_person %}{{ ch.contact_person }}{% endif %}
+            {% if ch.contact_phone %}<br>{{ ch.contact_phone }}{% endif %}
+          </td>
+          <td class="!text-center num">{{ ch.beneficiary_count }}</td>
+          <td class="cell-num money font-medium">${{ ch.total_levy|default:0|floatformat:2 }}</td>
+          <td class="!text-center num">{{ ch.tx_count }}</td>
+          <td>
+            {% if ch.is_active %}
+            <span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Active" %}</span>
+            {% else %}
+            <span class="badge bg-neutral-soft text-neutral">{% trans "Inactive" %}</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="flex gap-2 text-xs">
+              <a href="{% url 'fuel:church-detail' ch.id %}" class="text-accent hover:underline">{% trans "View" %}</a>
+              <a href="{% url 'fuel:church-edit' ch.id %}" class="text-muted hover:text-ink">{% trans "Edit" %}</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9">{% include "fuel/partials/_empty_state.html" with message=_("No churches yet.") %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

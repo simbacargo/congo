@@ -1,11 +1,23 @@
-<tr id="disburse-{{ d.pk }}" class="hover:bg-blue-900/10 transition">
-  <td class="px-4 py-3 font-mono text-xs text-blue-400">{{ d.reference }}</td>
-  <td class="px-4 py-3 font-medium text-white">{{ d.church.name }}</td>
-  <td class="px-4 py-3 text-gray-300">{{ d.church.station.name }}</td>
-  <td class="px-4 py-3 text-xs" style="color:var(--muted);">{{ d.period_start|date:"M d" }} – {{ d.period_end|date:"M d, Y" }}</td>
-  <td class="px-4 py-3 text-right text-green-400 font-semibold">${{ d.amount_usd }}</td>
-  <td class="px-4 py-3 text-xs" style="color:var(--muted);">{{ d.payment_method|default:"—" }}</td>
-  <td class="px-4 py-3 text-xs" style="color:var(--muted);">{{ d.prepared_by.username|default:"—" }}</td>
-  <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs font-medium status-{{ d.status }}">{{ d.get_status_display }}</span></td>
-  <td class="px-4 py-3 text-xs"><a href="{% url 'fuel:disbursement-edit' d.pk %}" class="text-gray-400 hover:text-white">Edit</a></td>
+{% load i18n %}
+<tr id="disburse-{{ d.pk }}">
+  <td class="receipt-code text-xs text-accent">{{ d.reference }}</td>
+  <td class="font-medium">{{ d.church.name }}</td>
+  <td>{{ d.church.station.name }}</td>
+  <td class="text-xs text-muted whitespace-nowrap">{{ d.period_start|date:"M d" }} – {{ d.period_end|date:"M d, Y" }}</td>
+  <td class="cell-num money font-semibold">${{ d.amount_usd }}</td>
+  <td class="text-xs text-muted">{{ d.payment_method|default:"—" }}</td>
+  <td class="text-xs text-muted">{{ d.prepared_by.username|default:"—" }}</td>
+  <td>{% include "fuel/partials/_status_badge.html" with status=d.status label=d.get_status_display %}</td>
+  <td>
+    <div class="flex gap-2 text-xs">
+      {% if d.status == 'SCHEDULED' %}
+      <button class="text-ok hover:underline" style="color: var(--color-ok);"
+              hx-post="{% url 'fuel:disbursement-pay' d.pk %}"
+              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+              hx-target="#disburse-{{ d.pk }}"
+              hx-swap="outerHTML">{% trans "Mark Paid" %}</button>
+      {% endif %}
+      <a href="{% url 'fuel:disbursement-edit' d.pk %}" class="text-muted hover:text-ink">{% trans "Edit" %}</a>
+    </div>
+  </td>
 </tr>

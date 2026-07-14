@@ -4,10 +4,11 @@ from fuel_app.models import (
 )
 from authentication.models import User, ROLE_STATION_AGENT, ROLE_COMPANY_MANAGER, ROLE_NGO_ADMIN
 
-_FIELD_CLASSES = "w-full bg-gray-900 border border-gray-700 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-_SELECT_CLASSES = "w-full bg-gray-900 border border-gray-700 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-_TEXTAREA_CLASSES = "w-full bg-gray-900 border border-gray-700 text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
-_CHECK_CLASSES = "w-4 h-4 accent-blue-600"
+# v2 component classes defined in static/src/app.css
+_FIELD_CLASSES = "field"
+_SELECT_CLASSES = "field"
+_TEXTAREA_CLASSES = "field field-textarea"
+_CHECK_CLASSES = "check"
 
 
 def _apply(form):

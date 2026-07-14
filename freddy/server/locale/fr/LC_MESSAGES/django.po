@@ -681,3 +681,108 @@ msgstr "Effacer les filtres"
 
 msgid "Unknown"
 msgstr "Inconnu"
+
+msgid "Apply filters"
+msgstr "Appliquer les filtres"
+
+msgid "Back to driver"
+msgstr "Retour au chauffeur"
+
+msgid "CARTE DE CONSOMMATION DE CARBURANT POUR LA SANTE"
+msgstr "CARTE DE CONSOMMATION DE CARBURANT POUR LA SANTE"
+
+msgid "Date d'expiration"
+msgstr "Date d'expiration"
+
+msgid "Date de livraison"
+msgstr "Date de livraison"
+
+msgid "Date range"
+msgstr "Période"
+
+msgid "Dismiss"
+msgstr "Fermer"
+
+msgid "ID Card"
+msgstr "Carte d'identité"
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Levy Trend (USD)"
+msgstr "Évolution du prélèvement (USD)"
+
+msgid "Loading…"
+msgstr "Chargement…"
+
+msgid "Lubumbashi Charity Fuel Initiative"
+msgstr "Lubumbashi Charity Fuel Initiative"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "No churches linked."
+msgstr "Aucune église liée."
+
+msgid "No stations for this company."
+msgstr "Aucune station pour cette compagnie."
+
+msgid "Nom du porteur de la carte"
+msgstr "Nom du porteur de la carte"
+
+msgid "Numéro de la carte"
+msgstr "Numéro de la carte"
+
+msgid "Pagination"
+msgstr "Pagination"
+
+msgid "Print card"
+msgstr "Imprimer la carte"
+
+msgid "QR Code"
+msgstr "Code QR"
+
+msgid "QR code linking to this driver profile"
+msgstr "Code QR menant au profil de ce chauffeur"
+
+msgid "REPUBLIQUE DEMOCRATIQUE DU CONGO"
+msgstr "REPUBLIQUE DEMOCRATIQUE DU CONGO"
+
+msgid "Scan to open this driver's profile"
+msgstr "Scannez pour ouvrir le profil de ce chauffeur"
+
+msgid "Showing %(start)s–%(end)s of %(total)s"
+msgstr "Affichage de %(start)s–%(end)s sur %(total)s"
+
+msgid "Si vous ramassez cette carte, veuillez contacter"
+msgstr "Si vous ramassez cette carte, veuillez contacter"
+
+msgid "Top Stations This Month"
+msgstr "Meilleures stations ce mois"
+
+msgid "User ID card"
+msgstr "Carte d'identité"
+
+msgid "Users & Agents"
+msgstr "Utilisateurs et agents"
+
+msgid "View detail"
+msgstr "Voir le détail"
+
+msgid "beneficiaries"
+msgstr "bénéficiaires"
+
+msgid "churches"
+msgstr "églises"
+
+msgid "days"
+msgstr "jours"
+
+msgid "levy"
+msgstr "prélèvement"
+
+msgid "no target set"
+msgstr "aucun objectif défini"
+
+msgid "of target"
+msgstr "de l'objectif"

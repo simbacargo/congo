@@ -1,9 +1,9 @@
 # Swahili translations for LCI Office
 msgid ""
 msgstr ""
+"Language: sw\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sw\n"
 
 msgid "English"
 msgstr "Kiingereza"
@@ -519,7 +519,8 @@ msgid "Save"
 msgstr "Hifadhi"
 
 msgid "Click Edit on a row to modify it, or use the button below."
-msgstr "Bonyeza Hariri kwenye safu mlalo kuibadilisha, au tumia kitufe hapa chini."
+msgstr ""
+"Bonyeza Hariri kwenye safu mlalo kuibadilisha, au tumia kitufe hapa chini."
 
 msgid "Add Fuel Type"
 msgstr "Ongeza Aina ya Mafuta"
@@ -532,3 +533,108 @@ msgstr "mtumiaji"
 
 msgid "Users"
 msgstr "Watumiaji"
+
+msgid "Apply filters"
+msgstr "Tumia vichujio"
+
+msgid "Back to driver"
+msgstr "Rudi kwa dereva"
+
+msgid "CARTE DE CONSOMMATION DE CARBURANT POUR LA SANTE"
+msgstr "CARTE DE CONSOMMATION DE CARBURANT POUR LA SANTE"
+
+msgid "Date d'expiration"
+msgstr "Date d'expiration"
+
+msgid "Date de livraison"
+msgstr "Date de livraison"
+
+msgid "Date range"
+msgstr "Kipindi cha tarehe"
+
+msgid "Dismiss"
+msgstr "Funga"
+
+msgid "ID Card"
+msgstr "Kitambulisho"
+
+msgid "Language"
+msgstr "Lugha"
+
+msgid "Levy Trend (USD)"
+msgstr "Mwenendo wa ushuru (USD)"
+
+msgid "Loading…"
+msgstr "Inapakia…"
+
+msgid "Lubumbashi Charity Fuel Initiative"
+msgstr "Lubumbashi Charity Fuel Initiative"
+
+msgid "Menu"
+msgstr "Menyu"
+
+msgid "No churches linked."
+msgstr "Hakuna kanisa lililounganishwa."
+
+msgid "No stations for this company."
+msgstr "Hakuna kituo cha kampuni hii."
+
+msgid "Nom du porteur de la carte"
+msgstr "Nom du porteur de la carte"
+
+msgid "Numéro de la carte"
+msgstr "Numéro de la carte"
+
+msgid "Pagination"
+msgstr "Kurasa"
+
+msgid "Print card"
+msgstr "Chapisha kadi"
+
+msgid "QR Code"
+msgstr "Msimbo QR"
+
+msgid "QR code linking to this driver profile"
+msgstr "Msimbo QR unaoelekeza kwenye wasifu wa dereva huyu"
+
+msgid "REPUBLIQUE DEMOCRATIQUE DU CONGO"
+msgstr "REPUBLIQUE DEMOCRATIQUE DU CONGO"
+
+msgid "Scan to open this driver's profile"
+msgstr "Skani kufungua wasifu wa dereva huyu"
+
+msgid "Showing %(start)s–%(end)s of %(total)s"
+msgstr "Inaonyesha %(start)s–%(end)s kati ya %(total)s"
+
+msgid "Si vous ramassez cette carte, veuillez contacter"
+msgstr "Si vous ramassez cette carte, veuillez contacter"
+
+msgid "Top Stations This Month"
+msgstr "Vituo bora mwezi huu"
+
+msgid "User ID card"
+msgstr "Kitambulisho"
+
+msgid "Users & Agents"
+msgstr "Watumiaji na mawakala"
+
+msgid "View detail"
+msgstr "Ona maelezo"
+
+msgid "beneficiaries"
+msgstr "wanufaika"
+
+msgid "churches"
+msgstr "makanisa"
+
+msgid "days"
+msgstr "siku"
+
+msgid "levy"
+msgstr "ushuru"
+
+msgid "no target set"
+msgstr "hakuna lengo lililowekwa"
+
+msgid "of target"
+msgstr "ya lengo"

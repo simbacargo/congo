@@ -17,6 +17,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from authentication.models import ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER, ROLE_STATION_AGENT, User
+from fuel_app.decorators import role_required
 from fuel_app.forms import (
     AgentForm, ChurchForm, DisbursementForm, FuelStationForm, FuelTypeForm,
     ParentCompanyForm, StationTargetForm, TransactionFilterForm, TransactionStatusForm,
@@ -57,10 +58,34 @@ def _kpi_stats():
 
 @login_required
 def dashboard(request):
+    from django.db.models import F, Q
+    today = timezone.now().date()
+    month_start = today.replace(day=1)
+    top_stations = list(
+        FuelStation.objects.filter(is_active=True)
+        .select_related("company")
+        .annotate(month_levy=Sum(
+            "transactions__levy_amount_usd",
+            filter=Q(transactions__created_at__date__gte=month_start),
+        ))
+        .order_by(F("month_levy").desc(nulls_last=True))[:6]
+    )
+    targets = {
+        t.station_id: t.target_usd
+        for t in StationTarget.objects.filter(year=today.year, month=today.month)
+    }
+    for s in top_stations:
+        s.month_levy = s.month_levy or 0
+        s.target_usd = targets.get(s.id)
+        s.target_pct = (
+            min(100, round(float(s.month_levy) / float(s.target_usd) * 100))
+            if s.target_usd else None
+        )
     return render(request, "fuel/dashboard.html", {
         "stats": _kpi_stats(),
         "rate": get_usd_to_cdf_rate(),
         "companies": ParentCompany.objects.filter(is_active=True),
+        "top_stations": top_stations,
     })
 
 
@@ -71,14 +96,19 @@ def dashboard_stats_partial(request):
 
 @login_required
 def dashboard_chart_data(request):
-    """JSON endpoint for Chart.js — last 30 days levy per day."""
+    """JSON endpoint for Chart.js — levy per day over ?days= (default 30)."""
     from datetime import timedelta
+    try:
+        days = int(request.GET.get("days", 30))
+    except (TypeError, ValueError):
+        days = 30
+    days = max(2, min(days, 365))
     today = timezone.now().date()
     data = []
-    for i in range(29, -1, -1):
+    for i in range(days - 1, -1, -1):
         d = today - timedelta(days=i)
         amt = Transaction.objects.filter(created_at__date=d).aggregate(t=Sum("levy_amount_usd"))["t"] or 0
-        data.append({"date": d.strftime("%b %d"), "amount": float(amt)})
+        data.append({"date": d.strftime("%d %b"), "amount": float(amt)})
     return JsonResponse({"data": data})
 
 
@@ -89,8 +119,14 @@ def transactions_list(request):
     qs = _tx_queryset(request)
     form = TransactionFilterForm(request.GET)
     totals = qs.aggregate(levy=Sum("levy_amount_usd"), count=Count("id"))
+    page_obj = Paginator(qs, 50).get_page(request.GET.get("page"))
+    filters = request.GET.copy()
+    filters.pop("page", None)
     ctx = {
-        "transactions": qs[:300],
+        "transactions": page_obj.object_list,
+        "page_obj": page_obj,
+        "page_range": page_obj.paginator.get_elided_page_range(page_obj.number, on_each_side=2, on_ends=1),
+        "querystring": filters.urlencode(),
         "form": form,
         "totals": totals,
         "companies": ParentCompany.objects.filter(is_active=True),
@@ -130,7 +166,7 @@ def transaction_update_status(request, pk):
     return redirect("fuel:tx-detail", pk=pk)
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 @require_POST
 def transaction_bulk_action(request):
     ids = request.POST.getlist("selected")
@@ -149,7 +185,7 @@ def transaction_bulk_action(request):
 
 # ─── Companies ────────────────────────────────────────────────────────────────
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def company_list(request):
     qs = ParentCompany.objects.annotate(
         station_count=Count("stations", distinct=True),
@@ -159,7 +195,7 @@ def company_list(request):
     return render(request, "fuel/companies/index.html", {"companies": qs})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def company_create(request):
     form = ParentCompanyForm(request.POST or None, request.FILES or None)
     if request.method == "POST" and form.is_valid():
@@ -171,7 +207,7 @@ def company_create(request):
     return render(request, "fuel/companies/form.html", {"form": form, "title": "New Company"})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def company_edit(request, pk):
     company = get_object_or_404(ParentCompany, pk=pk)
     form = ParentCompanyForm(request.POST or None, request.FILES or None, instance=company)
@@ -204,7 +240,7 @@ def company_detail(request, pk):
 
 # ─── Stations ─────────────────────────────────────────────────────────────────
 
-@login_required
+@role_required(ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER)
 def station_list(request):
     qs = FuelStation.objects.select_related("company").annotate(
         church_count=Count("churches", distinct=True),
@@ -221,7 +257,7 @@ def station_list(request):
     })
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER)
 def station_create(request):
     form = FuelStationForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
@@ -231,7 +267,7 @@ def station_create(request):
     return render(request, "fuel/stations/form.html", {"form": form, "title": "New Station"})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER)
 def station_edit(request, pk):
     station = get_object_or_404(FuelStation, pk=pk)
     form = FuelStationForm(request.POST or None, instance=station)
@@ -259,7 +295,7 @@ def station_detail_view(request, pk):
 
 # ─── Churches ─────────────────────────────────────────────────────────────────
 
-@login_required
+@role_required(ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER)
 def church_list(request):
     qs = Church.objects.select_related("station__company").annotate(
         tx_count=Count("transactions"), total_levy=Sum("transactions__levy_amount_usd"),
@@ -268,7 +304,7 @@ def church_list(request):
     return render(request, "fuel/churches/index.html", {"churches": qs})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER)
 def church_create(request):
     form = ChurchForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
@@ -278,7 +314,7 @@ def church_create(request):
     return render(request, "fuel/churches/form.html", {"form": form, "title": "New Church"})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER)
 def church_edit(request, pk):
     church = get_object_or_404(Church, pk=pk)
     form = ChurchForm(request.POST or None, instance=church)
@@ -369,6 +405,7 @@ def driver_list(request):
 
     return render(request, "fuel/drivers/index.html", {
         "page_obj": page_obj,
+        "page_range": page_obj.paginator.get_elided_page_range(page_obj.number, on_each_side=2, on_ends=1),
         "total_count": kpi["total"],
         "filtered_count": paginator.count,
         "communes": _opts("commune"),
@@ -440,13 +477,13 @@ def export_drivers_excel(request):
 
 # ─── Agents / Users ───────────────────────────────────────────────────────────
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def agent_list(request):
     users = User.objects.select_related("assigned_station__company", "managed_company").order_by("role", "username")
     return render(request, "fuel/agents/index.html", {"users": users})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def agent_create(request):
     form = AgentForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
@@ -456,7 +493,7 @@ def agent_create(request):
     return render(request, "fuel/agents/form.html", {"form": form, "title": "New User"})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def agent_edit(request, pk):
     user = get_object_or_404(User, pk=pk)
     form = AgentForm(request.POST or None, instance=user)
@@ -469,7 +506,7 @@ def agent_edit(request, pk):
 
 # ─── Disbursements ────────────────────────────────────────────────────────────
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def disbursement_list(request):
     qs = Disbursement.objects.select_related("church__station__company", "prepared_by").order_by("-created_at")
     status_filter = request.GET.get("status")
@@ -484,7 +521,7 @@ def disbursement_list(request):
     })
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def disbursement_create(request):
     form = DisbursementForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
@@ -496,7 +533,7 @@ def disbursement_create(request):
     return render(request, "fuel/disbursements/form.html", {"form": form, "title": "New Disbursement"})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def disbursement_edit(request, pk):
     d = get_object_or_404(Disbursement, pk=pk)
     form = DisbursementForm(request.POST or None, instance=d)
@@ -510,7 +547,7 @@ def disbursement_edit(request, pk):
     return render(request, "fuel/disbursements/form.html", {"form": form, "disburse": d, "title": "Edit Disbursement"})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 @require_POST
 def disbursement_mark_paid(request, pk):
     d = get_object_or_404(Disbursement, pk=pk)
@@ -525,7 +562,7 @@ def disbursement_mark_paid(request, pk):
 
 # ─── Reports ──────────────────────────────────────────────────────────────────
 
-@login_required
+@role_required(ROLE_NGO_ADMIN, ROLE_COMPANY_MANAGER)
 def reports(request):
     # Monthly levy roll-up for the past 12 months
     from datetime import date
@@ -577,7 +614,7 @@ def reports(request):
 
 # ─── Audit Log ────────────────────────────────────────────────────────────────
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def audit_log_list(request):
     qs = TransactionAuditLog.objects.select_related(
         "transaction__station__company", "changed_by"
@@ -587,13 +624,13 @@ def audit_log_list(request):
 
 # ─── Fuel Types ───────────────────────────────────────────────────────────────
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def fuel_type_list(request):
     types = FuelType.objects.all()
     return render(request, "fuel/settings/fuel_types.html", {"types": types})
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def fuel_type_create(request):
     form = FuelTypeForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
@@ -609,7 +646,7 @@ def fuel_type_create(request):
     })
 
 
-@login_required
+@role_required(ROLE_NGO_ADMIN)
 def fuel_type_edit(request, pk):
     ft = get_object_or_404(FuelType, pk=pk)
     form = FuelTypeForm(request.POST or None, instance=ft)

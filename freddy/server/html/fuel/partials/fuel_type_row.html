@@ -1,12 +1,15 @@
-<tr class="hover:bg-blue-900/10 transition text-xs">
-  <td class="px-4 py-3 text-gray-200">{{ ft.name }}</td>
-  <td class="px-4 py-3 font-mono" style="color:var(--muted);">{{ ft.code }}</td>
-  <td class="px-4 py-3">
-    <span class="px-2 py-0.5 rounded {% if ft.is_active %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-400{% endif %}">
-      {% if ft.is_active %}Active{% else %}Inactive{% endif %}
-    </span>
+{% load i18n %}
+<tr class="text-xs">
+  <td>{{ ft.name }}</td>
+  <td class="receipt-code text-muted">{{ ft.code }}</td>
+  <td>
+    {% if ft.is_active %}
+    <span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Active" %}</span>
+    {% else %}
+    <span class="badge bg-neutral-soft text-neutral">{% trans "Inactive" %}</span>
+    {% endif %}
   </td>
-  <td class="px-4 py-3">
-    <a href="{% url 'fuel:fuel-type-edit' ft.pk %}" class="text-blue-400 hover:underline">Edit</a>
+  <td>
+    <a href="{% url 'fuel:fuel-type-edit' ft.pk %}" class="text-accent hover:underline">{% trans "Edit" %}</a>
   </td>
 </tr>

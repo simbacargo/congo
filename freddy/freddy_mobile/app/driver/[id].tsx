@@ -22,11 +22,17 @@ import {
   postTransaction,
 } from "../../lib/api";
 import { saveOfflineTx } from "../../lib/db";
+import { useTheme } from "../../lib/ThemeContext";
+import { useLanguage } from "../../lib/LanguageContext";
 
 const LEVY_RATE = 0.02;
 type Currency = "USD" | "CDF";
 
 export default function DriverScreen() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+  const styles = getStyles(colors);
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const [data, setData] = useState<DriverLookup | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,7 +62,7 @@ export default function DriverScreen() {
       setData(result);
       setError("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Driver not found.");
+      setError(e instanceof Error ? e.message : t("driver.not.found"));
     } finally {
       setLoading(false);
     }
@@ -121,14 +127,11 @@ export default function DriverScreen() {
         created_at: createdAt,
       });
       resetForm();
-      Alert.alert("Recorded", "Purchase and 2% contribution saved.");
+      Alert.alert(t("driver.recorded"), t("driver.recorded.body"));
       await load();
     } catch {
       resetForm();
-      Alert.alert(
-        "Saved offline",
-        "No connection right now — it will sync automatically and appear in this driver's history once synced.",
-      );
+      Alert.alert(t("driver.saved.offline"), t("driver.saved.offline.body"));
     }
   }
 
@@ -143,7 +146,7 @@ export default function DriverScreen() {
   if (loading) {
     return (
       <View style={[styles.root, styles.center]}>
-        <ActivityIndicator color="#818cf8" />
+        <ActivityIndicator color={colors.accent} />
       </View>
     );
   }
@@ -151,11 +154,11 @@ export default function DriverScreen() {
   if (error || !data) {
     return (
       <View style={[styles.root, styles.center]}>
-        <FontAwesome name="exclamation-circle" size={28} color="#fca5a5" />
-        <Text style={styles.errTitle}>Couldn&apos;t load driver</Text>
-        <Text style={styles.errText}>{error || "Unknown error."}</Text>
+        <FontAwesome name="exclamation-circle" size={28} color={colors.error} />
+        <Text style={styles.errTitle}>{t("driver.couldnt.load")}</Text>
+        <Text style={styles.errText}>{error || t("driver.unknown.error")}</Text>
         <Pressable style={styles.btn} onPress={() => router.back()}>
-          <Text style={styles.btnText}>Back to scan</Text>
+          <Text style={styles.btnText}>{t("driver.back.scan")}</Text>
         </Pressable>
       </View>
     );
@@ -172,42 +175,42 @@ export default function DriverScreen() {
       {/* Driver header */}
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
-          <FontAwesome name="user" size={26} color="#818cf8" />
+          <FontAwesome name="user" size={26} color={colors.accent} />
         </View>
-        <Text style={styles.name}>{driver.full_name || "Unknown driver"}</Text>
+        <Text style={styles.name}>{driver.full_name || t("driver.unknown")}</Text>
         {driver.phone ? <Text style={styles.phone}>{driver.phone}</Text> : null}
 
         <View style={styles.tags}>
-          {driver.vehicle_type ? <Tag text={driver.vehicle_type} /> : null}
-          {driver.vehicle_color ? <Tag text={driver.vehicle_color} /> : null}
-          {driver.commune ? <Tag text={driver.commune} /> : null}
+          {driver.vehicle_type ? <Tag text={driver.vehicle_type} styles={styles} /> : null}
+          {driver.vehicle_color ? <Tag text={driver.vehicle_color} styles={styles} /> : null}
+          {driver.commune ? <Tag text={driver.commune} styles={styles} /> : null}
         </View>
       </View>
 
       {/* Summary */}
       <View style={styles.summaryRow}>
-        <Stat label="Transactions" value={String(summary.count)} />
-        <Stat label="Total levy" value={`$${parseFloat(summary.total_levy_usd).toFixed(2)}`} highlight />
-        <Stat label="Total fuel" value={`$${parseFloat(summary.total_amount_usd).toFixed(0)}`} />
+        <Stat label={t("analytics.transactions")} value={String(summary.count)} styles={styles} />
+        <Stat label={t("driver.total.levy")} value={`$${parseFloat(summary.total_levy_usd).toFixed(2)}`} highlight styles={styles} colors={colors} />
+        <Stat label={t("driver.total.fuel")} value={`$${parseFloat(summary.total_amount_usd).toFixed(0)}`} styles={styles} />
       </View>
 
       {/* Record purchase */}
       {!formOpen ? (
         <Pressable style={styles.recordBtn} onPress={openForm}>
-          <FontAwesome name="plus-circle" size={16} color="#fff" />
-          <Text style={styles.recordBtnText}>Record a purchase</Text>
+          <FontAwesome name="plus-circle" size={16} color={colors.onPrimary} />
+          <Text style={styles.recordBtnText}>{t("driver.record.purchase")}</Text>
         </Pressable>
       ) : (
         <View style={styles.formCard}>
           <View style={styles.formHeader}>
-            <Text style={styles.formTitle}>New purchase</Text>
+            <Text style={styles.formTitle}>{t("driver.new.purchase")}</Text>
             {!driver.phone && (
-              <Text style={styles.warn}>No phone on file — won&apos;t link to history.</Text>
+              <Text style={styles.warn}>{t("driver.no.phone.warn")}</Text>
             )}
           </View>
 
           {metaLoading ? (
-            <ActivityIndicator color="#818cf8" style={{ marginVertical: 20 }} />
+            <ActivityIndicator color={colors.accent} style={{ marginVertical: 20 }} />
           ) : (
             <>
               {/* Currency */}
@@ -218,7 +221,7 @@ export default function DriverScreen() {
                     style={[styles.currencyBtn, currency === c && styles.currencyBtnActive]}
                     onPress={() => setCurrency(c)}
                   >
-                    <Text style={[styles.currencyText, currency === c && { color: "#fff" }]}>
+                    <Text style={[styles.currencyText, currency === c && { color: colors.onPrimary }]}>
                       {c === "USD" ? "USD $" : "CDF FC"}
                     </Text>
                   </Pressable>
@@ -226,11 +229,11 @@ export default function DriverScreen() {
               </View>
 
               {/* Amount */}
-              <Text style={styles.fieldLabel}>Amount purchased</Text>
+              <Text style={styles.fieldLabel}>{t("driver.amount.purchased")}</Text>
               <TextInput
                 style={styles.input}
-                placeholder={`Amount in ${currency}`}
-                placeholderTextColor="#475569"
+                placeholder={`${t("newtx.amount.in")} ${currency}`}
+                placeholderTextColor={colors.textSecondary}
                 keyboardType="decimal-pad"
                 value={amountInput}
                 onChangeText={setAmountInput}
@@ -239,8 +242,8 @@ export default function DriverScreen() {
               {/* Contribution (locked at 2%) */}
               <View style={styles.levyBox}>
                 <View>
-                  <Text style={styles.levyLabel}>Contribution (2%)</Text>
-                  <Text style={styles.levyHint}>Auto-calculated</Text>
+                  <Text style={styles.levyLabel}>{t("driver.contribution")}</Text>
+                  <Text style={styles.levyHint}>{t("driver.auto.calculated")}</Text>
                 </View>
                 <View style={{ alignItems: "flex-end" }}>
                   <Text style={styles.levyValue}>${levyUsd.toFixed(4)}</Text>
@@ -249,7 +252,7 @@ export default function DriverScreen() {
               </View>
 
               {/* Fuel type */}
-              <Text style={styles.fieldLabel}>Fuel type</Text>
+              <Text style={styles.fieldLabel}>{t("fuel.type")}</Text>
               <View style={styles.chipGroup}>
                 {fuelTypes.map((ft) => (
                   <Pressable
@@ -257,7 +260,7 @@ export default function DriverScreen() {
                     style={[styles.chip, selectedFuel?.id === ft.id && styles.chipActive]}
                     onPress={() => setSelectedFuel(ft)}
                   >
-                    <Text style={[styles.chipText, selectedFuel?.id === ft.id && { color: "#fff" }]}>
+                    <Text style={[styles.chipText, selectedFuel?.id === ft.id && { color: colors.onPrimary }]}>
                       {ft.name}
                     </Text>
                   </Pressable>
@@ -265,9 +268,9 @@ export default function DriverScreen() {
               </View>
 
               {/* Church */}
-              <Text style={styles.fieldLabel}>Receiving church</Text>
+              <Text style={styles.fieldLabel}>{t("driver.receiving.church")}</Text>
               {churches.length === 0 ? (
-                <Text style={styles.warn}>No church available for your station.</Text>
+                <Text style={styles.warn}>{t("driver.no.church")}</Text>
               ) : (
                 churches.map((ch) => (
                   <Pressable
@@ -277,7 +280,7 @@ export default function DriverScreen() {
                   >
                     <Text style={styles.churchName}>{ch.name}</Text>
                     {selectedChurch?.id === ch.id && (
-                      <FontAwesome name="check" size={14} color="#3b82f6" />
+                      <FontAwesome name="check" size={14} color={colors.primary} />
                     )}
                   </Pressable>
                 ))
@@ -286,7 +289,7 @@ export default function DriverScreen() {
               {/* Actions */}
               <View style={styles.formActions}>
                 <Pressable style={styles.cancelBtn} onPress={resetForm} disabled={submitting}>
-                  <Text style={styles.cancelText}>Cancel</Text>
+                  <Text style={styles.cancelText}>{t("cancel")}</Text>
                 </Pressable>
                 <Pressable
                   style={[
@@ -297,9 +300,9 @@ export default function DriverScreen() {
                   disabled={!selectedFuel || !selectedChurch || amount <= 0 || submitting}
                 >
                   {submitting ? (
-                    <ActivityIndicator color="#fff" />
+                    <ActivityIndicator color={colors.onPrimary} />
                   ) : (
-                    <Text style={styles.submitText}>Save purchase</Text>
+                    <Text style={styles.submitText}>{t("driver.save.purchase")}</Text>
                   )}
                 </Pressable>
               </View>
@@ -309,14 +312,12 @@ export default function DriverScreen() {
       )}
 
       {/* History */}
-      <Text style={styles.sectionTitle}>Previous transactions</Text>
+      <Text style={styles.sectionTitle}>{t("driver.previous.tx")}</Text>
 
       {transactions.length === 0 ? (
         <View style={styles.emptyBox}>
-          <FontAwesome name="inbox" size={22} color="#334155" />
-          <Text style={styles.emptyText}>
-            No levy transactions recorded for this driver yet.
-          </Text>
+          <FontAwesome name="inbox" size={22} color={colors.textSecondary} />
+          <Text style={styles.emptyText}>{t("driver.no.tx")}</Text>
         </View>
       ) : (
         transactions.map((tx) => (
@@ -331,7 +332,7 @@ export default function DriverScreen() {
             <View style={styles.txBottom}>
               <Text style={styles.txDate}>{new Date(tx.created_at).toLocaleDateString()}</Text>
               <Text style={styles.txAmount}>
-                ${parseFloat(tx.amount_usd).toFixed(2)} fuel
+                ${parseFloat(tx.amount_usd).toFixed(2)} {t("driver.fuel")}
               </Text>
             </View>
           </View>
@@ -341,7 +342,7 @@ export default function DriverScreen() {
   );
 }
 
-function Tag({ text }: { text: string }) {
+function Tag({ text, styles }: { text: string; styles: any }) {
   return (
     <View style={styles.tag}>
       <Text style={styles.tagText}>{text}</Text>
@@ -349,133 +350,135 @@ function Tag({ text }: { text: string }) {
   );
 }
 
-function Stat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function Stat({ label, value, highlight, styles, colors }: { label: string; value: string; highlight?: boolean; styles: any; colors?: any }) {
   return (
     <View style={styles.stat}>
-      <Text style={[styles.statValue, highlight && { color: "#34d399" }]}>{value}</Text>
+      <Text style={[styles.statValue, highlight && { color: colors?.success }]}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0a0f1e" },
-  center: { justifyContent: "center", alignItems: "center", padding: 28, gap: 10 },
-  content: { padding: 20, paddingBottom: 40 },
+function getStyles(colors: any) {
+  return StyleSheet.create({
+    root: { flex: 1, backgroundColor: colors.background },
+    center: { justifyContent: "center", alignItems: "center", padding: 28, gap: 10 },
+    content: { padding: 20, paddingBottom: 40 },
 
-  profileCard: {
-    backgroundColor: "#111827", borderRadius: 18, padding: 22,
-    alignItems: "center", borderWidth: 1, borderColor: "#1e2d45", marginBottom: 16,
-  },
-  avatar: {
-    width: 64, height: 64, borderRadius: 32, backgroundColor: "#1e1a3a",
-    borderWidth: 1, borderColor: "#312e81",
-    justifyContent: "center", alignItems: "center", marginBottom: 12,
-  },
-  name: { fontSize: 19, fontWeight: "700", color: "#f8fafc", textAlign: "center" },
-  phone: { fontSize: 14, color: "#60a5fa", marginTop: 4, fontFamily: "monospace" },
-  tags: { flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: "center", marginTop: 14 },
-  tag: {
-    backgroundColor: "#0a0f1e", borderColor: "#1e2d45", borderWidth: 1,
-    borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5,
-  },
-  tagText: { color: "#94a3b8", fontSize: 12, fontWeight: "600" },
+    profileCard: {
+      backgroundColor: colors.surface, borderRadius: 18, padding: 22,
+      alignItems: "center", borderWidth: 1, borderColor: colors.border, marginBottom: 16,
+    },
+    avatar: {
+      width: 64, height: 64, borderRadius: 32, backgroundColor: colors.surfaceAlt,
+      borderWidth: 1, borderColor: colors.border,
+      justifyContent: "center", alignItems: "center", marginBottom: 12,
+    },
+    name: { fontSize: 19, fontWeight: "700", color: colors.text, textAlign: "center" },
+    phone: { fontSize: 14, color: colors.primary, marginTop: 4, fontFamily: "monospace" },
+    tags: { flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: "center", marginTop: 14 },
+    tag: {
+      backgroundColor: colors.background, borderColor: colors.border, borderWidth: 1,
+      borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5,
+    },
+    tagText: { color: colors.textSecondary, fontSize: 12, fontWeight: "600" },
 
-  summaryRow: {
-    flexDirection: "row", backgroundColor: "#111827", borderRadius: 16,
-    borderWidth: 1, borderColor: "#1e2d45", paddingVertical: 16, marginBottom: 16,
-  },
-  stat: { flex: 1, alignItems: "center" },
-  statValue: { fontSize: 18, fontWeight: "700", color: "#f8fafc" },
-  statLabel: { fontSize: 11, color: "#64748b", marginTop: 4 },
+    summaryRow: {
+      flexDirection: "row", backgroundColor: colors.surface, borderRadius: 16,
+      borderWidth: 1, borderColor: colors.border, paddingVertical: 16, marginBottom: 16,
+    },
+    stat: { flex: 1, alignItems: "center" },
+    statValue: { fontSize: 18, fontWeight: "700", color: colors.text },
+    statLabel: { fontSize: 11, color: colors.textSecondary, marginTop: 4 },
 
-  recordBtn: {
-    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10,
-    backgroundColor: "#4f46e5", borderRadius: 14, paddingVertical: 15, marginBottom: 24,
-  },
-  recordBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+    recordBtn: {
+      flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10,
+      backgroundColor: colors.accent, borderRadius: 14, paddingVertical: 15, marginBottom: 24,
+    },
+    recordBtnText: { color: colors.onPrimary, fontWeight: "700", fontSize: 15 },
 
-  formCard: {
-    backgroundColor: "#111827", borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: "#312e81", marginBottom: 24,
-  },
-  formHeader: { marginBottom: 12 },
-  formTitle: { fontSize: 16, fontWeight: "700", color: "#f8fafc" },
-  warn: { color: "#fbbf24", fontSize: 12, marginTop: 4 },
+    formCard: {
+      backgroundColor: colors.surface, borderRadius: 16, padding: 16,
+      borderWidth: 1, borderColor: colors.accent, marginBottom: 24,
+    },
+    formHeader: { marginBottom: 12 },
+    formTitle: { fontSize: 16, fontWeight: "700", color: colors.text },
+    warn: { color: colors.warning, fontSize: 12, marginTop: 4 },
 
-  currencyToggle: {
-    flexDirection: "row", backgroundColor: "#0a0f1e", borderRadius: 12,
-    padding: 4, marginBottom: 16, borderWidth: 1, borderColor: "#1e2d45",
-  },
-  currencyBtn: { flex: 1, paddingVertical: 10, alignItems: "center", borderRadius: 9 },
-  currencyBtnActive: { backgroundColor: "#4f46e5" },
-  currencyText: { color: "#94a3b8", fontWeight: "700", fontSize: 13 },
+    currencyToggle: {
+      flexDirection: "row", backgroundColor: colors.background, borderRadius: 12,
+      padding: 4, marginBottom: 16, borderWidth: 1, borderColor: colors.border,
+    },
+    currencyBtn: { flex: 1, paddingVertical: 10, alignItems: "center", borderRadius: 9 },
+    currencyBtnActive: { backgroundColor: colors.accent },
+    currencyText: { color: colors.textSecondary, fontWeight: "700", fontSize: 13 },
 
-  fieldLabel: { color: "#cbd5e1", fontSize: 13, fontWeight: "600", marginBottom: 8, marginTop: 4 },
-  input: {
-    backgroundColor: "#0a0f1e", borderWidth: 1, borderColor: "#1e2d45",
-    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 13,
-    color: "#f8fafc", fontSize: 16, marginBottom: 14,
-  },
+    fieldLabel: { color: colors.text, fontSize: 13, fontWeight: "600", marginBottom: 8, marginTop: 4 },
+    input: {
+      backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border,
+      borderRadius: 12, paddingHorizontal: 14, paddingVertical: 13,
+      color: colors.text, fontSize: 16, marginBottom: 14,
+    },
 
-  levyBox: {
-    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-    backgroundColor: "#0a1f17", borderWidth: 1, borderColor: "#166534",
-    borderRadius: 12, padding: 14, marginBottom: 16,
-  },
-  levyLabel: { color: "#34d399", fontWeight: "700", fontSize: 14 },
-  levyHint: { color: "#4ade80", fontSize: 11, marginTop: 2 },
-  levyValue: { color: "#34d399", fontWeight: "700", fontSize: 16 },
-  levySub: { color: "#4ade80", fontSize: 11, marginTop: 2 },
+    levyBox: {
+      flexDirection: "row", justifyContent: "space-between", alignItems: "center",
+      backgroundColor: colors.successBg, borderWidth: 1, borderColor: colors.successBorder,
+      borderRadius: 12, padding: 14, marginBottom: 16,
+    },
+    levyLabel: { color: colors.success, fontWeight: "700", fontSize: 14 },
+    levyHint: { color: colors.success, fontSize: 11, marginTop: 2 },
+    levyValue: { color: colors.success, fontWeight: "700", fontSize: 16 },
+    levySub: { color: colors.success, fontSize: 11, marginTop: 2 },
 
-  chipGroup: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 14 },
-  chip: {
-    backgroundColor: "#0a0f1e", borderWidth: 1, borderColor: "#1e2d45",
-    borderRadius: 999, paddingHorizontal: 16, paddingVertical: 9,
-  },
-  chipActive: { backgroundColor: "#4f46e5", borderColor: "#4f46e5" },
-  chipText: { color: "#94a3b8", fontWeight: "600", fontSize: 13 },
+    chipGroup: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 14 },
+    chip: {
+      backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border,
+      borderRadius: 999, paddingHorizontal: 16, paddingVertical: 9,
+    },
+    chipActive: { backgroundColor: colors.accent, borderColor: colors.accent },
+    chipText: { color: colors.textSecondary, fontWeight: "600", fontSize: 13 },
 
-  churchRow: {
-    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-    backgroundColor: "#0a0f1e", borderWidth: 1, borderColor: "#1e2d45",
-    borderRadius: 12, padding: 14, marginBottom: 8,
-  },
-  churchRowActive: { borderColor: "#3b82f6" },
-  churchName: { color: "#f8fafc", fontSize: 14, fontWeight: "600" },
+    churchRow: {
+      flexDirection: "row", justifyContent: "space-between", alignItems: "center",
+      backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border,
+      borderRadius: 12, padding: 14, marginBottom: 8,
+    },
+    churchRowActive: { borderColor: colors.primary },
+    churchName: { color: colors.text, fontSize: 14, fontWeight: "600" },
 
-  formActions: { flexDirection: "row", gap: 10, marginTop: 8 },
-  cancelBtn: {
-    paddingVertical: 14, paddingHorizontal: 20, borderRadius: 12,
-    borderWidth: 1, borderColor: "#1e2d45",
-  },
-  cancelText: { color: "#94a3b8", fontWeight: "700" },
-  submitBtn: {
-    flex: 1, backgroundColor: "#16a34a", borderRadius: 12,
-    paddingVertical: 14, alignItems: "center",
-  },
-  submitDisabled: { opacity: 0.4 },
-  submitText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+    formActions: { flexDirection: "row", gap: 10, marginTop: 8 },
+    cancelBtn: {
+      paddingVertical: 14, paddingHorizontal: 20, borderRadius: 12,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    cancelText: { color: colors.textSecondary, fontWeight: "700" },
+    submitBtn: {
+      flex: 1, backgroundColor: colors.success, borderRadius: 12,
+      paddingVertical: 14, alignItems: "center",
+    },
+    submitDisabled: { opacity: 0.4 },
+    submitText: { color: colors.onPrimary, fontWeight: "700", fontSize: 15 },
 
-  sectionTitle: { fontSize: 14, fontWeight: "700", color: "#cbd5e1", marginBottom: 12 },
+    sectionTitle: { fontSize: 14, fontWeight: "700", color: colors.text, marginBottom: 12 },
 
-  emptyBox: { alignItems: "center", gap: 10, paddingVertical: 36 },
-  emptyText: { color: "#475569", fontSize: 13, textAlign: "center", paddingHorizontal: 24 },
+    emptyBox: { alignItems: "center", gap: 10, paddingVertical: 36 },
+    emptyText: { color: colors.textSecondary, fontSize: 13, textAlign: "center", paddingHorizontal: 24 },
 
-  txCard: {
-    backgroundColor: "#111827", borderRadius: 14, padding: 14,
-    borderWidth: 1, borderColor: "#1e2d45", marginBottom: 10,
-  },
-  txTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  txCode: { color: "#60a5fa", fontWeight: "700", fontSize: 13, fontFamily: "monospace" },
-  txLevy: { color: "#34d399", fontWeight: "700", fontSize: 14 },
-  txMeta: { color: "#94a3b8", fontSize: 13, marginTop: 6 },
-  txBottom: { flexDirection: "row", justifyContent: "space-between", marginTop: 8 },
-  txDate: { color: "#64748b", fontSize: 12 },
-  txAmount: { color: "#64748b", fontSize: 12 },
+    txCard: {
+      backgroundColor: colors.surface, borderRadius: 14, padding: 14,
+      borderWidth: 1, borderColor: colors.border, marginBottom: 10,
+    },
+    txTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+    txCode: { color: colors.primary, fontWeight: "700", fontSize: 13, fontFamily: "monospace" },
+    txLevy: { color: colors.success, fontWeight: "700", fontSize: 14 },
+    txMeta: { color: colors.textSecondary, fontSize: 13, marginTop: 6 },
+    txBottom: { flexDirection: "row", justifyContent: "space-between", marginTop: 8 },
+    txDate: { color: colors.textSecondary, fontSize: 12 },
+    txAmount: { color: colors.textSecondary, fontSize: 12 },
 
-  errTitle: { color: "#f8fafc", fontSize: 16, fontWeight: "700" },
-  errText: { color: "#64748b", fontSize: 13, textAlign: "center" },
-  btn: { backgroundColor: "#4f46e5", borderRadius: 12, paddingVertical: 12, paddingHorizontal: 24, marginTop: 8 },
-  btnText: { color: "#fff", fontWeight: "700" },
-});
+    errTitle: { color: colors.text, fontSize: 16, fontWeight: "700" },
+    errText: { color: colors.textSecondary, fontSize: 13, textAlign: "center" },
+    btn: { backgroundColor: colors.accent, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 24, marginTop: 8 },
+    btnText: { color: colors.onPrimary, fontWeight: "700" },
+  });
+}

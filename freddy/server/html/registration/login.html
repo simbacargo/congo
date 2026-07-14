@@ -1,86 +1,61 @@
-{% load i18n %}
+{% load i18n static %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
 <meta charset="UTF-8">
-<title>{% trans "Login" %}</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% trans "Login" %} — Lubumbashi Charity Fuel Initiative</title>
+<link rel="icon" href="{% static 'logo.jpg' %}">
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
 
-<body class="min-h-screen flex items-center justify-center" style="background-color:#020d18;">
+<body class="min-h-screen flex items-center justify-center bg-page text-ink p-4">
 
-<div class="w-full max-w-md bg-gray-900 p-8 rounded-2xl shadow-xl space-y-6 text-white">
+<div class="w-full max-w-sm">
 
-  <!-- Title -->
-  <div class="text-center">
-    <img src="/media/logo.jpg" alt="Logo" style="border-radius: 100%; width: 180px; height: 180px; margin: auto;">
-    <h1 class="text-2xl font-bold">{% trans "Welcome Back" %}</h1>
-    <p class="text-gray-400 text-sm">{% trans "Login to your account" %}</p>
+  <!-- Identity -->
+  <div class="text-center mb-6">
+    <img src="{% static 'logo.jpg' %}" alt="LCI" class="w-20 h-20 rounded-full mx-auto mb-4 border border-line shadow-sm">
+    <h1 class="text-xl font-bold">LCI Office</h1>
+    <p class="text-muted text-sm">{% trans "Lubumbashi Charity Fuel Initiative" %}</p>
   </div>
 
-  <!-- Form -->
-  <form class="space-y-4" method="post" action="{% url 'login' %}">
-    {% if form.errors %}
-      <div class="bg-red-500 text-white p-2 rounded">
-        {% for field in form %}
-          {% for error in field.errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
-          <p>{{ error }}</p>
-        {% endfor %}
+  <div class="card p-6 space-y-4 shadow-sm">
+    <form class="space-y-4" method="post" action="{% url 'login' %}">
+      {% if form.errors %}
+        <div class="alert alert-error">
+          <div>
+            {% for field in form %}{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}{% endfor %}
+            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      {% csrf_token %}
+
+      <div>
+        <label class="field-label" for="id_username">{% trans "Username" %}</label>
+        <input id="id_username" type="text" name="username" class="field" autofocus
+               autocomplete="username" placeholder="{% trans 'Enter your username' %}">
       </div>
-    {% endif %}
-    {% csrf_token %}
 
-    <!-- Username -->
-    <div>
-      <label class="block text-sm mb-1">{% trans "Username" %}</label>
-      <input type="text" placeholder="{% trans 'Enter your username' %}" name="username"
-        class="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring focus:ring-blue-500 outline-none">
-    </div>
+      <div>
+        <label class="field-label" for="id_password">{% trans "Password" %}</label>
+        <input id="id_password" type="password" name="password" class="field"
+               autocomplete="current-password" placeholder="••••••••">
+      </div>
 
-    <!-- Password -->
-    <div>
-      <label class="block text-sm mb-1">{% trans "Password" %}</label>
-      <input type="password" placeholder="••••••••" name="password"
-        class="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring focus:ring-blue-500 outline-none">
-    </div>
-
-    <!-- Remember + Forgot -->
-    <div class="flex justify-between items-center text-sm">
-      <label class="flex items-center gap-2">
-        <input type="checkbox" class="accent-blue-600">
-        {% trans "Remember me" %}
-      </label>
-      <a href="#" class="text-blue-400 hover:underline">{% trans "Forgot password?" %}</a>
-    </div>
-
-    <!-- Button -->
-    <button type="submit"
-      class="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded-lg font-semibold transition">
-      {% trans "Login" %}
-    </button>
-
-  </form>
-
-  <!-- Divider -->
-  <div class="text-center text-gray-500 text-sm">{% trans "or" %}</div>
-
-  <!-- Signup Link -->
-  <p class="text-center text-sm text-gray-400">
-    {% trans "Don't have an account?" %}
-    <a href="/signup" class="text-blue-400 hover:underline">{% trans "Sign up" %}</a>
-  </p>
+      <button type="submit" class="btn btn-primary w-full justify-center !py-2.5">
+        {% trans "Login" %}
+      </button>
+    </form>
+  </div>
 
   <!-- Language switcher -->
-  <div class="flex justify-center">
+  <div class="flex justify-center mt-5">
     <form action="{% url 'set_language' %}" method="post" class="flex items-center gap-2">
       {% csrf_token %}
       <input name="next" type="hidden" value="{{ request.get_full_path }}">
-      <select name="language" onchange="this.form.submit()"
-              class="text-xs rounded px-2 py-1 border border-gray-700 bg-gray-800 text-gray-300">
+      <select name="language" onchange="this.form.submit()" class="field !w-auto !text-xs !py-1">
         {% get_current_language as current_lang %}
         {% get_available_languages as languages %}
         {% for lang_code, lang_name in languages %}

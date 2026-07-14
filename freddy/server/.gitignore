@@ -1,0 +1,8 @@
+# collectstatic output
+staticfiles/
+
+# CSS build helper (dev-only; see scripts/build_css.sh)
+scripts/node_modules/
+
+__pycache__/
+*.pyc

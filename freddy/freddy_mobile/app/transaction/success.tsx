@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NoPrinterError, printReceipt } from "../../lib/print";
+import ReceiptPreview from "../../lib/ReceiptPreview";
+import { useTheme } from "../../lib/ThemeContext";
+import { useLanguage } from "../../lib/LanguageContext";
 
 export default function SuccessScreen() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const params = useLocalSearchParams<{
     receiptCode: string;
     levyUsd: string;
@@ -22,6 +27,13 @@ export default function SuccessScreen() {
 
   const isOffline = params.offline === "true";
   const [printing, setPrinting] = useState(false);
+  const [agentName, setAgentName] = useState("Agent");
+
+  useEffect(() => {
+    AsyncStorage.getItem("agent_username").then((name) => {
+      if (name) setAgentName(name);
+    });
+  }, []);
 
   async function handlePrint() {
     setPrinting(true);
@@ -62,71 +74,96 @@ export default function SuccessScreen() {
     }
   }
 
+  const styles = getStyles(colors);
+
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.root, { backgroundColor: colors.background }]} contentContainerStyle={styles.content}>
       {/* Status */}
       <View style={[styles.iconCircle, isOffline && styles.iconCircleOffline]}>
         <FontAwesome
           name={isOffline ? "cloud-upload" : "check"}
           size={36}
-          color={isOffline ? "#fbbf24" : "#4ade80"}
+          color={isOffline ? colors.warning : colors.success}
         />
       </View>
-      <Text style={styles.title}>{isOffline ? "Saved Offline" : "Transaction Posted"}</Text>
-      <Text style={styles.subtitle}>
-        {isOffline
-          ? "No connection — saved locally and will sync automatically when you're back online."
-          : "Transaction recorded and submitted to the LCI server."}
+      <Text style={[styles.title, { color: colors.text }]}>
+        {isOffline ? t("transaction.offline") : t("transaction.success")}
+      </Text>
+      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+        {isOffline ? t("transaction.offline.msg") : t("transaction.posted")}
       </Text>
 
       {/* Receipt code */}
-      <View style={[styles.receiptBox, isOffline && styles.receiptBoxOffline]}>
-        <Text style={styles.receiptLabel}>{isOffline ? "LOCAL REFERENCE" : "RECEIPT CODE"}</Text>
-        <Text style={[styles.receiptCode, isOffline && { color: "#fbbf24", fontSize: 15 }]}>
+      <View style={[styles.receiptBox, isOffline && styles.receiptBoxOffline, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Text style={[styles.receiptLabel, { color: colors.textSecondary }]}>
+          {isOffline ? t("receipt.local") : t("receipt.code")}
+        </Text>
+        <Text style={[styles.receiptCode, isOffline && { color: colors.warning, fontSize: 15 }, { color: colors.primary }]}>
           {params.receiptCode}
         </Text>
-        {!isOffline && <Text style={styles.receiptHint}>Present to NGO for verification</Text>}
-        {isOffline && <Text style={styles.receiptHint}>Receipt code assigned after sync</Text>}
+        {!isOffline && <Text style={[styles.receiptHint, { color: colors.textSecondary }]}>{t("receipt.verify")}</Text>}
+        {isOffline && <Text style={[styles.receiptHint, { color: colors.textSecondary }]}>{t("receipt.sync.msg")}</Text>}
+      </View>
+
+      {/* Receipt Preview */}
+      <View style={styles.previewSection}>
+        <Text style={[styles.previewTitle, { color: colors.textSecondary }]}>{t("receipt.preview")}</Text>
+        <ReceiptPreview
+          receiptCode={params.receiptCode}
+          companyName={params.companyName}
+          stationName={params.stationName}
+          churchName={params.churchName}
+          fuelType={params.fuelType}
+          currencyUsed={params.currency}
+          amountUsd={params.amountUsd}
+          amountCdf={params.amountCdf}
+          levyUsd={params.levyUsd}
+          levyCdf={params.levyCdf}
+          agentName={agentName}
+        />
       </View>
 
       {/* Details card */}
-      <View style={styles.detailsCard}>
-        <Text style={styles.detailsCardTitle}>Transaction Summary</Text>
-        {params.companyName ? <DetailRow label="Company" value={params.companyName} /> : null}
-        {params.stationName ? <DetailRow label="Station" value={params.stationName} /> : null}
-        <DetailRow label="Church" value={params.churchName} />
-        <DetailRow label="Fuel Type" value={params.fuelType} />
-        <DetailRow label="Amount (USD)" value={`$${parseFloat(params.amountUsd).toFixed(2)}`} />
-        <DetailRow label="Amount (CDF)" value={`${parseFloat(params.amountCdf).toFixed(0)} FC`} />
-        <View style={styles.levyRow}>
-          <Text style={styles.levyLabel}>2% Charity Levy</Text>
+      <View style={[styles.detailsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Text style={[styles.detailsCardTitle, { color: colors.textSecondary }]}>
+          {t("transaction.summary")}
+        </Text>
+        {params.companyName ? <DetailRow label={t("company")} value={params.companyName} colors={colors} /> : null}
+        {params.stationName ? <DetailRow label={t("station")} value={params.stationName} colors={colors} /> : null}
+        <DetailRow label={t("church")} value={params.churchName} colors={colors} />
+        <DetailRow label={t("fuel.type")} value={params.fuelType} colors={colors} />
+        <DetailRow label={t("amount.usd")} value={`$${parseFloat(params.amountUsd).toFixed(2)}`} colors={colors} />
+        <DetailRow label={t("amount.cdf")} value={`${parseFloat(params.amountCdf).toFixed(0)} FC`} colors={colors} />
+        <View style={[styles.levyRow, { backgroundColor: colors.surfaceAlt }]}>
+          <Text style={[styles.levyLabel, { color: colors.success }]}>{t("levy")}</Text>
           <View style={{ alignItems: "flex-end" }}>
-            <Text style={styles.levyValue}>${parseFloat(params.levyUsd).toFixed(4)}</Text>
-            <Text style={styles.levyCdf}>{parseFloat(params.levyCdf).toFixed(2)} FC</Text>
+            <Text style={[styles.levyValue, { color: colors.success }]}>${parseFloat(params.levyUsd).toFixed(4)}</Text>
+            <Text style={[styles.levyCdf, { color: colors.success }]}>{parseFloat(params.levyCdf).toFixed(2)} FC</Text>
           </View>
         </View>
       </View>
 
       {/* Actions */}
-      <Pressable style={[styles.printBtn, printing && { opacity: 0.6 }]} onPress={handlePrint} disabled={printing}>
+      <Pressable style={[styles.printBtn, printing && { opacity: 0.6 }, { backgroundColor: colors.primary }]} onPress={handlePrint} disabled={printing}>
         {printing ? (
           <ActivityIndicator color="#fff" />
         ) : (
           <>
             <FontAwesome name="print" size={16} color="#fff" />
-            <Text style={styles.printBtnText}>Print Receipt</Text>
+            <Text style={styles.printBtnText}>{t("receipt.print")}</Text>
           </>
         )}
       </Pressable>
 
-      <Pressable style={styles.doneBtn} onPress={() => router.replace("/(tabs)")}>
-        <Text style={styles.doneBtnText}>Back to Home</Text>
+      <Pressable style={[styles.doneBtn, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={() => router.replace("/(tabs)")}>
+        <Text style={[styles.doneBtnText, { color: colors.textSecondary }]}>{t("back")}</Text>
       </Pressable>
     </ScrollView>
   );
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
+function DetailRow({ label, value, colors }: { label: string; value: string; colors: any }) {
+  const styles = getDetailRowStyles(colors);
   return (
     <View style={styles.detailRow}>
       <Text style={styles.detailLabel}>{label}</Text>
@@ -135,64 +172,114 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0a0f1e" },
-  content: { padding: 24, alignItems: "center", paddingBottom: 40 },
+function getDetailRowStyles(colors: any) {
+  return StyleSheet.create({
+    detailRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: 9,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    detailLabel: { color: colors.textSecondary, fontSize: 13 },
+    detailValue: { color: colors.text, fontWeight: "600", fontSize: 13 },
+  });
+}
 
-  iconCircle: {
-    width: 88, height: 88, borderRadius: 44,
-    backgroundColor: "#052e16", borderWidth: 2, borderColor: "#166534",
-    justifyContent: "center", alignItems: "center", marginBottom: 18,
-  },
-  iconCircleOffline: { backgroundColor: "#451a03", borderColor: "#78350f" },
+function getStyles(colors: any) {
+  return StyleSheet.create({
+    root: { flex: 1, backgroundColor: colors.background },
+    content: { padding: 24, alignItems: "center", paddingBottom: 40 },
 
-  title: { fontSize: 24, fontWeight: "800", color: "#f8fafc", textAlign: "center", marginBottom: 8 },
-  subtitle: {
-    fontSize: 13, color: "#64748b", textAlign: "center",
-    lineHeight: 20, maxWidth: 300, marginBottom: 24,
-  },
+    iconCircle: {
+      width: 88,
+      height: 88,
+      borderRadius: 44,
+      backgroundColor: colors.surfaceAlt,
+      borderWidth: 2,
+      borderColor: colors.success,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 18,
+    },
+    iconCircleOffline: { borderColor: colors.warning },
 
-  receiptBox: {
-    backgroundColor: "#111827", borderRadius: 14, padding: 18, width: "100%",
-    alignItems: "center", marginBottom: 16, borderWidth: 1, borderColor: "#1e3a5f",
-  },
-  receiptBoxOffline: { borderColor: "#78350f" },
-  receiptLabel: { fontSize: 10, color: "#334155", letterSpacing: 1.5, marginBottom: 8 },
-  receiptCode: { fontSize: 18, fontWeight: "700", color: "#60a5fa", letterSpacing: 2, fontFamily: "monospace" },
-  receiptHint: { fontSize: 11, color: "#475569", marginTop: 6 },
+    title: { fontSize: 24, fontWeight: "800", textAlign: "center", marginBottom: 8 },
+    subtitle: {
+      fontSize: 13,
+      textAlign: "center",
+      lineHeight: 20,
+      maxWidth: 300,
+      marginBottom: 24,
+    },
 
-  detailsCard: {
-    backgroundColor: "#111827", borderRadius: 14, padding: 18, width: "100%",
-    marginBottom: 20, borderWidth: 1, borderColor: "#1e2d45",
-  },
-  detailsCardTitle: {
-    fontSize: 11, fontWeight: "700", color: "#334155",
-    letterSpacing: 1, textTransform: "uppercase", marginBottom: 12,
-  },
-  detailRow: {
-    flexDirection: "row", justifyContent: "space-between",
-    paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: "#0a0f1e",
-  },
-  detailLabel: { color: "#64748b", fontSize: 13 },
-  detailValue: { color: "#f8fafc", fontWeight: "600", fontSize: 13 },
+    receiptBox: {
+      borderRadius: 14,
+      padding: 18,
+      width: "100%",
+      alignItems: "center",
+      marginBottom: 16,
+      borderWidth: 1,
+    },
+    receiptBoxOffline: {},
+    receiptLabel: { fontSize: 10, letterSpacing: 1.5, marginBottom: 8 },
+    receiptCode: { fontSize: 18, fontWeight: "700", letterSpacing: 2, fontFamily: "monospace" },
+    receiptHint: { fontSize: 11, marginTop: 6 },
 
-  levyRow: {
-    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-    backgroundColor: "#052e16", borderRadius: 8, padding: 12, marginTop: 8,
-  },
-  levyLabel: { color: "#4ade80", fontWeight: "700", fontSize: 13 },
-  levyValue: { color: "#34d399", fontWeight: "700", fontSize: 16 },
-  levyCdf: { color: "#86efac", fontSize: 11 },
+    previewSection: { width: "100%", marginBottom: 20 },
+    previewTitle: {
+      fontSize: 11,
+      fontWeight: "700",
+      letterSpacing: 1,
+      textTransform: "uppercase",
+      marginBottom: 12,
+    },
 
-  printBtn: {
-    flexDirection: "row", alignItems: "center", justifyContent: "center",
-    gap: 10, backgroundColor: "#1e40af", borderRadius: 14, padding: 16,
-    width: "100%", marginBottom: 10,
-  },
-  printBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
-  doneBtn: {
-    backgroundColor: "#111827", borderRadius: 14, padding: 16, width: "100%",
-    alignItems: "center", borderWidth: 1, borderColor: "#1e2d45",
-  },
-  doneBtnText: { color: "#64748b", fontWeight: "600", fontSize: 15 },
-});
+    detailsCard: {
+      borderRadius: 14,
+      padding: 18,
+      width: "100%",
+      marginBottom: 20,
+      borderWidth: 1,
+    },
+    detailsCardTitle: {
+      fontSize: 11,
+      fontWeight: "700",
+      letterSpacing: 1,
+      textTransform: "uppercase",
+      marginBottom: 12,
+    },
+
+    levyRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      borderRadius: 8,
+      padding: 12,
+      marginTop: 8,
+    },
+    levyLabel: { fontWeight: "700", fontSize: 13 },
+    levyValue: { fontWeight: "700", fontSize: 16 },
+    levyCdf: { fontSize: 11 },
+
+    printBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 10,
+      borderRadius: 14,
+      padding: 16,
+      width: "100%",
+      marginBottom: 10,
+    },
+    printBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
+    doneBtn: {
+      borderRadius: 14,
+      padding: 16,
+      width: "100%",
+      alignItems: "center",
+      borderWidth: 1,
+    },
+    doneBtnText: { fontWeight: "600", fontSize: 15 },
+  });
+}

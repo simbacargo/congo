@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -13,9 +13,10 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Crypto from "expo-crypto";
 import { Church, FuelType, fetchChurches, fetchCurrencyRate, fetchFuelTypes, postTransaction } from "../../lib/api";
 import { saveOfflineTx } from "../../lib/db";
+import { useTheme } from "../../lib/ThemeContext";
+import { useLanguage } from "../../lib/LanguageContext";
 
 type Step = 1 | 2 | 3;
 type Currency = "USD" | "CDF";
@@ -23,6 +24,10 @@ type Currency = "USD" | "CDF";
 const LEVY_RATE = 0.02;
 
 export default function NewTransactionScreen() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+  const styles = getStyles(colors);
+
   const [step, setStep] = useState<Step>(1);
   const [fuelTypes, setFuelTypes] = useState<FuelType[]>([]);
   const [churches, setChurches] = useState<Church[]>([]);
@@ -142,31 +147,31 @@ export default function NewTransactionScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.loadingText}>Loading…</Text>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>{t("loading")}</Text>
       </View>
     );
   }
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "#0f172a" }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {/* Step Indicator */}
       <View style={styles.stepBar}>
         {([1, 2, 3] as Step[]).map((s) => (
           <View key={s} style={[styles.stepDot, step >= s && styles.stepDotActive]}>
-            <Text style={[styles.stepDotText, step >= s && { color: "#fff" }]}>{s}</Text>
+            <Text style={[styles.stepDotText, step >= s && { color: colors.onPrimary }]}>{s}</Text>
           </View>
         ))}
         <View style={[styles.stepLine, step >= 2 && styles.stepLineActive]} />
         <View style={[styles.stepLine, step >= 3 && styles.stepLineActive]} />
       </View>
       <View style={styles.stepLabels}>
-        <Text style={[styles.stepLabel, step === 1 && styles.stepLabelActive]}>Fuel Type</Text>
-        <Text style={[styles.stepLabel, step === 2 && styles.stepLabelActive]}>Amount</Text>
-        <Text style={[styles.stepLabel, step === 3 && styles.stepLabelActive]}>Preview</Text>
+        <Text style={[styles.stepLabel, step === 1 && styles.stepLabelActive]}>{t("newtx.step.fueltype")}</Text>
+        <Text style={[styles.stepLabel, step === 2 && styles.stepLabelActive]}>{t("newtx.step.amount")}</Text>
+        <Text style={[styles.stepLabel, step === 3 && styles.stepLabelActive]}>{t("newtx.step.preview")}</Text>
       </View>
 
       <ScrollView style={styles.body} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -174,7 +179,7 @@ export default function NewTransactionScreen() {
         {/* ── Step 1: Select Fuel Type & Church ── */}
         {step === 1 && (
           <View>
-            <Text style={styles.sectionTitle}>Select Fuel Type</Text>
+            <Text style={styles.sectionTitle}>{t("newtx.select.fueltype")}</Text>
             <View style={styles.chipGroup}>
               {fuelTypes.map((ft) => (
                 <Pressable
@@ -189,7 +194,7 @@ export default function NewTransactionScreen() {
               ))}
             </View>
 
-            <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Select Church</Text>
+            <Text style={[styles.sectionTitle, { marginTop: 24 }]}>{t("newtx.select.church")}</Text>
             {churches.map((ch) => (
               <Pressable
                 key={ch.id}
@@ -201,7 +206,7 @@ export default function NewTransactionScreen() {
                   <Text style={styles.churchSub}>{ch.station_name} · {ch.company_name}</Text>
                 </View>
                 {selectedChurch?.id === ch.id && (
-                  <Text style={{ color: "#3b82f6", fontWeight: "700" }}>✓</Text>
+                  <Text style={{ color: colors.primary, fontWeight: "700" }}>✓</Text>
                 )}
               </Pressable>
             ))}
@@ -211,7 +216,7 @@ export default function NewTransactionScreen() {
               onPress={() => setStep(2)}
               disabled={!selectedFuel || !selectedChurch}
             >
-              <Text style={styles.nextBtnText}>Next →</Text>
+              <Text style={styles.nextBtnText}>{t("newtx.next")}</Text>
             </Pressable>
           </View>
         )}
@@ -219,7 +224,7 @@ export default function NewTransactionScreen() {
         {/* ── Step 2: Enter Amount ── */}
         {step === 2 && (
           <View>
-            <Text style={styles.sectionTitle}>Enter Amount</Text>
+            <Text style={styles.sectionTitle}>{t("newtx.enter.amount")}</Text>
 
             {/* Currency Toggle */}
             <View style={styles.currencyToggle}>
@@ -227,20 +232,20 @@ export default function NewTransactionScreen() {
                 style={[styles.currencyBtn, currency === "USD" && styles.currencyBtnActive]}
                 onPress={() => setCurrency("USD")}
               >
-                <Text style={[styles.currencyBtnText, currency === "USD" && { color: "#fff" }]}>USD $</Text>
+                <Text style={[styles.currencyBtnText, currency === "USD" && { color: colors.onPrimary }]}>USD $</Text>
               </Pressable>
               <Pressable
                 style={[styles.currencyBtn, currency === "CDF" && styles.currencyBtnActive]}
                 onPress={() => setCurrency("CDF")}
               >
-                <Text style={[styles.currencyBtnText, currency === "CDF" && { color: "#fff" }]}>CDF FC</Text>
+                <Text style={[styles.currencyBtnText, currency === "CDF" && { color: colors.onPrimary }]}>CDF FC</Text>
               </Pressable>
             </View>
 
             <TextInput
               style={styles.amountInput}
-              placeholder={`Amount in ${currency}`}
-              placeholderTextColor="#475569"
+              placeholder={`${t("newtx.amount.in")} ${currency}`}
+              placeholderTextColor={colors.textSecondary}
               keyboardType="decimal-pad"
               value={amountInput}
               onChangeText={setAmountInput}
@@ -250,46 +255,44 @@ export default function NewTransactionScreen() {
             {/* Live Preview */}
             {amount > 0 && (
               <View style={styles.previewBox}>
-                <Text style={styles.previewTitle}>Live Breakdown</Text>
+                <Text style={styles.previewTitle}>{t("newtx.live.breakdown")}</Text>
                 <View style={styles.previewRow}>
-                  <Text style={styles.previewLabel}>Amount (USD)</Text>
+                  <Text style={styles.previewLabel}>{t("amount.usd")}</Text>
                   <Text style={styles.previewValue}>${amountUsd.toFixed(2)}</Text>
                 </View>
                 <View style={styles.previewRow}>
-                  <Text style={styles.previewLabel}>Amount (CDF)</Text>
+                  <Text style={styles.previewLabel}>{t("amount.cdf")}</Text>
                   <Text style={styles.previewValue}>{amountCdf.toFixed(0)} FC</Text>
                 </View>
                 <View style={[styles.previewRow, styles.previewHighlight]}>
-                  <Text style={[styles.previewLabel, { color: "#34d399", fontWeight: "700" }]}>
-                    2% Charity Levy
+                  <Text style={[styles.previewLabel, { color: colors.success, fontWeight: "700" }]}>
+                    {t("levy")}
                   </Text>
                   <View style={{ alignItems: "flex-end" }}>
-                    <Text style={[styles.previewValue, { color: "#34d399" }]}>${levyUsd.toFixed(4)}</Text>
-                    <Text style={{ color: "#4ade80", fontSize: 11 }}>{levyCdf.toFixed(2)} FC</Text>
+                    <Text style={[styles.previewValue, { color: colors.success }]}>${levyUsd.toFixed(4)}</Text>
+                    <Text style={{ color: colors.success, fontSize: 11 }}>{levyCdf.toFixed(2)} FC</Text>
                   </View>
                 </View>
                 <View style={styles.previewRow}>
-                  <Text style={styles.previewLabel}>For: {selectedChurch?.name}</Text>
+                  <Text style={styles.previewLabel}>{t("newtx.for")}: {selectedChurch?.name}</Text>
                 </View>
               </View>
             )}
 
             <TextInput
               style={[styles.amountInput, { fontSize: 14, marginTop: 16 }]}
-              placeholder="Driver phone (optional)"
-              placeholderTextColor="#475569"
+              placeholder={t("newtx.driver.phone")}
+              placeholderTextColor={colors.textSecondary}
               keyboardType="phone-pad"
               value={driverPhone}
               onChangeText={setDriverPhone}
             />
-            <Text style={styles.fieldHint}>
-              Links this levy to the driver so it shows in their history when scanned.
-            </Text>
+            <Text style={styles.fieldHint}>{t("newtx.driver.phone.hint")}</Text>
 
             <TextInput
               style={[styles.amountInput, { fontSize: 14, marginTop: 16 }]}
-              placeholder="Notes (optional)"
-              placeholderTextColor="#475569"
+              placeholder={t("newtx.notes")}
+              placeholderTextColor={colors.textSecondary}
               value={notes}
               onChangeText={setNotes}
               multiline
@@ -297,14 +300,14 @@ export default function NewTransactionScreen() {
 
             <View style={styles.navRow}>
               <Pressable style={styles.backBtn} onPress={() => setStep(1)}>
-                <Text style={styles.backBtnText}>← Back</Text>
+                <Text style={styles.backBtnText}>{t("newtx.back")}</Text>
               </Pressable>
               <Pressable
                 style={[styles.nextBtn, { flex: 1 }, (!amount || amount <= 0) && styles.nextBtnDisabled]}
                 onPress={() => setStep(3)}
                 disabled={!amount || amount <= 0}
               >
-                <Text style={styles.nextBtnText}>Review →</Text>
+                <Text style={styles.nextBtnText}>{t("newtx.review")}</Text>
               </Pressable>
             </View>
           </View>
@@ -313,38 +316,38 @@ export default function NewTransactionScreen() {
         {/* ── Step 3: Confirm ── */}
         {step === 3 && (
           <View>
-            <Text style={styles.sectionTitle}>Confirm Transaction</Text>
+            <Text style={styles.sectionTitle}>{t("newtx.confirm")}</Text>
 
             <View style={styles.confirmCard}>
-              <Row label="Company" value={selectedChurch?.company_name ?? ""} />
-              <Row label="Church" value={selectedChurch?.name ?? ""} />
-              <Row label="Fuel Type" value={selectedFuel?.name ?? ""} />
-              <Row label="Currency" value={currency} />
-              <Row label="Amount (USD)" value={`$${amountUsd.toFixed(2)}`} />
-              <Row label="Amount (CDF)" value={`${amountCdf.toFixed(0)} FC`} />
+              <Row label={t("company")} value={selectedChurch?.company_name ?? ""} styles={styles} />
+              <Row label={t("church")} value={selectedChurch?.name ?? ""} styles={styles} />
+              <Row label={t("fuel.type")} value={selectedFuel?.name ?? ""} styles={styles} />
+              <Row label={t("newtx.currency")} value={currency} styles={styles} />
+              <Row label={t("amount.usd")} value={`$${amountUsd.toFixed(2)}`} styles={styles} />
+              <Row label={t("amount.cdf")} value={`${amountCdf.toFixed(0)} FC`} styles={styles} />
               <View style={styles.levyHighlight}>
-                <Text style={styles.levyLabel}>2% Charity Levy (USD)</Text>
+                <Text style={styles.levyLabel}>{t("levy")} (USD)</Text>
                 <Text style={styles.levyValue}>${levyUsd.toFixed(4)}</Text>
               </View>
               <View style={styles.levyHighlight}>
-                <Text style={styles.levyLabel}>2% Charity Levy (CDF)</Text>
+                <Text style={styles.levyLabel}>{t("levy")} (CDF)</Text>
                 <Text style={styles.levyValue}>{levyCdf.toFixed(2)} FC</Text>
               </View>
             </View>
 
             <View style={styles.navRow}>
               <Pressable style={styles.backBtn} onPress={() => setStep(2)}>
-                <Text style={styles.backBtnText}>← Edit</Text>
+                <Text style={styles.backBtnText}>{t("newtx.edit")}</Text>
               </Pressable>
               <Pressable
-                style={[styles.nextBtn, { flex: 1, backgroundColor: "#16a34a" }, submitting && { opacity: 0.6 }]}
+                style={[styles.nextBtn, { flex: 1, backgroundColor: colors.success }, submitting && { opacity: 0.6 }]}
                 onPress={submit}
                 disabled={submitting}
               >
                 {submitting ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color={colors.onPrimary} />
                 ) : (
-                  <Text style={styles.nextBtnText}>Submit Transaction</Text>
+                  <Text style={styles.nextBtnText}>{t("newtx.submit")}</Text>
                 )}
               </Pressable>
             </View>
@@ -356,7 +359,7 @@ export default function NewTransactionScreen() {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, styles }: { label: string; value: string; styles: any }) {
   return (
     <View style={styles.confirmRow}>
       <Text style={styles.confirmLabel}>{label}</Text>
@@ -365,97 +368,99 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  center: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
-  loadingText: { color: "#64748b", marginTop: 12 },
+function getStyles(colors: any) {
+  return StyleSheet.create({
+    center: { flex: 1, backgroundColor: colors.background, justifyContent: "center", alignItems: "center" },
+    loadingText: { color: colors.textSecondary, marginTop: 12 },
 
-  // Step bar
-  stepBar: { flexDirection: "row", alignItems: "center", paddingHorizontal: 32, paddingTop: 20 },
-  stepDot: {
-    width: 28, height: 28, borderRadius: 14, borderWidth: 2,
-    borderColor: "#334155", backgroundColor: "#1e293b",
-    justifyContent: "center", alignItems: "center",
-  },
-  stepDotActive: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  stepDotText: { color: "#475569", fontWeight: "700", fontSize: 12 },
-  stepLine: { flex: 1, height: 2, backgroundColor: "#334155", marginHorizontal: -14, zIndex: -1 },
-  stepLineActive: { backgroundColor: "#2563eb" },
-  stepLabels: { flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 16, marginTop: 6, marginBottom: 20 },
-  stepLabel: { fontSize: 11, color: "#475569", flex: 1, textAlign: "center" },
-  stepLabelActive: { color: "#93c5fd", fontWeight: "600" },
+    // Step bar
+    stepBar: { flexDirection: "row", alignItems: "center", paddingHorizontal: 32, paddingTop: 20 },
+    stepDot: {
+      width: 28, height: 28, borderRadius: 14, borderWidth: 2,
+      borderColor: colors.border, backgroundColor: colors.surface,
+      justifyContent: "center", alignItems: "center",
+    },
+    stepDotActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+    stepDotText: { color: colors.textSecondary, fontWeight: "700", fontSize: 12 },
+    stepLine: { flex: 1, height: 2, backgroundColor: colors.border, marginHorizontal: -14, zIndex: -1 },
+    stepLineActive: { backgroundColor: colors.primary },
+    stepLabels: { flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 16, marginTop: 6, marginBottom: 20 },
+    stepLabel: { fontSize: 11, color: colors.textSecondary, flex: 1, textAlign: "center" },
+    stepLabelActive: { color: colors.primary, fontWeight: "600" },
 
-  body: { flex: 1, paddingHorizontal: 20 },
-  sectionTitle: { fontSize: 15, fontWeight: "700", color: "#cbd5e1", marginBottom: 12 },
-  fieldHint: { fontSize: 11, color: "#475569", marginTop: 6, lineHeight: 16 },
+    body: { flex: 1, paddingHorizontal: 20 },
+    sectionTitle: { fontSize: 15, fontWeight: "700", color: colors.text, marginBottom: 12 },
+    fieldHint: { fontSize: 11, color: colors.textSecondary, marginTop: 6, lineHeight: 16 },
 
-  chipGroup: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  chip: {
-    paddingHorizontal: 16, paddingVertical: 10,
-    borderRadius: 20, borderWidth: 1, borderColor: "#334155", backgroundColor: "#1e293b",
-  },
-  chipActive: { backgroundColor: "#1d4ed8", borderColor: "#2563eb" },
-  chipText: { color: "#94a3b8", fontWeight: "600" },
-  chipTextActive: { color: "#fff" },
+    chipGroup: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+    chip: {
+      paddingHorizontal: 16, paddingVertical: 10,
+      borderRadius: 20, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface,
+    },
+    chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+    chipText: { color: colors.textSecondary, fontWeight: "600" },
+    chipTextActive: { color: colors.onPrimary },
 
-  churchRow: {
-    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-    backgroundColor: "#1e293b", borderRadius: 12, padding: 14, marginBottom: 8,
-    borderWidth: 1, borderColor: "#334155",
-  },
-  churchRowActive: { borderColor: "#2563eb", backgroundColor: "#172554" },
-  churchName: { fontWeight: "600", color: "#f1f5f9", fontSize: 14 },
-  churchSub: { color: "#64748b", fontSize: 12, marginTop: 2 },
+    churchRow: {
+      flexDirection: "row", justifyContent: "space-between", alignItems: "center",
+      backgroundColor: colors.surface, borderRadius: 12, padding: 14, marginBottom: 8,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    churchRowActive: { borderColor: colors.primary, backgroundColor: colors.surfaceAlt },
+    churchName: { fontWeight: "600", color: colors.text, fontSize: 14 },
+    churchSub: { color: colors.textSecondary, fontSize: 12, marginTop: 2 },
 
-  currencyToggle: {
-    flexDirection: "row", backgroundColor: "#1e293b", borderRadius: 10,
-    borderWidth: 1, borderColor: "#334155", marginBottom: 16, overflow: "hidden",
-  },
-  currencyBtn: { flex: 1, paddingVertical: 12, alignItems: "center" },
-  currencyBtnActive: { backgroundColor: "#2563eb" },
-  currencyBtnText: { fontWeight: "700", color: "#64748b" },
+    currencyToggle: {
+      flexDirection: "row", backgroundColor: colors.surface, borderRadius: 10,
+      borderWidth: 1, borderColor: colors.border, marginBottom: 16, overflow: "hidden",
+    },
+    currencyBtn: { flex: 1, paddingVertical: 12, alignItems: "center" },
+    currencyBtnActive: { backgroundColor: colors.primary },
+    currencyBtnText: { fontWeight: "700", color: colors.textSecondary },
 
-  amountInput: {
-    backgroundColor: "#1e293b", borderWidth: 1, borderColor: "#334155",
-    borderRadius: 12, padding: 16, color: "#f1f5f9", fontSize: 28, fontWeight: "700",
-  },
-  previewBox: {
-    backgroundColor: "#0d2137", borderRadius: 12, padding: 16, marginTop: 16,
-    borderWidth: 1, borderColor: "#1e3a5f",
-  },
-  previewTitle: { fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 },
-  previewRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-  previewHighlight: {
-    backgroundColor: "#052e16", borderRadius: 8, padding: 10,
-    marginTop: 4, marginBottom: 4,
-  },
-  previewLabel: { color: "#94a3b8", fontSize: 13 },
-  previewValue: { color: "#f1f5f9", fontWeight: "600", fontSize: 13 },
+    amountInput: {
+      backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
+      borderRadius: 12, padding: 16, color: colors.text, fontSize: 28, fontWeight: "700",
+    },
+    previewBox: {
+      backgroundColor: colors.surfaceAlt, borderRadius: 12, padding: 16, marginTop: 16,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    previewTitle: { fontSize: 11, color: colors.textSecondary, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 },
+    previewRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
+    previewHighlight: {
+      backgroundColor: colors.successBg, borderRadius: 8, padding: 10,
+      marginTop: 4, marginBottom: 4,
+    },
+    previewLabel: { color: colors.textSecondary, fontSize: 13 },
+    previewValue: { color: colors.text, fontWeight: "600", fontSize: 13 },
 
-  confirmCard: {
-    backgroundColor: "#1e293b", borderRadius: 14, padding: 18,
-    borderWidth: 1, borderColor: "#334155", marginBottom: 20,
-  },
-  confirmRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: "#0f172a" },
-  confirmLabel: { color: "#64748b", fontSize: 13 },
-  confirmValue: { color: "#f1f5f9", fontWeight: "600", fontSize: 13 },
-  levyHighlight: {
-    flexDirection: "row", justifyContent: "space-between",
-    backgroundColor: "#052e16", borderRadius: 8, padding: 10, marginTop: 8,
-  },
-  levyLabel: { color: "#4ade80", fontSize: 13 },
-  levyValue: { color: "#34d399", fontWeight: "700", fontSize: 13 },
+    confirmCard: {
+      backgroundColor: colors.surface, borderRadius: 14, padding: 18,
+      borderWidth: 1, borderColor: colors.border, marginBottom: 20,
+    },
+    confirmRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.background },
+    confirmLabel: { color: colors.textSecondary, fontSize: 13 },
+    confirmValue: { color: colors.text, fontWeight: "600", fontSize: 13 },
+    levyHighlight: {
+      flexDirection: "row", justifyContent: "space-between",
+      backgroundColor: colors.successBg, borderRadius: 8, padding: 10, marginTop: 8,
+    },
+    levyLabel: { color: colors.success, fontSize: 13 },
+    levyValue: { color: colors.success, fontWeight: "700", fontSize: 13 },
 
-  navRow: { flexDirection: "row", gap: 12 },
-  nextBtn: {
-    backgroundColor: "#2563eb", borderRadius: 12, padding: 16,
-    alignItems: "center", marginTop: 20,
-  },
-  nextBtnDisabled: { opacity: 0.4 },
-  nextBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
-  backBtn: {
-    backgroundColor: "#1e293b", borderRadius: 12, padding: 16,
-    alignItems: "center", marginTop: 20, borderWidth: 1, borderColor: "#334155",
-    paddingHorizontal: 20,
-  },
-  backBtnText: { color: "#94a3b8", fontWeight: "600" },
-});
+    navRow: { flexDirection: "row", gap: 12 },
+    nextBtn: {
+      backgroundColor: colors.primary, borderRadius: 12, padding: 16,
+      alignItems: "center", marginTop: 20,
+    },
+    nextBtnDisabled: { opacity: 0.4 },
+    nextBtnText: { color: colors.onPrimary, fontWeight: "700", fontSize: 16 },
+    backBtn: {
+      backgroundColor: colors.surface, borderRadius: 12, padding: 16,
+      alignItems: "center", marginTop: 20, borderWidth: 1, borderColor: colors.border,
+      paddingHorizontal: 20,
+    },
+    backBtnText: { color: colors.textSecondary, fontWeight: "600" },
+  });
+}

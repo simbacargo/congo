@@ -49,6 +49,23 @@ bun start                          # expo; --android / --ios / --web
   `/api/` (the mobile app's backend). Web views and API views coexist in `views.py`.
 - i18n: English / French / Swahili (`locale/en|fr|sw`). DB is SQLite (`db.sqlite3`).
 
+### Web frontend (v2, light "paper ledger" theme)
+
+- Templates live in `server/html/` (`base.html` shell + `html/fuel/` pages/partials).
+  Design tokens & component classes (`.card`, `.btn*`, `.field`, `.badge-<STATUS>`,
+  `.tbl`, `.nav-link`) are defined in `static/src/app.css` (Tailwind v4 source).
+- **All assets are vendored** (fonts, htmx, Chart.js under `static/`); no CDNs —
+  connectivity in Lubumbashi is unreliable. Keep it that way.
+- CSS build: `./scripts/build_css.sh` (uses bun, one-off; the minified output
+  `static/css/app.css` is **committed**). Re-run after adding new Tailwind
+  utility classes to templates. Django forms get widget classes from the
+  `_FIELD_CLASSES` constants in `fuel_app/forms.py`.
+- Web role gating: `fuel_app/decorators.py::role_required(*roles)` on views +
+  matching `{% if %}` blocks in `base.html` nav. Superusers always pass.
+- Chart styling: shared `static/js/charts.js` (`LCI` global — palette, status
+  colors, Chart.js defaults). Pages that chart must override the `chart_lib`
+  block to load Chart.js (base.html doesn't ship it).
+
 ### Domain conventions
 
 - Primary keys are **UUIDs** on the main models.

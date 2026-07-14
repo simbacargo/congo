@@ -1,9 +1,9 @@
 {% load i18n %}
-<th class="px-4 py-3 whitespace-nowrap">
+<th class="whitespace-nowrap">
   <a href="?{% if sort_querystring %}{{ sort_querystring }}&{% endif %}sort={{ col }}&dir={% if sort == col and dir == 'asc' %}desc{% else %}asc{% endif %}"
-     class="inline-flex items-center gap-1 hover:text-white transition">
+     class="inline-flex items-center gap-1 hover:text-ink transition">
     {{ label }}
-    {% if sort == col %}<span class="text-blue-400">{% if dir == 'asc' %}↑{% else %}↓{% endif %}</span>
+    {% if sort == col %}<span class="text-accent">{% if dir == 'asc' %}↑{% else %}↓{% endif %}</span>
     {% else %}<span class="opacity-30">↕</span>{% endif %}
   </a>
 </th>
