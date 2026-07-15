@@ -1,0 +1,30 @@
+# Mirrors .gitignore (EAS uses this INSTEAD of .gitignore when present)
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.DS_Store
+*.pem
+.env*.local
+*.tsbuildinfo
+/ios
+/android
+
+# Extra: not needed for EAS builds
+*.aab
+*.apk
+.vscode/
+.claude/
+.git/
