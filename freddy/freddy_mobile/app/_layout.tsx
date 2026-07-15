@@ -1,5 +1,5 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { DarkTheme, ThemeProvider as NavThemeProvider } from "@react-navigation/native";
+import { DarkTheme, ThemeProvider as NavThemeProvider } from "expo-router/react-navigation";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
