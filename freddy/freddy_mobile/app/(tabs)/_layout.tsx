@@ -1,9 +1,10 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
+import { ColorValue } from "react-native";
 import { useTheme } from "../../lib/ThemeContext";
 import { useLanguage } from "../../lib/LanguageContext";
 
-function TabIcon({ name, color }: { name: React.ComponentProps<typeof FontAwesome>["name"]; color: string }) {
+function TabIcon({ name, color }: { name: React.ComponentProps<typeof FontAwesome>["name"]; color: ColorValue }) {
   return <FontAwesome name={name} size={20} color={color} />;
 }
 

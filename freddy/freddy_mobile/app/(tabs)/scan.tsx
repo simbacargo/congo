@@ -90,7 +90,7 @@ function getStyles(colors: any) {
     btn: { backgroundColor: colors.accent, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 28 },
     btnText: { color: colors.onPrimary, fontWeight: "700", fontSize: 15 },
 
-    overlay: { ...StyleSheet.absoluteFillObject, justifyContent: "center", alignItems: "center" },
+    overlay: { ...StyleSheet.absoluteFill, justifyContent: "center", alignItems: "center" },
     frame: {
       width: 240, height: 240, borderRadius: 24,
       borderWidth: 3, borderColor: colors.accent,
