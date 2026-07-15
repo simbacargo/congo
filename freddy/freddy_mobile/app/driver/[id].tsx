@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
   Alert,
@@ -32,6 +33,7 @@ export default function DriverScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const [data, setData] = useState<DriverLookup | null>(null);
@@ -169,7 +171,7 @@ export default function DriverScreen() {
   return (
     <ScrollView
       style={styles.root}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: 40 + insets.bottom }]}
       keyboardShouldPersistTaps="handled"
     >
       {/* Driver header */}

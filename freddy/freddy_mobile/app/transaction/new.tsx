@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
   Alert,
@@ -27,6 +28,7 @@ export default function NewTransactionScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
 
   const [step, setStep] = useState<Step>(1);
   const [fuelTypes, setFuelTypes] = useState<FuelType[]>([]);
@@ -174,7 +176,7 @@ export default function NewTransactionScreen() {
         <Text style={[styles.stepLabel, step === 3 && styles.stepLabelActive]}>{t("newtx.step.preview")}</Text>
       </View>
 
-      <ScrollView style={styles.body} contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView style={styles.body} contentContainerStyle={{ paddingBottom: 40 + insets.bottom }}>
 
         {/* ── Step 1: Select Fuel Type & Church ── */}
         {step === 1 && (

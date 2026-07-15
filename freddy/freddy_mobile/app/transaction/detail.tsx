@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
   Pressable,
@@ -19,6 +20,7 @@ export default function TransactionDetailScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
 
   const { syncId } = useLocalSearchParams<{ syncId: string }>();
   const [tx, setTx] = useState<OfflineTx | null>(null);
@@ -80,7 +82,7 @@ export default function TransactionDetailScreen() {
   const levy = parseFloat(tx.levy_preview);
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.root} contentContainerStyle={[styles.content, { paddingBottom: 40 + insets.bottom }]}>
       {/* Status banner */}
       <View style={[styles.statusBanner, tx.synced ? styles.bannerSynced : styles.bannerPending]}>
         <FontAwesome

@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTheme } from "../../lib/ThemeContext";
@@ -9,9 +10,10 @@ export default function SettingsScreen() {
   const { language, setLanguage, t } = useLanguage();
 
   const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView style={[styles.root, { backgroundColor: colors.background }]} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.root, { backgroundColor: colors.background }]} contentContainerStyle={[styles.content, { paddingBottom: 40 + insets.bottom }]}>
       {/* Theme Section */}
       <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.sectionHeader}>

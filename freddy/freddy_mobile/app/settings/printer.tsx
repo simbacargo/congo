@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
   Alert,
@@ -26,6 +27,7 @@ export default function PrinterSettingsScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
 
   const [devices, setDevices] = useState<BluetoothDevice[]>([]);
   const [saved, setSaved] = useState<SavedPrinter | null>(null);
@@ -91,7 +93,7 @@ export default function PrinterSettingsScreen() {
   }
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.root} contentContainerStyle={[styles.content, { paddingBottom: 40 + insets.bottom }]}>
       <Text style={styles.intro}>{t("printer.intro")}</Text>
 
       {saved && (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
@@ -75,9 +76,10 @@ export default function SuccessScreen() {
   }
 
   const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView style={[styles.root, { backgroundColor: colors.background }]} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.root, { backgroundColor: colors.background }]} contentContainerStyle={[styles.content, { paddingBottom: 40 + insets.bottom }]}>
       {/* Status */}
       <View style={[styles.iconCircle, isOffline && styles.iconCircleOffline]}>
         <FontAwesome
