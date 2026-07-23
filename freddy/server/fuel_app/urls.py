@@ -79,6 +79,10 @@ urlpatterns = [
     path("api/transactions/<uuid:pk>/status/", views.api_transaction_status, name="api-tx-status"),
     path("api/transactions/<uuid:pk>/audit/", views.api_audit_log, name="api-tx-audit"),
     path("api/drivers/<uuid:pk>/", views.api_driver_detail, name="api-driver-detail"),
+    path("api/agents/me/history/", views.api_agent_history, name="api-agent-history-me"),
+    path("api/agents/<uuid:pk>/history/", views.api_agent_history, name="api-agent-history"),
+    path("api/stations/me/history/", views.api_station_history, name="api-station-history-me"),
+    path("api/stations/<uuid:pk>/history/", views.api_station_history, name="api-station-history"),
     path("api/verify/<str:receipt_code>/", views.api_transaction_verify, name="api-verify"),
     path("api/auth/profile/", views.api_profile, name="api-profile"),
 ]

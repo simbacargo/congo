@@ -141,6 +141,118 @@ def tx_queryset(request):
     return qs
 
 
+# ─── Transaction history (mobile /api/…/history/ endpoints) ────────────────
+
+def scope_transactions(user, qs):
+    """Restrict a Transaction queryset to what ``user`` is allowed to see.
+
+    NGO admins and superusers see everything; a company manager is limited to
+    their company's stations; a station agent to their assigned station. A
+    user with no assignment sees nothing rather than everything.
+    """
+    from authentication.models import ROLE_COMPANY_MANAGER, ROLE_STATION_AGENT
+
+    if user.is_superuser:
+        return qs
+    if user.role == ROLE_STATION_AGENT:
+        return qs.filter(station=user.assigned_station) if user.assigned_station else qs.none()
+    if user.role == ROLE_COMPANY_MANAGER:
+        return qs.filter(station__company=user.managed_company) if user.managed_company else qs.none()
+    return qs
+
+
+def filter_history(qs, params):
+    """Apply the shared ``?from=&to=&status=&church=&fuel_type=`` filters.
+
+    Dates are ISO ``YYYY-MM-DD`` and inclusive on both ends; an unparseable
+    value is ignored rather than erroring, so a stale mobile client sending a
+    bad filter still gets its history back.
+    """
+    from datetime import date
+
+    def _parse(key):
+        raw = (params.get(key) or "").strip()
+        try:
+            return date.fromisoformat(raw) if raw else None
+        except ValueError:
+            return None
+
+    date_from, date_to = _parse("from"), _parse("to")
+    if date_from:
+        qs = qs.filter(created_at__date__gte=date_from)
+    if date_to:
+        qs = qs.filter(created_at__date__lte=date_to)
+
+    status = (params.get("status") or "").strip().upper()
+    if status:
+        qs = qs.filter(status=status)
+    for key, field in (("church", "church_id"), ("fuel_type", "fuel_type_id")):
+        value = (params.get(key) or "").strip()
+        if value:
+            qs = qs.filter(**{field: value})
+    return qs
+
+
+def money_str(value, places="0.01"):
+    """Format an aggregate as a fixed-precision string.
+
+    SQLite's SUM() comes back float-backed, so a plain str() yields noise like
+    "0.430000000000000". Quantize to the column's own precision instead.
+    """
+    return str(Decimal(str(value or 0)).quantize(Decimal(places)))
+
+
+def history_summary(qs):
+    """Totals + per-status breakdown for a history queryset (2 queries)."""
+    from django.db.models import Count, Max, Min, Sum
+
+    agg = qs.aggregate(
+        count=Count("id"),
+        total_amount_usd=Sum("amount_usd"),
+        total_amount_cdf=Sum("amount_cdf"),
+        total_levy_usd=Sum("levy_amount_usd"),
+        total_levy_cdf=Sum("levy_amount_cdf"),
+        first_at=Min("created_at"),
+        last_at=Max("created_at"),
+    )
+    by_status = {
+        row["status"]: {"count": row["count"], "levy_usd": money_str(row["levy"], "0.0001")}
+        for row in qs.values("status").annotate(count=Count("id"), levy=Sum("levy_amount_usd"))
+    }
+    return {
+        "count": agg["count"] or 0,
+        "total_amount_usd": money_str(agg["total_amount_usd"]),
+        "total_amount_cdf": money_str(agg["total_amount_cdf"]),
+        "total_levy_usd": money_str(agg["total_levy_usd"], "0.0001"),
+        "total_levy_cdf": money_str(agg["total_levy_cdf"], "0.0001"),
+        "first_at": agg["first_at"],
+        "last_at": agg["last_at"],
+        "by_status": by_status,
+    }
+
+
+def paginate_history(qs, request, serializer_class):
+    """Page a history queryset with the project-wide PageNumberPagination.
+
+    ``@api_view`` functions don't get DRF's automatic pagination, so the
+    paginator is driven by hand here and reused by both history endpoints.
+    """
+    from rest_framework.pagination import PageNumberPagination
+
+    paginator = PageNumberPagination()
+    paginator.page_size_query_param = "page_size"
+    paginator.max_page_size = 200
+    page = paginator.paginate_queryset(qs, request)
+    return {
+        "count": paginator.page.paginator.count,
+        "page": paginator.page.number,
+        "num_pages": paginator.page.paginator.num_pages,
+        "next": paginator.get_next_link(),
+        "previous": paginator.get_previous_link(),
+        "results": serializer_class(page, many=True).data,
+    }
+
+
 DRIVER_SORTABLE = {
     "name": "full_name", "commune": "commune", "vehicle": "vehicle_type",
     "fuel": "fuel_type", "consumption": "daily_fuel_consumption",

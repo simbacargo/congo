@@ -34,9 +34,10 @@ from fuel_app.serializers import (
 )
 from fuel_app.services import (
     build_drivers_excel, build_transactions_excel, build_transactions_pdf,
-    driver_card_number, driver_queryset, get_usd_to_cdf_rate, kpi_stats,
-    qr_data_uri, image_data_uri, barcode_data_uri, normalize_phone,
-    record_audit_log, tx_queryset, DRIVER_SORTABLE, CONSUMPTION_ORDER,
+    driver_card_number, driver_queryset, filter_history, get_usd_to_cdf_rate,
+    history_summary, kpi_stats, paginate_history, qr_data_uri, image_data_uri,
+    barcode_data_uri, normalize_phone, record_audit_log, scope_transactions,
+    tx_queryset, money_str, DRIVER_SORTABLE, CONSUMPTION_ORDER,
 )
 
 
@@ -808,6 +809,126 @@ def api_driver_detail(request, pk):
             "total_amount_usd": str(agg["total_amount_usd"] or 0),
         },
     })
+
+
+def _history_payload(request, qs):
+    """Shared envelope for the history endpoints: summary + one page of rows.
+
+    ``qs`` must already be filtered. The summary is computed over the whole
+    filtered set, not just the page, so an agent sees their true running
+    totals however deep they scroll.
+    """
+    payload = {"summary": history_summary(qs)}
+    payload.update(paginate_history(qs, request, TransactionSerializer))
+    return payload
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def api_agent_history(request, pk=None):
+    """Every transaction an agent has recorded, newest first.
+
+    ``pk`` omitted means the caller ("me"), which any authenticated user may
+    read. Reading *another* agent's history is limited to NGO admins and to
+    company managers whose company owns that agent's station.
+    """
+    if pk is None:
+        agent = request.user
+    else:
+        agent = get_object_or_404(User, pk=pk)
+        if agent != request.user and not _can_read_agent(request.user, agent):
+            return Response(
+                {"detail": "You do not have access to this agent's history."},
+                status=drf_status.HTTP_403_FORBIDDEN,
+            )
+
+    qs = Transaction.objects.filter(agent=agent).select_related(
+        "station__company", "church", "agent", "fuel_type"
+    )
+    # An agent always sees their own work; anyone else is scoped as usual.
+    if agent != request.user:
+        qs = scope_transactions(request.user, qs)
+    qs = filter_history(qs, request.query_params).order_by("-created_at")
+
+    payload = {
+        "agent": {
+            "id": str(agent.id),
+            "username": agent.username,
+            "full_name": " ".join(filter(None, [agent.firstname, agent.lastname])) or None,
+            "role": agent.role,
+            "station": str(agent.assigned_station_id) if agent.assigned_station_id else None,
+            "station_name": agent.assigned_station.name if agent.assigned_station_id else None,
+        },
+    }
+    payload.update(_history_payload(request, qs))
+    return Response(payload)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def api_station_history(request, pk=None):
+    """Every transaction recorded at a station, newest first.
+
+    ``pk`` omitted means the caller's assigned station. Access is the same
+    role scoping used everywhere else: admins any station, managers their
+    company's, agents only the station they are assigned to.
+    """
+    if pk is None:
+        station = request.user.assigned_station
+        if station is None:
+            return Response(
+                {"detail": "Your account has no assigned station."},
+                status=drf_status.HTTP_400_BAD_REQUEST,
+            )
+    else:
+        station = get_object_or_404(FuelStation, pk=pk)
+
+    qs = Transaction.objects.filter(station=station).select_related(
+        "station__company", "church", "agent", "fuel_type"
+    )
+    scoped = scope_transactions(request.user, qs)
+    # An empty scope on a station that *has* transactions means it isn't theirs.
+    if pk is not None and not scoped.exists() and qs.exists():
+        return Response(
+            {"detail": "You do not have access to this station's history."},
+            status=drf_status.HTTP_403_FORBIDDEN,
+        )
+
+    scoped = filter_history(scoped, request.query_params).order_by("-created_at")
+
+    payload = {
+        "station": {
+            "id": str(station.id),
+            "name": station.name,
+            "code": station.code,
+            "company": station.company.name,
+        },
+        "by_agent": [
+            {
+                "agent": str(row["agent_id"]),
+                "username": row["agent__username"],
+                "count": row["count"],
+                "levy_usd": money_str(row["levy"], "0.0001"),
+            }
+            for row in scoped.values("agent_id", "agent__username")
+            .annotate(count=Count("id"), levy=Sum("levy_amount_usd"))
+            .order_by("-levy")
+        ],
+    }
+    payload.update(_history_payload(request, scoped))
+    return Response(payload)
+
+
+def _can_read_agent(user, agent):
+    """May `user` read another user's transaction history?"""
+    if user.is_superuser or user.role == ROLE_NGO_ADMIN:
+        return True
+    if user.role == ROLE_COMPANY_MANAGER and user.managed_company_id:
+        return (
+            agent.assigned_station_id is not None
+            and agent.assigned_station.company_id == user.managed_company_id
+        )
+    return False
 
 
 @api_view(["PATCH"])
