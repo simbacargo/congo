@@ -42,6 +42,7 @@ urlpatterns = [
     # ── Agents / Users ────────────────────────────────────────────────────
     path("agents/", views.agent_list, name="agents"),
     path("agents/new/", views.agent_create, name="agent-create"),
+    path("agents/<uuid:pk>/", views.agent_detail, name="agent-detail"),
     path("agents/<uuid:pk>/edit/", views.agent_edit, name="agent-edit"),
 
     # ── Disbursements ─────────────────────────────────────────────────────

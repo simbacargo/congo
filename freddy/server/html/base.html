@@ -52,6 +52,18 @@
         {% with c=stats.pending_count %}{% if c %}<span class="ml-auto num text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-warn-soft text-warn">{{ c }}</span>{% endif %}{% endwith %}
       </a>
 
+      {% comment %}
+        The verify page is public, so this must not render for anonymous
+        visitors: the "url ... as" form silently yields an empty href.
+      {% endcomment %}
+      {% if request.user.is_authenticated %}
+      {% url 'fuel:agent-detail' request.user.id as url_me %}
+      <a href="{{ url_me }}" class="nav-link {% if request.path == url_me %}nav-active{% endif %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+        {% trans "My history" %}
+      </a>
+      {% endif %}
+
       {% if is_su or role == 'NGO_ADMIN' %}
       {% url 'fuel:disbursements' as url_dsb %}
       <a href="{{ url_dsb }}" class="nav-link {% if '/disbursements/' in request.path %}nav-active{% endif %}">

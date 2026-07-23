@@ -10,8 +10,11 @@ from authentication.models import (
 from fuel_app.models import Church, FuelStation, FuelType, ParentCompany, Transaction
 
 
-class HistoryAPITests(TestCase):
-    """Coverage for /api/agents/…/history/ and /api/stations/…/history/."""
+class HistoryFixture:
+    """Two companies, two stations, five users, five transactions.
+
+    Shared by the API and page test cases so both exercise identical data.
+    """
 
     @classmethod
     def setUpTestData(cls):
@@ -55,6 +58,10 @@ class HistoryAPITests(TestCase):
             currency_used=Transaction.Currency.USD, amount_usd=amount,
             exchange_rate=Decimal("2800.0000"),
         )
+
+
+class HistoryAPITests(HistoryFixture, TestCase):
+    """Coverage for /api/agents/…/history/ and /api/stations/…/history/."""
 
     def client_for(self, user):
         c = APIClient()
@@ -170,3 +177,99 @@ class HistoryAPITests(TestCase):
             reverse("fuel:api-station-history-me"), {"from": "2000-01-01", "to": "2000-01-02"}
         )
         self.assertEqual(res.data["by_agent"], [])
+
+
+class HistoryPageTests(HistoryFixture, TestCase):
+    """The server-rendered detail pages that embed the same history block."""
+
+    def page_for(self, user):
+        self.client.force_login(user)
+        return self.client
+
+    # ── agent detail ───────────────────────────────────────────────────────
+
+    def test_agent_can_open_own_detail_page(self):
+        res = self.page_for(self.agent).get(
+            reverse("fuel:agent-detail", args=[self.agent.id])
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, "fuel/agents/detail.html")
+        self.assertEqual(res.context["summary"]["count"], 3)
+        self.assertTrue(res.context["is_self"])
+
+    def test_agent_detail_page_denies_other_agents(self):
+        res = self.page_for(self.agent).get(
+            reverse("fuel:agent-detail", args=[self.agent2.id])
+        )
+        self.assertEqual(res.status_code, 403)
+
+    def test_admin_can_open_any_agent_detail_page(self):
+        res = self.page_for(self.admin).get(
+            reverse("fuel:agent-detail", args=[self.agent.id])
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(res.context["is_self"])
+
+    def test_manager_denied_outside_own_company(self):
+        res = self.page_for(self.manager).get(
+            reverse("fuel:agent-detail", args=[self.foreign_agent.id])
+        )
+        self.assertEqual(res.status_code, 403)
+
+    def test_agent_detail_page_filters(self):
+        res = self.page_for(self.agent).get(
+            reverse("fuel:agent-detail", args=[self.agent.id]),
+            {"from": "2000-01-01", "to": "2000-01-02"},
+        )
+        self.assertEqual(res.context["summary"]["count"], 0)
+        self.assertEqual(len(res.context["history"]), 0)
+
+    def test_agent_detail_pagination(self):
+        for _ in range(30):
+            self._tx(self.agent, self.station, self.church, Decimal("10.00"))
+        res = self.page_for(self.agent).get(
+            reverse("fuel:agent-detail", args=[self.agent.id])
+        )
+        self.assertEqual(res.context["page_obj"].paginator.count, 33)
+        self.assertEqual(len(res.context["history"]), 25)
+        self.assertTrue(res.context["page_obj"].has_next())
+
+    # ── station detail ─────────────────────────────────────────────────────
+
+    def test_station_detail_page_renders_full_history(self):
+        res = self.page_for(self.admin).get(
+            reverse("fuel:station-detail", args=[self.station.id])
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, "fuel/stations/detail.html")
+        self.assertEqual(res.context["summary"]["count"], 4)
+        by_agent = {r["agent__username"]: r["count"] for r in res.context["by_agent"]}
+        self.assertEqual(by_agent, {"agent1": 3, "agent2": 1})
+
+    def test_station_detail_htmx_still_returns_the_partial(self):
+        res = self.page_for(self.admin).get(
+            reverse("fuel:station-detail", args=[self.station.id]),
+            headers={"hx-request": "true"},
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, "fuel/partials/station_detail.html")
+
+    def test_station_detail_scopes_to_the_viewer(self):
+        # An agent from another station sees the page but none of the rows.
+        res = self.page_for(self.foreign_agent).get(
+            reverse("fuel:station-detail", args=[self.station.id])
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context["summary"]["count"], 0)
+
+    def test_agents_list_links_to_the_detail_page(self):
+        res = self.page_for(self.admin).get(reverse("fuel:agents"))
+        self.assertContains(res, reverse("fuel:agent-detail", args=[self.agent.id]))
+
+    def test_nav_shows_my_history_only_when_logged_in(self):
+        res = self.page_for(self.agent).get(reverse("fuel:transactions"))
+        self.assertContains(res, reverse("fuel:agent-detail", args=[self.agent.id]))
+        # The verify page is public and extends the same base template.
+        anon = self.client_class().get(reverse("fuel:verify"))
+        self.assertEqual(anon.status_code, 200)
+        self.assertNotContains(anon, 'href=""')

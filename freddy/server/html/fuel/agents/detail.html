@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ agent_obj.username }}{% endblock %}
+{% block page_title %}{% if is_self %}{% trans "My history" %}{% else %}{{ agent_obj.username }}{% endif %}{% endblock %}
+{% block page_subtitle %}
+  {% if is_self %}<span class="receipt-code">{{ agent_obj.username }}</span>{% endif %}
+  {{ agent_obj.firstname }} {{ agent_obj.lastname }}
+{% endblock %}
+{% block header_actions %}
+{% if request.user.is_superuser or request.user.role == 'NGO_ADMIN' %}
+<a href="{% url 'fuel:agent-edit' agent_obj.id %}" class="btn">{% trans "Edit" %}</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="card p-5 mb-4">
+  <div class="flex items-center gap-4">
+    <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center font-bold text-white flex-shrink-0">
+      {{ agent_obj.username|slice:":1"|upper }}
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="font-semibold">{{ agent_obj.firstname }} {{ agent_obj.lastname|default:"" }}</p>
+      <p class="text-xs text-muted">
+        {% if agent_obj.email %}{{ agent_obj.email }}{% endif %}
+        {% if agent_obj.mobile and agent_obj.mobile != '0' %} · {{ agent_obj.mobile }}{% endif %}
+      </p>
+    </div>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <span class="badge
+        {% if agent_obj.role == 'NGO_ADMIN' %}bg-info-soft text-info
+        {% elif agent_obj.role == 'COMPANY_MANAGER' %}bg-accent-soft text-accent
+        {% else %}bg-neutral-soft text-neutral{% endif %}">
+        {{ agent_obj.get_role_display|default:agent_obj.role }}
+      </span>
+      {% if agent_obj.is_active %}
+      <span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Active" %}</span>
+      {% else %}
+      <span class="badge bg-neutral-soft text-neutral">{% trans "Inactive" %}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if agent_obj.assigned_station or agent_obj.managed_company %}
+  <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t border-line text-xs">
+    {% if agent_obj.assigned_station %}
+    <span class="text-muted">📍 {% trans "Station" %}:
+      <a href="{% url 'fuel:station-detail' agent_obj.assigned_station.id %}" class="text-accent hover:underline">{{ agent_obj.assigned_station.name }}</a>
+    </span>
+    {% endif %}
+    {% if agent_obj.managed_company %}
+    <span class="text-muted">🏢 {% trans "Company" %}: <span class="text-ink">{{ agent_obj.managed_company.name }}</span></span>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% include "fuel/partials/history.html" with history_title=_("Levy history") %}
+
+{% if request.user.is_superuser or request.user.role == 'NGO_ADMIN' %}
+<div class="mt-4">
+  <a href="{% url 'fuel:agents' %}" class="btn">← {% trans "Back to list" %}</a>
+</div>
+{% endif %}
+{% endblock %}

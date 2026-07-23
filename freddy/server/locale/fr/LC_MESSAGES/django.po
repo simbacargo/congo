@@ -786,3 +786,42 @@ msgstr "aucun objectif défini"
 
 msgid "of target"
 msgstr "de l'objectif"
+
+msgid "Transaction history"
+msgstr "Historique des transactions"
+
+msgid "Gross"
+msgstr "Brut"
+
+msgid "Levy collected"
+msgstr "Prélèvement collecté"
+
+msgid "From"
+msgstr "Du"
+
+msgid "To"
+msgstr "Au"
+
+msgid "No transactions for this period."
+msgstr "Aucune transaction pour cette période."
+
+msgid "Lifetime levy"
+msgstr "Prélèvement total"
+
+msgid "Collected by agent"
+msgstr "Collecté par agent"
+
+msgid "Station history"
+msgstr "Historique de la station"
+
+msgid "My history"
+msgstr "Mon historique"
+
+msgid "Levy history"
+msgstr "Historique des prélèvements"
+
+msgid "History"
+msgstr "Historique"
+
+msgid "You do not have access to this agent's history."
+msgstr "Vous n'avez pas accès à l'historique de cet agent."

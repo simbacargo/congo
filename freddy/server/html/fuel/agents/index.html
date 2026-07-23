@@ -39,7 +39,10 @@
       {% else %}
       <span class="badge bg-neutral-soft text-neutral">{% trans "Inactive" %}</span>
       {% endif %}
-      <a href="{% url 'fuel:agent-edit' u.id %}" class="text-xs text-accent hover:underline">{% trans "Edit" %} →</a>
+      <div class="flex gap-3 text-xs">
+        <a href="{% url 'fuel:agent-detail' u.id %}" class="text-accent hover:underline">{% trans "History" %}</a>
+        <a href="{% url 'fuel:agent-edit' u.id %}" class="text-muted hover:text-ink">{% trans "Edit" %}</a>
+      </div>
     </div>
   </div>
   {% empty %}

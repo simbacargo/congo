@@ -1,0 +1,105 @@
+{% load i18n %}
+{# Transaction history block, shared by the station and agent detail pages.
+   Include with: history=<page object_list> summary=<history_summary dict>
+   page_obj / page_range / querystring (see views._history_page),
+   and history_title=<heading>. Set hide_station=1 where the station column
+   would just repeat the page's own subject. #}
+<div class="card mb-4">
+  <div class="flex items-center justify-between px-5 py-3 border-b border-line">
+    <span class="text-sm font-semibold">{{ history_title|default:_("Transaction history") }}</span>
+    <span class="text-xs text-muted num">{{ summary.count }} {% trans "records" %}</span>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-line">
+    <div class="bg-surface p-4">
+      <p class="kpi-label">{% trans "Transactions" %}</p>
+      <p class="num text-lg font-semibold">{{ summary.count }}</p>
+    </div>
+    <div class="bg-surface p-4">
+      <p class="kpi-label">{% trans "Gross" %}</p>
+      <p class="money text-lg font-semibold">${{ summary.total_amount_usd }}</p>
+    </div>
+    <div class="bg-surface p-4">
+      <p class="kpi-label">{% trans "Levy collected" %}</p>
+      <p class="money text-lg font-semibold">${{ summary.total_levy_usd }}</p>
+    </div>
+    <div class="bg-surface p-4">
+      <p class="kpi-label">{% trans "Period" %}</p>
+      <p class="text-xs mt-1">
+        {% if summary.first_at %}
+          {{ summary.first_at|date:"M d, Y" }} → {{ summary.last_at|date:"M d, Y" }}
+        {% else %}<span class="text-muted">—</span>{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <form method="get" class="flex flex-wrap items-end gap-3 px-5 py-4 border-t border-line">
+    <div>
+      <label class="field-label" for="h-from">{% trans "From" %}</label>
+      <input type="date" id="h-from" name="from" value="{{ history_filters.from }}" class="field">
+    </div>
+    <div>
+      <label class="field-label" for="h-to">{% trans "To" %}</label>
+      <input type="date" id="h-to" name="to" value="{{ history_filters.to }}" class="field">
+    </div>
+    <div>
+      <label class="field-label" for="h-status">{% trans "Status" %}</label>
+      <select id="h-status" name="status" class="field">
+        <option value="">{% trans "All" %}</option>
+        {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if history_filters.status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">{% trans "Apply" %}</button>
+    {% if history_filters.from or history_filters.to or history_filters.status %}
+    <a href="{{ request.path }}" class="btn">{% trans "Reset" %}</a>
+    {% endif %}
+  </form>
+
+  <div class="overflow-x-auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>{% trans "Receipt" %}</th>
+          <th>{% trans "Date" %}</th>
+          {% if not hide_station %}<th>{% trans "Station" %}</th>{% endif %}
+          <th>{% trans "Church" %}</th>
+          {% if not hide_agent %}<th>{% trans "Agent" %}</th>{% endif %}
+          <th>{% trans "Fuel" %}</th>
+          <th class="!text-right">{% trans "Amount" %}</th>
+          <th class="!text-right">{% trans "Levy" %}</th>
+          <th class="!text-center">{% trans "Status" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tx in history %}
+        <tr>
+          <td><a href="{% url 'fuel:tx-detail' tx.pk %}" class="receipt-code text-xs font-semibold text-accent hover:underline">{{ tx.receipt_code }}</a></td>
+          <td class="whitespace-nowrap">
+            <p class="text-xs font-medium">{{ tx.created_at|date:"M d, Y" }}</p>
+            <p class="text-xs text-muted mt-0.5 num">{{ tx.created_at|date:"H:i" }}</p>
+          </td>
+          {% if not hide_station %}
+          <td><p class="text-xs truncate max-w-[150px]">{{ tx.station.name }}</p></td>
+          {% endif %}
+          <td><p class="text-xs truncate max-w-[140px]">{{ tx.church.name }}</p></td>
+          {% if not hide_agent %}
+          <td><p class="text-xs truncate max-w-[110px]">{{ tx.agent.username }}</p></td>
+          {% endif %}
+          <td class="text-xs text-muted">{{ tx.fuel_type.name }}</td>
+          <td class="cell-num text-xs">${{ tx.amount_usd }}</td>
+          <td class="cell-num"><span class="money text-sm font-semibold">${{ tx.levy_amount_usd }}</span></td>
+          <td class="!text-center whitespace-nowrap">
+            {% include "fuel/partials/_status_badge.html" with status=tx.status label=tx.get_status_display %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9">{% include "fuel/partials/_empty_state.html" with message=_("No transactions for this period.") %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% include "fuel/partials/_pagination.html" %}

@@ -5,10 +5,13 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Sum
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+# Imported as `gettext`, not the usual `_`, because `_` is already used as a
+# throwaway unpacking name in this module.
+from django.utils.translation import gettext
 from django.views.decorators.http import require_POST, require_http_methods
 from knox.models import AuthToken
 from rest_framework import status as drf_status
@@ -53,6 +56,30 @@ def _tx_queryset(request):
 
 def _kpi_stats():
     return kpi_stats()
+
+
+def _history_page(request, qs, per_page=25):
+    """Context for the shared `fuel/partials/history.html` block.
+
+    Same filtering and summary logic as the /api/…/history/ endpoints, so the
+    dashboard and the mobile app can never disagree about an agent's totals.
+    The summary covers the whole filtered set, not just the visible page.
+    """
+    qs = filter_history(qs, request.GET).order_by("-created_at")
+    page_obj = Paginator(qs, per_page).get_page(request.GET.get("page"))
+    filters = request.GET.copy()
+    filters.pop("page", None)
+    return {
+        "history": page_obj.object_list,
+        "summary": history_summary(qs),
+        "page_obj": page_obj,
+        "page_range": page_obj.paginator.get_elided_page_range(
+            page_obj.number, on_each_side=2, on_ends=1
+        ),
+        "querystring": filters.urlencode(),
+        "history_filters": {k: request.GET.get(k, "") for k in ("from", "to", "status")},
+        "status_choices": Transaction.Status.choices,
+    }
 
 
 # ─── Dashboard ────────────────────────────────────────────────────────────────
@@ -283,15 +310,31 @@ def station_edit(request, pk):
 def station_detail_view(request, pk):
     station = get_object_or_404(FuelStation.objects.select_related("company"), pk=pk)
     churches = station.churches.filter(is_active=True)
-    recent_txs = station.transactions.select_related("church", "agent", "fuel_type")[:20]
     totals = station.transactions.aggregate(total_usd=Sum("levy_amount_usd"), tx_count=Count("id"))
+
+    # The HTMX drawer on the stations list stays a short preview; only the
+    # standalone page pays for the full paginated history.
     if _htmx(request):
+        recent_txs = station.transactions.select_related("church", "agent", "fuel_type")[:20]
         return render(request, "fuel/partials/station_detail.html", {
             "station": station, "churches": churches, "recent_txs": recent_txs, "totals": totals,
         })
-    return render(request, "fuel/stations/detail.html", {
-        "station": station, "churches": churches, "recent_txs": recent_txs, "totals": totals,
-    })
+
+    txs = scope_transactions(
+        request.user,
+        Transaction.objects.filter(station=station).select_related(
+            "station__company", "church", "agent", "fuel_type"
+        ),
+    )
+    ctx = {"station": station, "churches": churches, "totals": totals, "hide_station": True}
+    ctx.update(_history_page(request, txs))
+    ctx["by_agent"] = (
+        filter_history(txs, request.GET)
+        .values("agent_id", "agent__username")
+        .annotate(count=Count("id"), levy=Sum("levy_amount_usd"))
+        .order_by("-levy")
+    )
+    return render(request, "fuel/stations/detail.html", ctx)
 
 
 # ─── Churches ─────────────────────────────────────────────────────────────────
@@ -492,6 +535,32 @@ def agent_create(request):
         messages.success(request, f'User "{user.username}" created.')
         return redirect("fuel:agents")
     return render(request, "fuel/agents/form.html", {"form": form, "title": "New User"})
+
+
+@login_required
+def agent_detail(request, pk):
+    """An agent's profile plus their full levy history.
+
+    Deliberately not admin-only: an agent can always open their own page, so
+    a station agent has somewhere on the dashboard to review everything they
+    have recorded. Reading someone *else's* page follows the same rule as the
+    API — NGO admins anyone, company managers their own company's agents.
+    """
+    agent = get_object_or_404(
+        User.objects.select_related("assigned_station__company", "managed_company"), pk=pk
+    )
+    if agent != request.user and not _can_read_agent(request.user, agent):
+        return HttpResponseForbidden(gettext("You do not have access to this agent's history."))
+
+    txs = Transaction.objects.filter(agent=agent).select_related(
+        "station__company", "church", "agent", "fuel_type"
+    )
+    if agent != request.user:
+        txs = scope_transactions(request.user, txs)
+
+    ctx = {"agent_obj": agent, "is_self": agent == request.user, "hide_agent": True}
+    ctx.update(_history_page(request, txs))
+    return render(request, "fuel/agents/detail.html", ctx)
 
 
 @role_required(ROLE_NGO_ADMIN)
