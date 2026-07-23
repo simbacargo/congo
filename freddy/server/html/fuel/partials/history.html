@@ -1,9 +1,11 @@
 {% load i18n %}
-{# Transaction history block, shared by the station and agent detail pages.
-   Include with: history=<page object_list> summary=<history_summary dict>
-   page_obj / page_range / querystring (see views._history_page),
-   and history_title=<heading>. Set hide_station=1 where the station column
-   would just repeat the page's own subject. #}
+{% comment %}
+  Transaction history block, shared by the station, agent and driver detail
+  pages. Include with: history (page object_list), summary (history_summary
+  dict), page_obj / page_range / querystring (see views._history_page), and
+  history_title. Set hide_station / hide_agent to drop a column that would
+  just repeat the page's own subject.
+{% endcomment %}
 <div class="card mb-4">
   <div class="flex items-center justify-between px-5 py-3 border-b border-line">
     <span class="text-sm font-semibold">{{ history_title|default:_("Transaction history") }}</span>
