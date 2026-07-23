@@ -475,11 +475,23 @@ def driver_detail(request, pk):
     profile_url = request.build_absolute_uri(
         reverse("fuel:driver-detail", args=[driver.pk])
     )
-    return render(
-        request,
-        "fuel/drivers/detail.html",
-        {"driver": driver, "qr_code": qr_data_uri(profile_url), "profile_url": profile_url},
-    )
+
+    # Levies this driver paid, matched loosely by normalized phone (there is no
+    # FK). Same scoping as the API and the other detail pages, so an agent only
+    # sees the levies collected at their own station.
+    phone = normalize_phone(driver.phone)
+    txs = Transaction.objects.none()
+    if phone:
+        txs = scope_transactions(
+            request.user,
+            Transaction.objects.filter(driver_phone=phone).select_related(
+                "station__company", "church", "agent", "fuel_type"
+            ),
+        )
+
+    ctx = {"driver": driver, "qr_code": qr_data_uri(profile_url), "profile_url": profile_url}
+    ctx.update(_history_page(request, txs))
+    return render(request, "fuel/drivers/detail.html", ctx)
 
 
 @login_required

@@ -52,11 +52,11 @@ class HistoryFixture:
         )
 
     @classmethod
-    def _tx(cls, agent, station, church, amount):
+    def _tx(cls, agent, station, church, amount, driver_phone=None):
         return Transaction.objects.create(
             station=station, church=church, agent=agent, fuel_type=cls.fuel,
             currency_used=Transaction.Currency.USD, amount_usd=amount,
-            exchange_rate=Decimal("2800.0000"),
+            exchange_rate=Decimal("2800.0000"), driver_phone=driver_phone,
         )
 
 
@@ -273,3 +273,67 @@ class HistoryPageTests(HistoryFixture, TestCase):
         anon = self.client_class().get(reverse("fuel:verify"))
         self.assertEqual(anon.status_code, 200)
         self.assertNotContains(anon, 'href=""')
+
+
+class DriverHistoryPageTests(HistoryFixture, TestCase):
+    """The driver detail page, whose history is matched by phone (no FK)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from fuel_app.models import Driver
+
+        # A driver whose (messy) phone normalizes to the same key as the
+        # transactions' stored driver_phone. normalize_phone keeps the last 9
+        # digits, so "+243 0812 345 678" and "812345678" collide.
+        cls.driver = Driver.objects.create(
+            full_name="Jean Kabila", phone="+243 812 345 678"
+        )
+        # 2 levies for this driver at our station, 1 at the foreign station.
+        cls._tx(cls.agent, cls.station, cls.church, Decimal("40.00"), driver_phone="812345678")
+        cls._tx(cls.agent2, cls.station, cls.church, Decimal("60.00"), driver_phone="812345678")
+        cls._tx(cls.foreign_agent, cls.other_station, cls.other_church,
+                Decimal("30.00"), driver_phone="812345678")
+        # An unrelated driver with no levies.
+        cls.stranger = Driver.objects.create(full_name="No Levy", phone="999888777")
+
+    def page_for(self, user):
+        self.client.force_login(user)
+        return self.client
+
+    def test_admin_sees_all_of_a_drivers_levies(self):
+        res = self.page_for(self.admin).get(
+            reverse("fuel:driver-detail", args=[self.driver.id])
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, "fuel/drivers/detail.html")
+        self.assertEqual(res.context["summary"]["count"], 3)
+
+    def test_agent_sees_only_levies_from_their_station(self):
+        res = self.page_for(self.agent).get(
+            reverse("fuel:driver-detail", args=[self.driver.id])
+        )
+        # 2 at our station; the foreign-station levy is scoped out.
+        self.assertEqual(res.context["summary"]["count"], 2)
+
+    def test_driver_with_no_levies_renders_empty_history(self):
+        res = self.page_for(self.admin).get(
+            reverse("fuel:driver-detail", args=[self.stranger.id])
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.context["summary"]["count"], 0)
+
+    def test_driver_with_blank_phone_never_matches(self):
+        from fuel_app.models import Driver
+        phoneless = Driver.objects.create(full_name="Anon")
+        res = self.page_for(self.admin).get(
+            reverse("fuel:driver-detail", args=[phoneless.id])
+        )
+        self.assertEqual(res.context["summary"]["count"], 0)
+
+    def test_driver_history_respects_date_filter(self):
+        res = self.page_for(self.admin).get(
+            reverse("fuel:driver-detail", args=[self.driver.id]),
+            {"from": "2000-01-01", "to": "2000-01-02"},
+        )
+        self.assertEqual(res.context["summary"]["count"], 0)
