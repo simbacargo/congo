@@ -3,12 +3,21 @@ python manage.py import_drivers "/path/to/NOTRE BASA DE DONNEES CHAUFFEURS.xlsx"
 
 Imports driver registrations from the Google Forms Excel export into the
 Driver model. Idempotent: each row is keyed on the form submission timestamp
-(Horodateur), so re-running the command updates existing records rather than
-creating duplicates.
+(Horodateur) by default, so re-running the command updates existing records
+rather than creating duplicates.
+
+Some exports (e.g. "PRINCIPPALE BASE DE DONNEES") have no Horodateur column;
+for those, key on the driver's phone number instead:
+
+  python manage.py import_drivers FILE.xlsx --key phone --replace
 
 Options:
   --dry-run   Parse and report counts without writing to the database.
   --sheet     Worksheet name to read (default: the active/first sheet).
+  --key       Idempotency key: 'submitted_at' (default) or 'phone'. With
+              'phone', the driver's normalized phone de-duplicates rows.
+  --replace   Delete ALL existing drivers first, then import (full reload).
+              Wrapped in a transaction, so a parse error rolls back the delete.
 """
 import re
 from datetime import date, datetime
@@ -18,24 +27,34 @@ from django.utils import timezone
 
 
 # Driver model field -> the French header label(s) it may appear under.
+# Multiple labels per field because the source spreadsheets come from
+# different Google-Form revisions with slightly different wording; the first
+# label present in the file wins. Matching is whitespace/case-insensitive
+# (see _norm), so only genuinely different wording needs a new entry.
 COLUMN_MAP = {
     "submitted_at": ["Horodateur"],
     "score": ["Score"],
     "gender": ["Sexe"],
-    "phone": ["Numéro téléphone"],
-    "full_name": ["Nom complet"],
+    "phone": ["Numéro téléphone", "Numéro Téléphone (WhatsApp ou Normal)"],
+    "full_name": ["Nom complet", "Nom Complet en Majuscule"],
     "marital_status": ["État - civil", "État-civil"],
     "commune": ["Commune"],
     "quartier": ["Quartier"],
     "city_country": ["Ville et Pays"],
     "vehicle_type": ["Quel type de véhicule"],
     "vehicle_color": ["Couleur véhicule"],
-    "daily_fuel_consumption": ["Consommation carburant par jour (en littres)"],
+    "daily_fuel_consumption": [
+        "Consommation carburant par jour (en littres)",
+        "Consommation carburant par jour (en Littres)",
+    ],
     "fuel_type": ["Type de carburant"],
     "has_health_coverage": ["Avez-vous déjà une couverture santé ?"],
     "has_care_access_difficulty": ["Avez-vous des difficultés à un accès aux soins de qualité ?"],
-    "dependents": ["Quel nombre de personnes sont à votre charge ?"],
-    "field_agent": ["Nom de l'Agent-terrain"],
+    "dependents": [
+        "Quel nombre de personnes sont à votre charge ?",
+        "Quel nombre de personne sont à votre charge",
+    ],
+    "field_agent": ["Nom de l'Agent-terrain", "Nom de l'Agent - terrain"],
     "consent": ["Consentement"],
     "email": ["Adresse e-mail"],
     "registration_date": ["Date d'enregistrement"],
@@ -75,6 +94,16 @@ class Command(BaseCommand):
         parser.add_argument("path", help="Path to the .xlsx file")
         parser.add_argument("--sheet", default=None, help="Worksheet name (default: active sheet)")
         parser.add_argument("--dry-run", action="store_true", help="Parse without writing to the DB")
+        parser.add_argument(
+            "--key", choices=["submitted_at", "phone"], default="submitted_at",
+            help="Idempotency key. 'submitted_at' (default) for exports with a "
+                 "Horodateur column; 'phone' for exports without one.",
+        )
+        parser.add_argument(
+            "--replace", action="store_true",
+            help="Delete ALL existing drivers before importing (full reload). "
+                 "Runs in a transaction, so a parse error rolls back the delete.",
+        )
 
     def handle(self, *args, **options):
         try:
@@ -117,8 +146,19 @@ class Command(BaseCommand):
                 f"Columns not found (left blank): {', '.join(missing)}"
             ))
 
-        created = updated = skipped = 0
-        seen_keys = set()
+        from django.db import transaction
+        from fuel_app.services import normalize_phone
+
+        key_field = options["key"]
+
+        # ── Pass 1: parse every row, de-duplicating within the file ──────────
+        # For the phone key, a normalized phone appearing twice keeps the LAST
+        # occurrence (spreadsheets are edited top-down, so later rows are more
+        # current). Rows with no key value are always kept as separate records.
+        keyed = {}          # key value -> data (last wins)
+        keyless = []        # rows with no usable key value
+        in_file_dupes = 0
+        skipped = 0
 
         for row in rows:
             if not any(c not in (None, "") for c in row):
@@ -154,38 +194,75 @@ class Command(BaseCommand):
                 else:
                     data[field] = _clean_str(raw)
 
-            key = data.get("submitted_at")
-            if key is not None:
-                if key in seen_keys:
-                    # Duplicate submission timestamp within the file — skip the
-                    # second occurrence so the unique key import stays stable.
-                    skipped += 1
-                    continue
-                seen_keys.add(key)
-
-            if options["dry_run"]:
-                created += 1
-                continue
-
-            if key is not None:
-                _, was_created = Driver.objects.update_or_create(
-                    submitted_at=key, defaults=data
-                )
+            if key_field == "phone":
+                key = normalize_phone(data.get("phone")) or None
             else:
-                # No timestamp to key on — always create a fresh record.
-                Driver.objects.create(**data)
-                was_created = True
-            created += int(was_created)
-            updated += int(not was_created)
+                key = data.get("submitted_at")
+
+            if key is None:
+                keyless.append(data)
+            else:
+                if key in keyed:
+                    in_file_dupes += 1
+                keyed[key] = data
 
         wb.close()
 
+        total = len(keyed) + len(keyless)
+
         if options["dry_run"]:
+            existing = Driver.objects.count()
             self.stdout.write(self.style.SUCCESS(
-                f"[dry-run] {created} rows would be imported, {skipped} skipped."
+                f"[dry-run] key={key_field} replace={options['replace']}\n"
+                f"  {total} records would be written "
+                f"({len(keyed)} keyed on {key_field}, {len(keyless)} keyless).\n"
+                f"  {in_file_dupes} duplicate {key_field}(s) collapsed within the file.\n"
+                f"  {skipped} blank rows skipped.\n"
+                f"  DB drivers now: {existing}"
+                + (f" -> {total} after replace." if options["replace"]
+                   else f" -> up to {existing + len(keyless)}+ after upsert.")
             ))
-        else:
-            self.stdout.write(self.style.SUCCESS(
-                f"Done. {created} created, {updated} updated, {skipped} skipped. "
-                f"Total drivers now: {Driver.objects.count()}"
-            ))
+            return
+
+        created = updated = deleted = 0
+        with transaction.atomic():
+            if options["replace"]:
+                deleted = Driver.objects.count()
+                Driver.objects.all().delete()
+
+            if options["replace"]:
+                # Table is empty (or being replaced): a straight bulk insert is
+                # far faster than per-row upserts for a few thousand rows.
+                Driver.objects.bulk_create(
+                    [Driver(**d) for d in list(keyed.values()) + keyless],
+                    batch_size=500,
+                )
+                created = total
+            else:
+                for data in list(keyed.values()):
+                    if key_field == "phone":
+                        # Match on the STORED phone string; normalization already
+                        # collapsed same-number variants during parsing, so at
+                        # most one existing row can carry this exact value.
+                        existing = Driver.objects.filter(phone=data.get("phone")).first()
+                    else:
+                        existing = Driver.objects.filter(
+                            submitted_at=data.get("submitted_at")
+                        ).first()
+                    if existing:
+                        for f, v in data.items():
+                            setattr(existing, f, v)
+                        existing.save()
+                        updated += 1
+                    else:
+                        Driver.objects.create(**data)
+                        created += 1
+                for data in keyless:
+                    Driver.objects.create(**data)
+                    created += 1
+
+        self.stdout.write(self.style.SUCCESS(
+            f"Done. {deleted} deleted, {created} created, {updated} updated, "
+            f"{skipped} blank rows skipped, {in_file_dupes} in-file dupes collapsed. "
+            f"Total drivers now: {Driver.objects.count()}"
+        ))
