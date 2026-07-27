@@ -1,3 +1,4 @@
+import uuid
 from decimal import Decimal
 from django.conf import settings
 from django.contrib import messages
@@ -5,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Sum
-from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -839,15 +840,47 @@ def api_transaction_verify(request, receipt_code):
     })
 
 
+def _driver_by_phone(value):
+    """Resolve a free-text phone to a Driver, or None.
+
+    Stored phones come from the Google Form and are inconsistent (bare local,
+    0-prefixed, +243-prefixed), so we narrow with a suffix match on the
+    normalized key and then confirm in Python via ``normalize_phone`` — a
+    plain ``endswith`` would let a short stored number match a longer query.
+    Phone is not unique on Driver; if a number was registered twice the most
+    recent submission wins (model default ordering).
+    """
+    key = normalize_phone(value)
+    if not key:
+        return None
+    for driver in Driver.objects.filter(phone__endswith=key):
+        if normalize_phone(driver.phone) == key:
+            return driver
+    return None
+
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def api_driver(request, pk):
-    """The full driver record on its own.
+def api_driver(request, identifier):
+    """The full driver record on its own, by UUID *or* phone number.
 
     Unlike :func:`api_driver_detail` this returns every stored field and no
-    levy history, for callers that just want the registration data.
+    levy history, for callers that just want the registration data. The phone
+    form lets the mobile app look a driver up straight from a typed number
+    without first resolving an id.
     """
-    driver = get_object_or_404(Driver, pk=pk)
+    try:
+        pk = uuid.UUID(identifier)
+    except ValueError:
+        # Not an id, so treat it as a phone. Never fall back from a well-formed
+        # id to a phone lookup: the digits inside a UUID could match a number.
+        driver = _driver_by_phone(identifier)
+    else:
+        driver = Driver.objects.filter(pk=pk).first()
+
+    if driver is None:
+        raise Http404
+
     return Response(DriverSerializer(driver).data)
 
 
