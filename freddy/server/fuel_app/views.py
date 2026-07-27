@@ -31,7 +31,7 @@ from fuel_app.models import (
 )
 from fuel_app.permissions import IsNGOAdmin, IsStationAgent
 from fuel_app.serializers import (
-    ChurchSerializer, FuelStationSerializer, FuelTypeSerializer,
+    ChurchSerializer, DriverSerializer, FuelStationSerializer, FuelTypeSerializer,
     TransactionAuditLogSerializer, TransactionCreateSerializer,
     TransactionSerializer, TransactionStatusUpdateSerializer,
 )
@@ -837,6 +837,18 @@ def api_transaction_verify(request, receipt_code):
         "amount_usd": str(tx.amount_usd), "levy_usd": str(tx.levy_amount_usd),
         "status": tx.status, "created_at": tx.created_at, "valid": True,
     })
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def api_driver(request, pk):
+    """The full driver record on its own.
+
+    Unlike :func:`api_driver_detail` this returns every stored field and no
+    levy history, for callers that just want the registration data.
+    """
+    driver = get_object_or_404(Driver, pk=pk)
+    return Response(DriverSerializer(driver).data)
 
 
 @api_view(["GET"])

@@ -79,6 +79,7 @@ urlpatterns = [
     path("api/transactions/sync/", views.api_bulk_sync, name="api-tx-sync"),
     path("api/transactions/<uuid:pk>/status/", views.api_transaction_status, name="api-tx-status"),
     path("api/transactions/<uuid:pk>/audit/", views.api_audit_log, name="api-tx-audit"),
+    path("api/driver/<uuid:pk>/", views.api_driver, name="api-driver"),
     path("api/drivers/<uuid:pk>/", views.api_driver_detail, name="api-driver-detail"),
     path("api/agents/me/history/", views.api_agent_history, name="api-agent-history-me"),
     path("api/agents/<uuid:pk>/history/", views.api_agent_history, name="api-agent-history"),

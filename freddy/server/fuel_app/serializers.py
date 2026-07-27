@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from fuel_app.models import (
     Church,
+    Driver,
     ExchangeRateCache,
     FuelStation,
     FuelType,
@@ -144,3 +145,20 @@ class ExchangeRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExchangeRateCache
         fields = ["usd_to_cdf", "source", "fetched_at"]
+
+
+class DriverSerializer(serializers.ModelSerializer):
+    """Full driver record for the API. Read-only: drivers are imported from
+    the Google Forms export, not created over the API."""
+
+    class Meta:
+        model = Driver
+        fields = [
+            "id", "submitted_at", "score",
+            "full_name", "gender", "phone", "email", "marital_status",
+            "commune", "quartier", "city_country",
+            "vehicle_type", "vehicle_color", "daily_fuel_consumption", "fuel_type",
+            "has_health_coverage", "has_care_access_difficulty", "dependents",
+            "field_agent", "consent", "registration_date", "created_at",
+        ]
+        read_only_fields = fields
