@@ -7,5 +7,18 @@ db.sqlite3
 # CSS build helper (dev-only; see scripts/build_css.sh)
 scripts/node_modules/
 
+# SPA (see spa/README.md)
+spa/node_modules/
+# Vite build output. Unlike static/css/app.css this is NOT committed: the
+# filenames are content-hashed, so committing it would accumulate a new set
+# of files on every build. That means the deploy host needs `bun run build` —
+# if you'd rather keep deploys toolchain-free, drop this line and commit the
+# output instead.
+static/spa/
+
+# Standalone Svelte frontend dependencies and Vite build output.
+frontend/node_modules/
+static/frontend/
+
 __pycache__/
 *.pyc

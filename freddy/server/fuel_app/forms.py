@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.crypto import get_random_string
 from fuel_app.models import (
     Church, Disbursement, FuelStation, FuelType, ParentCompany, Transaction, StationTarget
 )
@@ -104,7 +105,9 @@ class AgentForm(forms.ModelForm):
         if pwd:
             user.set_password(pwd)
         elif not user.pk:
-            user.set_password(User.objects.make_random_password())
+            # An unusable random password: the account exists but can only be
+            # entered once an admin sets a real one.
+            user.set_password(get_random_string(32))
         if commit:
             user.save()
         return user

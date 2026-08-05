@@ -6,6 +6,11 @@ from datetime import timedelta
 import requests
 from django.utils import timezone
 
+# Row-level scoping now lives in fuel_app/scoping.py alongside the rules for
+# every other model. Re-exported here because the mobile API imports it from
+# this module.
+from fuel_app.scoping import scope_transactions  # noqa: F401
+
 
 RATE_CACHE_MINUTES = 30
 FALLBACK_RATE = Decimal("2800.00")  # conservative fallback when API is unreachable
@@ -77,13 +82,23 @@ def record_audit_log(transaction, user, field_name, old_value, new_value, reques
 # Next.js admin API (fuel_app/admin_views.py) so the business logic only
 # lives in one place.
 
-def kpi_stats():
+def kpi_stats(user=None):
+    """Dashboard KPI block, scoped to what ``user`` may see.
+
+    ``user=None`` means unscoped and is only for internal/management callers —
+    every request-driven caller must pass ``request.user``.
+    """
     from django.db.models import Count, Sum
     from fuel_app.models import Disbursement, Transaction
+    from fuel_app.scoping import scope_disbursements
 
     today = timezone.now().date()
     this_month = timezone.now().replace(day=1, hour=0, minute=0, second=0)
-    txs = Transaction.objects
+    txs = Transaction.objects.all()
+    disbursements = Disbursement.objects.all()
+    if user is not None:
+        txs = scope_transactions(user, txs)
+        disbursements = scope_disbursements(user, disbursements)
     return {
         "today_levy": txs.filter(created_at__date=today).aggregate(t=Sum("levy_amount_usd"))["t"] or 0,
         "today_count": txs.filter(created_at__date=today).count(),
@@ -94,8 +109,8 @@ def kpi_stats():
         "pending_count": txs.filter(status=Transaction.Status.PENDING).count(),
         "verified_count": txs.filter(status=Transaction.Status.VERIFIED).count(),
         "remitted_count": txs.filter(status=Transaction.Status.REMITTED).count(),
-        "total_disbursed": Disbursement.objects.filter(status=Disbursement.Status.PAID).aggregate(t=Sum("amount_usd"))["t"] or 0,
-        "pending_disburse": Disbursement.objects.filter(status=Disbursement.Status.SCHEDULED).count(),
+        "total_disbursed": disbursements.filter(status=Disbursement.Status.PAID).aggregate(t=Sum("amount_usd"))["t"] or 0,
+        "pending_disburse": disbursements.filter(status=Disbursement.Status.SCHEDULED).count(),
         "by_company": list(
             txs.values("station__company__name", "station__company__id")
             .annotate(total=Sum("levy_amount_usd"), count=Count("id"))
@@ -110,14 +125,98 @@ def kpi_stats():
     }
 
 
+def top_stations_with_targets(user, limit=6):
+    """Highest-earning stations this month, with progress against their target.
+
+    Returns plain dicts so the same payload serves both the Django template and
+    the JSON API. ``target_pct`` is ``None`` when no ``StationTarget`` exists
+    for the current month, which the UI renders as "no target set" rather than
+    an empty bar.
+    """
+    from django.db.models import F, Q, Sum
+    from fuel_app.models import FuelStation, StationTarget
+    from fuel_app.scoping import scope_stations
+
+    today = timezone.now().date()
+    month_start = today.replace(day=1)
+    stations = list(
+        scope_stations(user, FuelStation.objects.filter(is_active=True))
+        .select_related("company")
+        .annotate(month_levy=Sum(
+            "transactions__levy_amount_usd",
+            filter=Q(transactions__created_at__date__gte=month_start),
+        ))
+        .order_by(F("month_levy").desc(nulls_last=True))[:limit]
+    )
+    targets = {
+        t.station_id: t.target_usd
+        for t in StationTarget.objects.filter(year=today.year, month=today.month)
+    }
+    rows = []
+    for s in stations:
+        month_levy = s.month_levy or 0
+        target = targets.get(s.id)
+        rows.append({
+            "id": str(s.id),
+            "name": s.name,
+            "company_name": s.company.name,
+            "month_levy": float(month_levy),
+            "target_usd": float(target) if target else None,
+            "target_pct": (
+                min(100, round(float(month_levy) / float(target) * 100))
+                if target else None
+            ),
+        })
+    return rows
+
+
+def levy_by_day(user, days=30):
+    """Daily levy totals for the trend chart, as one grouped query.
+
+    Days with no transactions still appear with ``0`` so the line has no gaps.
+    """
+    from datetime import timedelta
+
+    from django.db.models import Sum
+    from django.db.models.functions import TruncDate
+    from fuel_app.models import Transaction
+    from fuel_app.scoping import scope_transactions
+
+    days = max(2, min(int(days), 365))
+    today = timezone.now().date()
+    start = today - timedelta(days=days - 1)
+
+    totals = {
+        row["day"]: float(row["total"] or 0)
+        for row in scope_transactions(user, Transaction.objects.all())
+        .filter(created_at__date__gte=start)
+        .annotate(day=TruncDate("created_at"))
+        .values("day")
+        .annotate(total=Sum("levy_amount_usd"))
+    }
+    return [
+        {
+            "date": (d := start + timedelta(days=i)).strftime("%d %b"),
+            "amount": totals.get(d, 0.0),
+        }
+        for i in range(days)
+    ]
+
+
 def tx_queryset(request):
+    """Filtered transaction list for the current request, scoped to the caller.
+
+    Scoping is applied *before* the filter form so that a manager or agent
+    cannot widen their view by passing an out-of-scope ``?company=`` or
+    ``?station=`` — those filters can only ever narrow what is already visible.
+    """
     from django.db.models import Q
     from fuel_app.forms import TransactionFilterForm
     from fuel_app.models import Transaction
 
-    qs = Transaction.objects.select_related(
+    qs = scope_transactions(request.user, Transaction.objects.select_related(
         "station__company", "church", "agent", "fuel_type"
-    )
+    ))
     f = TransactionFilterForm(request.GET)
     if f.is_valid():
         d = f.cleaned_data
@@ -142,24 +241,6 @@ def tx_queryset(request):
 
 
 # ─── Transaction history (mobile /api/…/history/ endpoints) ────────────────
-
-def scope_transactions(user, qs):
-    """Restrict a Transaction queryset to what ``user`` is allowed to see.
-
-    NGO admins and superusers see everything; a company manager is limited to
-    their company's stations; a station agent to their assigned station. A
-    user with no assignment sees nothing rather than everything.
-    """
-    from authentication.models import ROLE_COMPANY_MANAGER, ROLE_STATION_AGENT
-
-    if user.is_superuser:
-        return qs
-    if user.role == ROLE_STATION_AGENT:
-        return qs.filter(station=user.assigned_station) if user.assigned_station else qs.none()
-    if user.role == ROLE_COMPANY_MANAGER:
-        return qs.filter(station__company=user.managed_company) if user.managed_company else qs.none()
-    return qs
-
 
 def filter_history(qs, params):
     """Apply the shared ``?from=&to=&status=&church=&fuel_type=`` filters.
@@ -283,6 +364,25 @@ def driver_queryset(request):
     if cur["agent"]:
         qs = qs.filter(field_agent=cur["agent"])
     return qs.order_by("full_name"), cur
+
+
+def driver_transactions(driver, user):
+    """A driver's levy history, scoped to what ``user`` may see.
+
+    There is no FK from Transaction to Driver — transactions carry a
+    ``driver_phone`` string written by the mobile app. Both sides are reduced
+    with ``normalize_phone`` so a ``+243``-prefixed, ``0``-prefixed or bare
+    local number all match. A driver with no phone on file matches nothing.
+    """
+    from fuel_app.models import Transaction
+    from fuel_app.scoping import scope_transactions
+
+    phone = normalize_phone(driver.phone)
+    if not phone:
+        return Transaction.objects.none()
+    return scope_transactions(user, Transaction.objects.filter(driver_phone=phone)
+                              .select_related("station__company", "church", "fuel_type", "agent")
+                              .order_by("-created_at"))
 
 
 def qr_data_uri(data):

@@ -3,10 +3,13 @@
 These are additive — the mobile-facing serializers in `fuel_app/serializers.py`
 are untouched and reused here where they already fit.
 """
+from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
 from authentication.models import User
-from fuel_app.models import Church, Disbursement, Driver, FuelStation, ParentCompany
+from fuel_app.models import (
+    Church, Disbursement, Driver, FuelStation, ParentCompany, StationTarget,
+)
 
 
 class ParentCompanyAdminSerializer(serializers.ModelSerializer):
@@ -101,6 +104,36 @@ class DriverDetailSerializer(serializers.ModelSerializer):
         ]
 
 
+class StationTargetSerializer(serializers.ModelSerializer):
+    station_name = serializers.CharField(source="station.name", read_only=True)
+    company_name = serializers.CharField(source="station.company.name", read_only=True)
+
+    class Meta:
+        model = StationTarget
+        fields = ["id", "station", "station_name", "company_name", "year", "month", "target_usd"]
+
+    def validate_month(self, value):
+        # The model has no range validator, so an unusable month would only
+        # surface as a target that silently never matches the dashboard.
+        if not 1 <= value <= 12:
+            raise serializers.ValidationError("Month must be between 1 and 12.")
+        return value
+
+    def validate(self, attrs):
+        """Surface the (station, year, month) clash as a field error, not a 500."""
+        station = attrs.get("station", getattr(self.instance, "station", None))
+        year = attrs.get("year", getattr(self.instance, "year", None))
+        month = attrs.get("month", getattr(self.instance, "month", None))
+        clash = StationTarget.objects.filter(station=station, year=year, month=month)
+        if self.instance:
+            clash = clash.exclude(pk=self.instance.pk)
+        if clash.exists():
+            raise serializers.ValidationError(
+                "This station already has a target for that month."
+            )
+        return attrs
+
+
 class UserAdminSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False, allow_blank=True)
     assigned_station_name = serializers.CharField(source="assigned_station.name", read_only=True, default=None)
@@ -121,7 +154,9 @@ class UserAdminSerializer(serializers.ModelSerializer):
         if password:
             user.set_password(password)
         else:
-            user.set_password(User.objects.make_random_password())
+            # An unusable random password: the account exists but can only be
+            # entered once an admin sets a real one.
+            user.set_password(get_random_string(32))
         user.save()
         return user
 

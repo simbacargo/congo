@@ -70,7 +70,7 @@
         </div>
         <p class="text-[10px] text-muted mt-0.5">{{ st.target_pct }}% {% trans "of target" %} ${{ st.target_usd|floatformat:0 }}</p>
         {% else %}
-        <p class="text-[10px] text-muted mt-0.5">{{ st.company.name }} · {% trans "no target set" %}</p>
+        <p class="text-[10px] text-muted mt-0.5">{{ st.company_name }} · {% trans "no target set" %}</p>
         {% endif %}
       </div>
       {% empty %}<p class="text-sm text-muted">{% trans "No stations yet." %}</p>{% endfor %}

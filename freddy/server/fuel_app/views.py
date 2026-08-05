@@ -40,8 +40,12 @@ from fuel_app.services import (
     build_drivers_excel, build_transactions_excel, build_transactions_pdf,
     driver_card_number, driver_queryset, filter_history, get_usd_to_cdf_rate,
     history_summary, kpi_stats, paginate_history, qr_data_uri, image_data_uri,
-    barcode_data_uri, normalize_phone, record_audit_log, scope_transactions,
-    tx_queryset, money_str, DRIVER_SORTABLE, CONSUMPTION_ORDER,
+    barcode_data_uri, normalize_phone, record_audit_log, levy_by_day,
+    driver_transactions, top_stations_with_targets, tx_queryset, money_str,
+    DRIVER_SORTABLE, CONSUMPTION_ORDER,
+)
+from fuel_app.scoping import (
+    scope_companies, scope_stations, scope_transactions,
 )
 
 
@@ -55,8 +59,8 @@ def _tx_queryset(request):
     return tx_queryset(request)
 
 
-def _kpi_stats():
-    return kpi_stats()
+def _kpi_stats(request):
+    return kpi_stats(request.user)
 
 
 def _history_page(request, qs, per_page=25):
@@ -87,58 +91,27 @@ def _history_page(request, qs, per_page=25):
 
 @login_required
 def dashboard(request):
-    from django.db.models import F, Q
-    today = timezone.now().date()
-    month_start = today.replace(day=1)
-    top_stations = list(
-        FuelStation.objects.filter(is_active=True)
-        .select_related("company")
-        .annotate(month_levy=Sum(
-            "transactions__levy_amount_usd",
-            filter=Q(transactions__created_at__date__gte=month_start),
-        ))
-        .order_by(F("month_levy").desc(nulls_last=True))[:6]
-    )
-    targets = {
-        t.station_id: t.target_usd
-        for t in StationTarget.objects.filter(year=today.year, month=today.month)
-    }
-    for s in top_stations:
-        s.month_levy = s.month_levy or 0
-        s.target_usd = targets.get(s.id)
-        s.target_pct = (
-            min(100, round(float(s.month_levy) / float(s.target_usd) * 100))
-            if s.target_usd else None
-        )
     return render(request, "fuel/dashboard.html", {
-        "stats": _kpi_stats(),
+        "stats": _kpi_stats(request),
         "rate": get_usd_to_cdf_rate(),
-        "companies": ParentCompany.objects.filter(is_active=True),
-        "top_stations": top_stations,
+        "companies": scope_companies(request.user, ParentCompany.objects.filter(is_active=True)),
+        "top_stations": top_stations_with_targets(request.user),
     })
 
 
 @login_required
 def dashboard_stats_partial(request):
-    return render(request, "fuel/partials/stats_cards.html", {"stats": _kpi_stats()})
+    return render(request, "fuel/partials/stats_cards.html", {"stats": _kpi_stats(request)})
 
 
 @login_required
 def dashboard_chart_data(request):
     """JSON endpoint for Chart.js — levy per day over ?days= (default 30)."""
-    from datetime import timedelta
     try:
         days = int(request.GET.get("days", 30))
     except (TypeError, ValueError):
         days = 30
-    days = max(2, min(days, 365))
-    today = timezone.now().date()
-    data = []
-    for i in range(days - 1, -1, -1):
-        d = today - timedelta(days=i)
-        amt = Transaction.objects.filter(created_at__date=d).aggregate(t=Sum("levy_amount_usd"))["t"] or 0
-        data.append({"date": d.strftime("%d %b"), "amount": float(amt)})
-    return JsonResponse({"data": data})
+    return JsonResponse({"data": levy_by_day(request.user, days)})
 
 
 # ─── Transactions ─────────────────────────────────────────────────────────────
@@ -158,8 +131,12 @@ def transactions_list(request):
         "querystring": filters.urlencode(),
         "form": form,
         "totals": totals,
-        "companies": ParentCompany.objects.filter(is_active=True),
-        "stations": FuelStation.objects.filter(is_active=True).select_related("company"),
+        # Scoped so the filter dropdowns don't disclose company/station names
+        # outside the caller's own scope.
+        "companies": scope_companies(request.user, ParentCompany.objects.filter(is_active=True)),
+        "stations": scope_stations(
+            request.user, FuelStation.objects.filter(is_active=True).select_related("company")
+        ),
     }
     if _htmx(request):
         return render(request, "fuel/partials/tx_table.html", ctx)
@@ -168,9 +145,9 @@ def transactions_list(request):
 
 @login_required
 def transaction_detail(request, pk):
-    tx = get_object_or_404(Transaction.objects.select_related(
+    tx = get_object_or_404(scope_transactions(request.user, Transaction.objects.select_related(
         "station__company", "church", "agent", "fuel_type"
-    ), pk=pk)
+    )), pk=pk)
     audit_logs = tx.audit_logs.select_related("changed_by").all()
     form = TransactionStatusForm(instance=tx)
     return render(request, "fuel/transactions/detail.html", {
@@ -478,17 +455,8 @@ def driver_detail(request, pk):
     )
 
     # Levies this driver paid, matched loosely by normalized phone (there is no
-    # FK). Same scoping as the API and the other detail pages, so an agent only
-    # sees the levies collected at their own station.
-    phone = normalize_phone(driver.phone)
-    txs = Transaction.objects.none()
-    if phone:
-        txs = scope_transactions(
-            request.user,
-            Transaction.objects.filter(driver_phone=phone).select_related(
-                "station__company", "church", "agent", "fuel_type"
-            ),
-        )
+    # FK) and scoped, so an agent only sees those collected at their station.
+    txs = driver_transactions(driver, request.user)
 
     ctx = {"driver": driver, "qr_code": qr_data_uri(profile_url), "profile_url": profile_url}
     ctx.update(_history_page(request, txs))
@@ -691,7 +659,7 @@ def reports(request):
         "monthly": monthly,
         "church_summary": church_summary,
         "fuel_summary": fuel_summary,
-        "stats": _kpi_stats(),
+        "stats": _kpi_stats(request),
     })
 
 
@@ -895,20 +863,7 @@ def api_driver_detail(request, pk):
     agent only sees levies from their own station.
     """
     driver = get_object_or_404(Driver, pk=pk)
-    phone = normalize_phone(driver.phone)
-
-    txs = Transaction.objects.none()
-    if phone:
-        txs = (
-            Transaction.objects.filter(driver_phone=phone)
-            .select_related("station__company", "church", "fuel_type", "agent")
-            .order_by("-created_at")
-        )
-        user = request.user
-        if user.role == ROLE_STATION_AGENT:
-            txs = txs.filter(station=user.assigned_station) if user.assigned_station else txs.none()
-        elif user.role == ROLE_COMPANY_MANAGER:
-            txs = txs.filter(station__company=user.managed_company) if user.managed_company else txs.none()
+    txs = driver_transactions(driver, request.user)
 
     agg = txs.aggregate(
         count=Count("id"),
@@ -1008,18 +963,19 @@ def api_station_history(request, pk=None):
             )
     else:
         station = get_object_or_404(FuelStation, pk=pk)
+        # Check the *station* against the caller's scope, not whether the
+        # transaction queryset came back empty: a station with no transactions
+        # yet would otherwise disclose its name and company to anyone.
+        if not scope_stations(request.user, FuelStation.objects.filter(pk=pk)).exists():
+            return Response(
+                {"detail": "You do not have access to this station's history."},
+                status=drf_status.HTTP_403_FORBIDDEN,
+            )
 
     qs = Transaction.objects.filter(station=station).select_related(
         "station__company", "church", "agent", "fuel_type"
     )
     scoped = scope_transactions(request.user, qs)
-    # An empty scope on a station that *has* transactions means it isn't theirs.
-    if pk is not None and not scoped.exists() and qs.exists():
-        return Response(
-            {"detail": "You do not have access to this station's history."},
-            status=drf_status.HTTP_403_FORBIDDEN,
-        )
-
     scoped = filter_history(scoped, request.query_params).order_by("-created_at")
 
     payload = {
@@ -1102,13 +1058,21 @@ def api_audit_log(request, pk):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def api_login(request):
-    """JSON username/password login for the mobile app.
+    """JSON username/password login — the single login for mobile and the SPA.
 
     Knox's bundled LoginView authenticates with the global
     DEFAULT_AUTHENTICATION_CLASSES (here, token-only), so it can't accept a
     username/password body. This endpoint authenticates the credentials and
-    issues a Knox token in the same ``{token, expiry}`` shape the app expects.
+    issues a Knox token.
+
+    The response carries ``user`` alongside the ``{token, expiry}`` the mobile
+    app already reads; the extra key is ignored by older clients. There is
+    deliberately **no role check** — every role signs in here, and what they can
+    then reach is decided per endpoint by `fuel_app.permissions` and
+    `fuel_app.scoping`.
     """
+    from fuel_app.admin_views import user_payload
+
     username = request.data.get("username", "")
     password = request.data.get("password", "")
     user = authenticate(request, username=username, password=password)
@@ -1119,7 +1083,44 @@ def api_login(request):
         return Response({"detail": "This account is inactive."},
                         status=drf_status.HTTP_403_FORBIDDEN)
     instance, token = AuthToken.objects.create(user)
-    return Response({"token": token, "expiry": instance.expiry})
+    return Response({
+        "token": token,
+        "expiry": instance.expiry,
+        "user": user_payload(user),
+    })
+
+
+# ─── SPA shell ────────────────────────────────────────────────────────────────
+
+_SPA_INDEX = settings.BASE_DIR / "static" / "spa" / "index.html"
+_spa_cache: str | None = None
+
+
+def spa_index(request):
+    """Serve the built React app for every /app/… URL.
+
+    The SPA owns its own routing, so any path under /app/ returns the same
+    shell and React Router takes it from there. Vite writes absolute
+    /static/spa/… asset URLs into this file (see `base` in vite.config.ts), so
+    it is served verbatim rather than through the template engine — nothing in
+    it needs rendering, and that keeps Django from touching any stray braces.
+    """
+    global _spa_cache
+
+    if _spa_cache is None or settings.DEBUG:
+        try:
+            _spa_cache = _SPA_INDEX.read_text(encoding="utf-8")
+        except OSError:
+            if settings.DEBUG:
+                return HttpResponse(
+                    "<h1>SPA not built</h1>"
+                    "<p>Run <code>cd spa && bun install && bun run build</code>, "
+                    "or <code>bun run dev</code> for the Vite dev server on :5173.</p>",
+                    status=501,
+                )
+            raise Http404("SPA build missing — run `bun run build` in spa/.")
+
+    return HttpResponse(_spa_cache)
 
 
 @api_view(["GET"])
