@@ -1,6 +1,9 @@
 # collectstatic output
 staticfiles/
 
+# Local development database.
+db.sqlite3
+
 # CSS build helper (dev-only; see scripts/build_css.sh)
 scripts/node_modules/
 
