@@ -108,19 +108,12 @@ export default function Transactions() {
     },
     { key: "company", header: t("tx.company"), render: (tx) => tx.company_name },
     { key: "station", header: t("tx.station"), render: (tx) => tx.station_name },
-    { key: "church", header: t("tx.church"), render: (tx) => tx.church_name },
     { key: "agent", header: t("tx.agent"), render: (tx) => tx.agent_username },
     {
       key: "amount",
       header: t("tx.amountUsd"),
       numeric: true,
       render: (tx) => usd(tx.amount_usd),
-    },
-    {
-      key: "levy",
-      header: t("tx.levyUsd"),
-      numeric: true,
-      render: (tx) => <span className="money">{usd(tx.levy_amount_usd)}</span>,
     },
     { key: "status", header: t("common.status"), render: (tx) => <StatusBadge status={tx.status} /> },
     {
@@ -138,12 +131,7 @@ export default function Transactions() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-lg font-semibold">{t("tx.title")}</h1>
-          {totals && (
-            <p className="text-xs text-muted">
-              {number(totals.count)} {t("history.transactions")} ·{" "}
-              <span className="money">{usd(totals.levy)}</span> {t("tx.levy")}
-            </p>
-          )}
+          {totals && <p className="text-xs text-muted">{number(totals.count)} {t("history.transactions")}</p>}
         </div>
         <div className="flex gap-2">
           <button

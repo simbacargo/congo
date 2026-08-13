@@ -141,7 +141,7 @@ class StationTargetForm(forms.ModelForm):
 
 
 class TransactionFilterForm(forms.Form):
-    search = forms.CharField(required=False, widget=forms.TextInput(attrs={"placeholder": "Receipt code, church, station…"}))
+    search = forms.CharField(required=False, widget=forms.TextInput(attrs={"placeholder": "Receipt code or station…"}))
     company = forms.ModelChoiceField(queryset=ParentCompany.objects.all(), required=False, empty_label="All Companies")
     station = forms.ModelChoiceField(queryset=FuelStation.objects.all(), required=False, empty_label="All Stations")
     status = forms.ChoiceField(

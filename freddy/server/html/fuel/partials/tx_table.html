@@ -13,10 +13,8 @@
           <th>{% trans "Receipt" %}</th>
           <th>{% trans "Date" %}</th>
           <th>{% trans "Company" %} / {% trans "Station" %}</th>
-          <th>{% trans "Church" %}</th>
           <th>{% trans "Agent" %} / {% trans "Fuel" %}</th>
           <th class="!text-right">{% trans "Amount" %}</th>
-          <th class="!text-right">{% trans "Levy" %}</th>
           <th class="!text-center">{% trans "Status" %}</th>
           <th class="w-10"></th>
         </tr>
@@ -38,13 +36,11 @@
             <p class="text-xs font-medium truncate max-w-[150px]">{{ tx.station.name }}</p>
             <p class="text-xs text-muted mt-0.5 truncate max-w-[150px]">{{ tx.station.company.name }}</p>
           </td>
-          <td><p class="text-xs truncate max-w-[140px]">{{ tx.church.name }}</p></td>
           <td>
             <p class="text-xs truncate max-w-[110px]">{{ tx.agent.username }}</p>
             <p class="text-xs text-muted mt-0.5 truncate max-w-[110px]">{{ tx.fuel_type.name }}</p>
           </td>
           <td class="cell-num text-xs">${{ tx.amount_usd }}</td>
-          <td class="cell-num"><span class="money text-sm font-semibold">${{ tx.levy_amount_usd }}</span></td>
           <td class="!text-center whitespace-nowrap">
             {% include "fuel/partials/_status_badge.html" with status=tx.status label=tx.get_status_display %}
           </td>
@@ -58,7 +54,7 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="10">
+          <td colspan="8">
             {% url 'fuel:transactions' as clear_url %}
             {% include "fuel/partials/_empty_state.html" with message=_("No transactions match your filters.") action_url=clear_url action_label=_("Clear filters") %}
           </td>

@@ -3,10 +3,7 @@
 {% block title %}{% trans "Transactions" %}{% endblock %}
 {% block page_title %}{% trans "Transactions" %}{% endblock %}
 {% block page_subtitle %}
-  <span class="inline-flex items-center gap-3">
-    <span class="num">{{ totals.count|default:0 }} {% trans "records" %}</span>
-    <span class="money font-semibold">${{ totals.levy|default:0|floatformat:2 }} {% trans "total levy" %}</span>
-  </span>
+  <span class="num">{{ totals.count|default:0 }} {% trans "records" %}</span>
 {% endblock %}
 
 {% block content %}
