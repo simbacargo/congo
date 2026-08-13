@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ church.name }}{% endblock %}
+{% block page_title %}{{ church.name }}{% endblock %}
+{% block page_subtitle %}{{ church.station.name }} · {{ church.station.company.name }}{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <div class="lg:col-span-2 space-y-4">
+    <!-- Summary cards -->
+    <div class="grid grid-cols-3 gap-3">
+      <div class="kpi-card text-center">
+        <p class="kpi-value money">${{ totals.levy|default:0|floatformat:2 }}</p>
+        <p class="text-xs text-muted mt-1">{% trans "Total Levy" %}</p>
+      </div>
+      <div class="kpi-card text-center">
+        <p class="kpi-value">{{ totals.count|default:0 }}</p>
+        <p class="text-xs text-muted mt-1">{% trans "Transactions" %}</p>
+      </div>
+      <div class="kpi-card text-center">
+        <p class="kpi-value">{{ church.beneficiary_count }}</p>
+        <p class="text-xs text-muted mt-1">{% trans "Beneficiaries" %}</p>
+      </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="card overflow-hidden">
+      <div class="px-5 py-3 border-b border-line bg-surface-2">
+        <h3 class="text-sm font-semibold">{% trans "Recent Transactions" %}</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>{% trans "Receipt" %}</th>
+              <th>{% trans "Date" %}</th>
+              <th>{% trans "Fuel" %}</th>
+              <th class="!text-right">{% trans "Levy" %}</th>
+              <th class="!text-center">{% trans "Status" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tx in txs %}
+            <tr>
+              <td><a href="{% url 'fuel:tx-detail' tx.id %}" class="receipt-code text-accent hover:underline">{{ tx.receipt_code }}</a></td>
+              <td class="text-muted">{{ tx.created_at|date:"M d, Y" }}</td>
+              <td class="text-muted">{{ tx.fuel_type.name }}</td>
+              <td class="cell-num money font-medium">${{ tx.levy_amount_usd }}</td>
+              <td class="!text-center">{% include "fuel/partials/_status_badge.html" with status=tx.status label=tx.get_status_display %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="px-4 py-6 text-center text-muted">{% trans "No transactions." %}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Info + Disbursements -->
+  <div class="space-y-4">
+    <div class="card p-5">
+      <h3 class="text-sm font-semibold mb-3">{% trans "Church Info" %}</h3>
+      {% include "fuel/partials/_detail_row.html" with label=_("Contact") value=church.contact_person %}
+      <div class="mt-2">{% include "fuel/partials/_detail_row.html" with label=_("Phone") value=church.contact_phone %}</div>
+      <div class="mt-2">{% include "fuel/partials/_detail_row.html" with label=_("Station") value=church.station.name %}</div>
+      <div class="mt-2">{% include "fuel/partials/_detail_row.html" with label=_("Company") value=church.station.company.name %}</div>
+      <div class="mt-4 flex gap-2">
+        <a href="{% url 'fuel:church-edit' church.id %}" class="btn btn-primary flex-1 justify-center !text-xs">{% trans "Edit" %}</a>
+        <a href="{% url 'fuel:disbursement-create' %}?church={{ church.id }}" class="btn flex-1 justify-center !text-xs">+ {% trans "Disbursement" %}</a>
+      </div>
+    </div>
+
+    <div class="card overflow-hidden">
+      <div class="px-4 py-3 border-b border-line bg-surface-2">
+        <h3 class="text-sm font-semibold">{% trans "Disbursements" %}</h3>
+      </div>
+      <div class="divide-y divide-line text-xs">
+        {% for d in disbursements %}
+        <div class="px-4 py-3 flex items-center justify-between">
+          <div>
+            <p class="receipt-code text-accent">{{ d.reference }}</p>
+            <p class="text-muted">{{ d.period_start|date:"M Y" }}</p>
+          </div>
+          <div class="text-right">
+            <p class="money font-medium">${{ d.amount_usd }}</p>
+            {% include "fuel/partials/_status_badge.html" with status=d.status label=d.get_status_display %}
+          </div>
+        </div>
+        {% empty %}
+        <p class="px-4 py-4 text-center text-muted">{% trans "No disbursements." %}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

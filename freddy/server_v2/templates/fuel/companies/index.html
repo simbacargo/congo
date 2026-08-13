@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Companies" %}{% endblock %}
+{% block page_title %}{% trans "Parent Companies" %}{% endblock %}
+{% block page_subtitle %}{{ companies|length }} {% trans "registered" %}{% endblock %}
+{% block header_actions %}
+<a href="{% url 'fuel:company-create' %}" class="btn btn-primary">+ {% trans "New Company" %}</a>
+{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+  {% for c in companies %}
+  {% include "fuel/partials/company_row.html" with company=c %}
+  {% empty %}
+  <div class="col-span-full">
+    {% url 'fuel:company-create' as create_url %}
+    {% include "fuel/partials/_empty_state.html" with message=_("No companies yet.") action_url=create_url action_label=_("Add one →") %}
+  </div>
+  {% endfor %}
+</div>
+<div id="drill-panel" class="mt-6"></div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% trans "Login" %} — Lubumbashi Charity Fuel Initiative</title>
+<link rel="icon" href="{% static 'logo.jpg' %}">
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-page text-ink p-4">
+
+<div class="w-full max-w-sm">
+
+  <!-- Identity -->
+  <div class="text-center mb-6">
+    <img src="{% static 'logo.jpg' %}" alt="LCI" class="w-20 h-20 rounded-full mx-auto mb-4 border border-line shadow-sm">
+    <h1 class="text-xl font-bold">LCI Office</h1>
+    <p class="text-muted text-sm">{% trans "Lubumbashi Charity Fuel Initiative" %}</p>
+  </div>
+
+  <div class="card p-6 space-y-4 shadow-sm">
+    <form class="space-y-4" method="post" action="{% url 'login' %}">
+      {% if form.errors %}
+        <div class="alert alert-error">
+          <div>
+            {% for field in form.fields %}{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}{% endfor %}
+            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      {% csrf_token %}
+
+      <div>
+        <label class="field-label" for="id_username">{% trans "Username" %}</label>
+        <input id="id_username" type="text" name="username" class="field" autofocus
+               autocomplete="username" placeholder="{% trans 'Enter your username' %}">
+      </div>
+
+      <div>
+        <label class="field-label" for="id_password">{% trans "Password" %}</label>
+        <input id="id_password" type="password" name="password" class="field"
+               autocomplete="current-password" placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full justify-center !py-2.5">
+        {% trans "Login" %}
+      </button>
+    </form>
+  </div>
+
+  <!-- Language switcher -->
+  <div class="flex justify-center mt-5">
+    <form action="{% url 'set_language' %}" method="post" class="flex items-center gap-2">
+      {% csrf_token %}
+      <input name="next" type="hidden" value="{{ request.get_full_path }}">
+      <select name="language" onchange="this.form.submit()" class="field !w-auto !text-xs !py-1">
+        {% get_current_language as current_lang %}
+        {% get_available_languages as languages %}
+        {% for lang_code, lang_name in languages sorted %}
+        <option value="{{ lang_code }}"{% if lang_code == current_lang %} selected{% endif %}>{{ lang_name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+</div>
+
+</body>
+</html>

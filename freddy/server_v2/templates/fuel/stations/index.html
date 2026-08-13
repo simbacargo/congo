@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Stations" %}{% endblock %}
+{% block page_title %}{% trans "Fuel Stations" %}{% endblock %}
+{% block page_subtitle %}{{ stations|length }} {% trans "total" %}{% endblock %}
+{% block header_actions %}
+<a href="{% url 'fuel:station-create' %}" class="btn btn-primary">+ {% trans "New Station" %}</a>
+{% endblock %}
+{% block content %}
+<!-- Company filter -->
+<form method="get" class="flex gap-2 mb-4">
+  <select name="company" class="field !w-auto !text-xs !py-1.5" onchange="this.form.submit()">
+    <option value="">{% trans "All Companies" %}</option>
+    {% for c in companies %}<option value="{{ c.id }}" {% if selected_company == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+  </select>
+  {% if selected_company %}<a href="{% url 'fuel:stations' %}" class="text-xs self-center text-accent hover:underline">{% trans "Clear" %}</a>{% endif %}
+</form>
+
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>{% trans "Station" %}</th>
+          <th>{% trans "Code" %}</th>
+          <th>{% trans "Company" %}</th>
+          <th>{% trans "Churches" %}</th>
+          <th>{% trans "Transactions" %}</th>
+          <th class="!text-right">{% trans "Levy (USD)" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in stations %}
+        <tr>
+          <td class="font-medium">{{ s.name }}</td>
+          <td class="receipt-code text-xs text-muted">{{ s.code }}</td>
+          <td>{{ s.company.name }}</td>
+          <td class="num">{{ s.church_count }}</td>
+          <td class="num">{{ s.tx_count }}</td>
+          <td class="cell-num money font-medium">${{ s.total_levy|default:0|floatformat:2 }}</td>
+          <td>
+            {% if s.is_active %}
+            <span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Active" %}</span>
+            {% else %}
+            <span class="badge bg-neutral-soft text-neutral">{% trans "Inactive" %}</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="flex gap-2 text-xs">
+              <button class="text-accent hover:underline"
+                      hx-get="{% url 'fuel:station-detail' s.id %}"
+                      hx-target="#detail-panel"
+                      hx-swap="innerHTML">{% trans "View" %}</button>
+              <a href="{% url 'fuel:station-edit' s.id %}" class="text-muted hover:text-ink">{% trans "Edit" %}</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">{% include "fuel/partials/_empty_state.html" with message=_("No stations yet.") %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div id="detail-panel" class="mt-4"></div>
+{% endblock %}

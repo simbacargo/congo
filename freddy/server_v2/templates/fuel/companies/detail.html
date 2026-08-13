@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ company.name }}{% endblock %}
+{% block page_title %}{{ company.name }}{% endblock %}
+{% block page_subtitle %}<span class="receipt-code">{{ company.code }}</span>{% endblock %}
+{% block header_actions %}
+<a href="{% url 'fuel:company-edit' company.id %}" class="btn">{% trans "Edit" %}</a>
+{% endblock %}
+{% block content %}
+{% include "fuel/partials/company_detail.html" %}
+<div class="mt-4">
+  <a href="{% url 'fuel:companies' %}" class="btn">← {% trans "Back to list" %}</a>
+</div>
+{% endblock %}

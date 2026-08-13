@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Disbursements" %}{% endblock %}
+{% block page_title %}{% trans "Disbursements" %}{% endblock %}
+{% block page_subtitle %}{{ totals.count|default:0 }} {% trans "records" %} · <span class="money">${{ totals.total|default:0|floatformat:2 }}</span> {% trans "total" %}{% endblock %}
+{% block header_actions %}
+<a href="{% url 'fuel:disbursement-create' %}" class="btn btn-primary">+ {% trans "New Disbursement" %}</a>
+{% endblock %}
+{% block content %}
+<!-- Status filter tabs -->
+<div class="flex flex-wrap gap-2 mb-4">
+  <a href="{% url 'fuel:disbursements' %}"
+     class="btn !text-xs {% if not status_filter %}btn-primary{% else %}btn-quiet{% endif %}">{% trans "All" %}</a>
+  {% for val, label in statuses %}
+  <a href="?status={{ val }}"
+     class="btn !text-xs {% if status_filter == val %}btn-primary{% else %}btn-quiet{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>{% trans "Reference" %}</th>
+          <th>{% trans "Church" %}</th>
+          <th>{% trans "Station" %}</th>
+          <th>{% trans "Period" %}</th>
+          <th class="!text-right">{% trans "Amount" %}</th>
+          <th>{% trans "Payment" %}</th>
+          <th>{% trans "Prepared By" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in disbursements %}
+        {% include "fuel/partials/disburse_row.html" %}
+        {% empty %}
+        <tr><td colspan="9">{% include "fuel/partials/_empty_state.html" with message=_("No disbursements yet.") %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

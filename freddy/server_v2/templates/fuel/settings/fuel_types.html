@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Fuel Types" %}{% endblock %}
+{% block page_title %}{% trans "Settings — Fuel Types" %}{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+  <!-- List -->
+  <div class="card overflow-hidden">
+    <div class="px-5 py-3 border-b border-line bg-surface-2">
+      <h3 class="text-sm font-semibold">{% trans "Fuel Types" %}</h3>
+    </div>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>{% trans "Name" %}</th>
+          <th>{% trans "Code" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="fuel-type-list">
+        {% for ft in types %}
+        {% include "fuel/partials/fuel_type_row.html" %}
+        {% empty %}
+        <tr><td colspan="4" class="px-4 py-6 text-center text-xs text-muted">{% trans "No fuel types." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add/Edit form -->
+  <div id="fuel-type-form-panel" class="card p-5">
+    {% if form %}
+    {% include "fuel/partials/fuel_type_form.html" with form=form ft=editing %}
+    {% else %}
+    <p class="text-sm text-muted">{% trans "Click Edit on a row to modify it, or use the button below." %}</p>
+    <a href="{% url 'fuel:fuel-type-create' %}" class="btn btn-primary mt-3">+ {% trans "Add Fuel Type" %}</a>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

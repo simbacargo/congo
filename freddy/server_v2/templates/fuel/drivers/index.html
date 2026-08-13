@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block title %}{% trans "Drivers" %}{% endblock %}
+{% block page_title %}{% trans "Drivers" %}{% endblock %}
+{% block page_subtitle %}{{ filtered_count }} {% trans "of" %} {{ total_count }} {% trans "registered drivers" %}{% endblock %}
+
+{% block chart_lib %}
+<script src="{% static 'vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/charts.js' %}"></script>
+{% endblock %}
+
+{% block header_exports %}
+<a href="{% url 'fuel:drivers-export-excel' %}?{{ querystring }}" class="btn">
+  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+  {% trans "Export Excel" %}
+</a>
+{% endblock %}
+{% block content %}
+
+<!-- KPI cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+  <div class="kpi-card">
+    <p class="kpi-value">{{ kpi.filtered }}</p>
+    <p class="text-xs text-muted mt-1">{% trans "Drivers shown" %} · {{ kpi.total }} {% trans "total" %}</p>
+  </div>
+  <div class="kpi-card">
+    <p class="text-xl font-semibold text-accent truncate">{{ kpi.top_vehicle }}</p>
+    <p class="text-xs text-muted mt-1">{% trans "Top vehicle" %} · {{ kpi.top_vehicle_n }}</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-value" style="color: {% if kpi.coverage_pct < 25 %}var(--color-warn){% else %}var(--color-ok){% endif %};">{{ kpi.coverage_pct }}%</p>
+    <p class="text-xs text-muted mt-1">{% trans "Have health coverage" %}</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-value">{{ kpi.agents }}</p>
+    <p class="text-xs text-muted mt-1">{% trans "Field agents" %}</p>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+  <div class="lg:col-span-2 card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Drivers by Commune" %}</h3>
+    <canvas id="communeChart" height="90"></canvas>
+  </div>
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Vehicle Types" %}</h3>
+    <canvas id="vehicleChart" height="160"></canvas>
+  </div>
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Fuel Use (litres/day)" %}</h3>
+    <canvas id="consumptionChart" height="160"></canvas>
+  </div>
+  <div class="lg:col-span-2 card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Health Coverage" %}</h3>
+    <canvas id="healthChart" height="90"></canvas>
+  </div>
+</div>
+
+{{ chart_commune|json_script:"data-commune" }}
+{{ chart_vehicle|json_script:"data-vehicle" }}
+{{ chart_consumption|json_script:"data-consumption" }}
+{{ chart_health|json_script:"data-health" }}
+
+<!-- Filter bar -->
+<form method="get" class="mb-3 flex flex-wrap items-end gap-2">
+  <div class="flex-1 min-w-[180px]">
+    <label class="field-label">{% trans "Search" %}</label>
+    <input type="text" name="q" value="{{ cur.q }}" placeholder="{% trans 'Name, phone, email, quartier…' %}" class="field">
+  </div>
+  <div>
+    <label class="field-label">{% trans "Commune" %}</label>
+    <select name="commune" class="field !w-auto">
+      <option value="">{% trans "All" %}</option>
+      {% for c in communes %}<option value="{{ c }}" {% if cur.commune == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="field-label">{% trans "Vehicle" %}</label>
+    <select name="vehicle_type" class="field !w-auto">
+      <option value="">{% trans "All" %}</option>
+      {% for v in vehicle_types %}<option value="{{ v }}" {% if cur.vehicle_type == v %}selected{% endif %}>{{ v }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="field-label">{% trans "Fuel" %}</label>
+    <select name="fuel_type" class="field !w-auto">
+      <option value="">{% trans "All" %}</option>
+      {% for f in fuel_types %}<option value="{{ f }}" {% if cur.fuel_type == f %}selected{% endif %}>{{ f }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="field-label">{% trans "Agent" %}</label>
+    <select name="agent" class="field !w-auto">
+      <option value="">{% trans "All" %}</option>
+      {% for a in agents %}<option value="{{ a }}" {% if cur.agent == a %}selected{% endif %}>{{ a }}</option>{% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">{% trans "Filter" %}</button>
+  <a href="{% url 'fuel:drivers' %}" class="btn btn-quiet">{% trans "Reset" %}</a>
+</form>
+
+<!-- Active filter chips -->
+{% if chips %}
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <span class="text-xs text-muted">{% trans "Active:" %}</span>
+  {% for chip in chips %}
+  <a href="?{{ chip.qs }}" class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-surface-2 hover:bg-danger-soft hover:text-danger transition">
+    {{ chip.value }} <span class="opacity-60">✕</span>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Table -->
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto max-h-[60vh] overflow-y-auto">
+    <table class="tbl tbl-sticky tbl-zebra">
+      <thead>
+        <tr>
+          {% include "fuel/drivers/_sort_th.html" with label=_("Name") col="name" %}
+          <th>{% trans "Phone" %}</th>
+          {% include "fuel/drivers/_sort_th.html" with label=_("Location") col="commune" %}
+          {% include "fuel/drivers/_sort_th.html" with label=_("Vehicle") col="vehicle" %}
+          {% include "fuel/drivers/_sort_th.html" with label=_("Fuel") col="fuel" %}
+          {% include "fuel/drivers/_sort_th.html" with label=_("Litres/day") col="consumption" %}
+          <th class="!text-center">{% trans "Dependents" %}</th>
+          <th class="!text-center">{% trans "Health cover" %}</th>
+          {% include "fuel/drivers/_sort_th.html" with label=_("Agent") col="agent" %}
+          {% include "fuel/drivers/_sort_th.html" with label=_("Registered") col="registered" %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in page_obj %}
+        <tr>
+          <td class="font-medium">
+            <a href="{% url 'fuel:driver-detail' d.id %}" class="hover:text-accent hover:underline">{{ d.full_name|default:"—" }}</a>
+          </td>
+          <td>
+            {% if d.phone %}<a href="tel:{{ d.phone }}" class="text-accent hover:underline num">{{ d.phone }}</a>{% else %}<span class="text-muted">—</span>{% endif %}
+          </td>
+          <td class="text-xs text-muted">
+            {{ d.commune|default:"" }}{% if d.quartier %}<br>{{ d.quartier }}{% endif %}
+          </td>
+          <td>
+            {{ d.vehicle_type|default:"—" }}{% if d.vehicle_color %}<span class="text-xs text-muted"> · {{ d.vehicle_color }}</span>{% endif %}
+          </td>
+          <td>{{ d.fuel_type|default:"—" }}</td>
+          <td class="!text-center num">{{ d.daily_fuel_consumption|default:"—" }}</td>
+          <td class="!text-center num">{{ d.dependents|default:"—" }}</td>
+          <td class="!text-center">
+            {% if d.has_health_coverage == True %}<span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Yes" %}</span>
+            {% elif d.has_health_coverage == False %}<span class="badge bg-neutral-soft text-neutral">{% trans "No" %}</span>
+            {% else %}<span class="text-muted">—</span>{% endif %}
+          </td>
+          <td class="text-xs text-muted">{{ d.field_agent|default:"—" }}</td>
+          <td class="text-xs text-muted num">{{ d.registration_date|date:"Y-m-d"|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="10">
+          {% url 'fuel:drivers' as clear_url %}
+          {% include "fuel/partials/_empty_state.html" with message=_("No drivers match these filters.") action_url=clear_url action_label=_("Clear filters") %}
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% include "fuel/partials/_pagination.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const J = id => JSON.parse(document.getElementById(id).textContent);
+
+  const commune = J('data-commune');
+  new Chart(document.getElementById('communeChart'), {
+    type: 'bar',
+    data: { labels: commune.map(r => r[0]),
+      datasets: [{ data: commune.map(r => r[1]), backgroundColor: LCI.accent, borderRadius: 4 }] },
+    options: { ...LCI.defaults, plugins: { legend: { display: false } } }
+  });
+
+  const vehicle = J('data-vehicle');
+  new Chart(document.getElementById('vehicleChart'), {
+    type: 'doughnut',
+    data: { labels: vehicle.map(r => r[0]),
+      datasets: [{ data: vehicle.map(r => r[1]), backgroundColor: LCI.palette, ...LCI.doughnutSegment }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  const cons = J('data-consumption');
+  new Chart(document.getElementById('consumptionChart'), {
+    type: 'bar',
+    data: { labels: cons.map(r => r[0]),
+      datasets: [{ data: cons.map(r => r[1]), backgroundColor: LCI.palette[1], borderRadius: 4 }] },
+    options: { ...LCI.defaults, plugins: { legend: { display: false } } }
+  });
+
+  const health = J('data-health');
+  new Chart(document.getElementById('healthChart'), {
+    type: 'bar',
+    data: { labels: ['{% trans "Yes" %}', '{% trans "No" %}', '{% trans "Unknown" %}'],
+      datasets: [{ data: health,
+        backgroundColor: [LCI.statusColors.REMITTED, LCI.statusColors.SCHEDULED, '#c3c2b7'], borderRadius: 4 }] },
+    options: { ...LCI.defaults, indexAxis: 'y', plugins: { legend: { display: false } } }
+  });
+})();
+</script>
+{% endblock %}

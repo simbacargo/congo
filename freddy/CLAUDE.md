@@ -9,14 +9,17 @@ Fuel stations collect a small levy (2%) on fuel sales; the levy is tracked,
 verified, and disbursed to partner churches. There is also a driver-registration
 dataset for the "OSS" health program (moto-taxi / vehicle drivers).
 
-Two deployables:
+Three deployables:
 
 | Path | Stack | Role |
 |------|-------|------|
 | `server/` | Django 5.1 + DRF + Knox | Backend: web dashboard (server-rendered) + JSON API |
+| `server/spa/` | Vite + React 19 + TS | New dashboard SPA, served by Django at `/app/` |
 | `freddy_mobile/` | Expo / React Native (TS) | Offline-first field app for station agents |
 
 > `kdcharite/` and `kdcharitewebsite/` are untracked and appear unrelated to Freddy.
+> `server_v2/` is an **abandoned** Go/Echo rewrite — superseded by the SPA, do
+> not extend it.
 
 ## Environment & commands
 
@@ -30,6 +33,12 @@ source /home/david/.venv/bin/activate
 python manage.py migrate
 python manage.py runserver
 python manage.py seed_lci          # demo companies/stations/churches/agent
+
+# SPA (run from server/spa/)
+bun install
+bun run dev                        # Vite on :5173, proxies /api → :8000
+bun run build                      # → server/static/spa/, served at /app/
+bun run typecheck
 
 # Mobile (run from freddy_mobile/)
 bun install
@@ -65,6 +74,36 @@ bun start                          # expo; --android / --ios / --web
 - Chart styling: shared `static/js/charts.js` (`LCI` global — palette, status
   colors, Chart.js defaults). Pages that chart must override the `chart_lib`
   block to load Chart.js (base.html doesn't ship it).
+
+### SPA (`server/spa/`) — the v3 dashboard
+
+Replaces the server-rendered dashboard page by page. Both run side by side: the
+Django UI keeps `/`, the SPA is mounted at `/app/` (`fuel_app.views.spa_index`
+serves the built `static/spa/index.html` for every `/app/…` path; React Router
+uses `basename="/app"`).
+
+- **Backend is `/api/admin/`** (`fuel_app/admin_views.py` + `admin_urls.py`),
+  Knox token auth. `GET /api/admin/me/` is the bootstrap call: identity,
+  a `permissions` capability map, and the pending-transaction badge count.
+- **Two separate access layers, don't conflate them.**
+  `fuel_app/permissions.py` decides *who may call* an endpoint (all classes
+  bypass for superusers); `fuel_app/scoping.py` decides *which rows* come back
+  (`scope_transactions`, `scope_stations`, `scope_companies`, …). An
+  out-of-scope UUID 404s rather than 403s. **An unassigned user gets `.none()`,
+  never everything** — follow that rule in any new scope helper.
+- **Design tokens are shared, not copied.** `static/src/_tokens.css` holds the
+  tokens plus `.card` / `.btn*` / `.field` / `.badge-<STATUS>` / `.tbl` /
+  `.nav-link`, and is imported by *both* `static/src/app.css` (Django pages) and
+  `spa/src/index.css`. Edit component styles there so the two UIs can't drift.
+- **No CDNs, ever** — Vite bundles everything; fonts stay vendored at
+  `/static/fonts/`. Connectivity in Lubumbashi is unreliable.
+- i18n is `react-i18next` with hand-authored `fr`/`en`/`sw` JSON under
+  `spa/src/i18n/locales/`, French default. Independent of Django's `set_language`.
+- Scoping is covered by `fuel_app/test_scoping.py` — run it after touching any
+  queryset or permission class.
+
+`drivers/<pk>/id-card/` stays server-rendered (embedded QR, Code128 barcode and
+base64 logos in a print stylesheet); the SPA links out to it.
 
 ### Domain conventions
 

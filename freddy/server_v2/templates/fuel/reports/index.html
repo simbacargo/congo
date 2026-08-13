@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block title %}{% trans "Reports" %}{% endblock %}
+{% block page_title %}{% trans "Reports & Analytics" %}{% endblock %}
+{% block page_subtitle %}{% trans "Historical levy data and church summaries" %}{% endblock %}
+
+{% block chart_lib %}
+<script src="{% static 'vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/charts.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<!-- KPI summary -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+  <div class="kpi-card">
+    <p class="kpi-label">{% trans "Total Levy" %}</p>
+    <p class="kpi-value money">${{ stats.total_levy|floatformat:2 }}</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-label">{% trans "Total Transactions" %}</p>
+    <p class="kpi-value">{{ stats.total_count }}</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-label">{% trans "Disbursed" %}</p>
+    <p class="kpi-value money">${{ stats.total_disbursed|floatformat:2 }}</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-label">{% trans "Pending Disburse" %}</p>
+    <p class="kpi-value" style="color: var(--color-warn);">{{ stats.pending_disburse }}</p>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Monthly Levy (12 Months)" %}</h3>
+    <canvas id="monthlyChart" height="100"></canvas>
+  </div>
+
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">{% trans "Levy by Fuel Type" %}</h3>
+    <canvas id="fuelChart" height="100"></canvas>
+  </div>
+
+</div>
+
+<!-- Tables -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+  <div class="card overflow-hidden">
+    <div class="px-5 py-3 border-b border-line bg-surface-2">
+      <h3 class="text-sm font-semibold">{% trans "Monthly Breakdown" %}</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>{% trans "Month" %}</th>
+            <th class="!text-right">{% trans "Transactions" %}</th>
+            <th class="!text-right">{% trans "Levy (USD)" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in monthly %}
+          <tr>
+            <td>{{ row.label }}</td>
+            <td class="cell-num text-muted">{{ row.count }}</td>
+            <td class="cell-num money font-medium">${{ row.levy|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Top churches -->
+  <div class="card overflow-hidden">
+    <div class="px-5 py-3 border-b border-line bg-surface-2">
+      <h3 class="text-sm font-semibold">{% trans "Top 20 Churches by Levy" %}</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>{% trans "Church" %}</th>
+            <th>{% trans "Station" %}</th>
+            <th class="!text-right">{% trans "Tx" %}</th>
+            <th class="!text-right">{% trans "Levy" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in church_summary %}
+          <tr>
+            <td>{{ row.church__name }}</td>
+            <td class="text-muted">{{ row.church__station__name }}</td>
+            <td class="cell-num text-muted">{{ row.tx_count }}</td>
+            <td class="cell-num money font-medium">${{ row.total_levy|floatformat:2 }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="px-4 py-6 text-center text-muted">{% trans "No data." %}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{{ monthly|json_script:"monthlyData" }}
+{{ fuel_summary|json_script:"fuelSummaryData" }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Monthly bar
+const monthly = JSON.parse(document.getElementById('monthlyData').textContent);
+new Chart(document.getElementById('monthlyChart'), {
+  type: 'bar',
+  data: {
+    labels: monthly.map(d => d.label),
+    datasets: [{ label: '{% trans "Levy (USD)" %}', data: monthly.map(d => d.levy),
+      backgroundColor: LCI.accent, borderRadius: 4 }]
+  },
+  options: { ...LCI.defaults, plugins: { legend: { display: false } } }
+});
+
+// Fuel type
+const fuels = JSON.parse(document.getElementById('fuelSummaryData').textContent);
+new Chart(document.getElementById('fuelChart'), {
+  type: 'doughnut',
+  data: {
+    labels: fuels.map(d => d.fuel_type__name),
+    datasets: [{ data: fuels.map(d => parseFloat(d.total || 0)),
+      backgroundColor: LCI.palette, ...LCI.doughnutSegment }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+</script>
+{% endblock %}

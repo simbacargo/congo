@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ driver.full_name|default:_("Driver") }}{% endblock %}
+{% block page_title %}{{ driver.full_name|default:_("Driver") }}{% endblock %}
+{% block page_subtitle %}{% if driver.commune %}{{ driver.commune }}{% endif %}{% if driver.quartier %} · {{ driver.quartier }}{% endif %}{% endblock %}
+{% block header_actions %}
+<a href="{% url 'fuel:driver-id-card' driver.pk %}" class="btn btn-primary">{% trans "User ID card" %}</a>
+<a href="{% url 'fuel:drivers' %}" class="btn btn-quiet">← {% trans "Back to drivers" %}</a>
+{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <!-- Contact + identity -->
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-3">{% trans "Contact" %}</h3>
+    <div class="space-y-3">
+      <div>
+        <p class="text-xs font-medium text-muted mb-0.5">{% trans "Phone" %}</p>
+        {% if driver.phone %}<a href="tel:{{ driver.phone }}" class="text-sm text-accent hover:underline num">{{ driver.phone }}</a>{% else %}<p class="text-sm">—</p>{% endif %}
+      </div>
+      <div>
+        <p class="text-xs font-medium text-muted mb-0.5">{% trans "Email" %}</p>
+        {% if driver.email %}<a href="mailto:{{ driver.email }}" class="text-sm text-accent hover:underline break-all">{{ driver.email }}</a>{% else %}<p class="text-sm">—</p>{% endif %}
+      </div>
+      {% include "fuel/partials/_detail_row.html" with label=_("Gender") value=driver.gender %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Marital Status") value=driver.marital_status %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Dependents") value=driver.dependents %}
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-3">{% trans "Location" %}</h3>
+    <div class="space-y-3">
+      {% include "fuel/partials/_detail_row.html" with label=_("Commune") value=driver.commune %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Quartier") value=driver.quartier %}
+      {% include "fuel/partials/_detail_row.html" with label=_("City / Country") value=driver.city_country %}
+    </div>
+  </div>
+
+  <!-- Vehicle -->
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-3">{% trans "Vehicle & Fuel" %}</h3>
+    <div class="space-y-3">
+      {% include "fuel/partials/_detail_row.html" with label=_("Vehicle Type") value=driver.vehicle_type %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Vehicle Color") value=driver.vehicle_color %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Fuel Type") value=driver.fuel_type %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Litres / day") value=driver.daily_fuel_consumption %}
+    </div>
+  </div>
+
+  <!-- Health program (OSS) -->
+  <div class="card p-5 lg:col-span-2">
+    <h3 class="text-sm font-semibold mb-3">{% trans "OSS Health Program" %}</h3>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <p class="text-xs font-medium text-muted mb-0.5">{% trans "Has health coverage" %}</p>
+        {% if driver.has_health_coverage == True %}<span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Yes" %}</span>
+        {% elif driver.has_health_coverage == False %}<span class="badge bg-neutral-soft text-neutral">{% trans "No" %}</span>
+        {% else %}<span class="text-muted">—</span>{% endif %}
+      </div>
+      <div>
+        <p class="text-xs font-medium text-muted mb-0.5">{% trans "Care access difficulty" %}</p>
+        {% if driver.has_care_access_difficulty == True %}<span class="badge badge-PENDING">{% trans "Yes" %}</span>
+        {% elif driver.has_care_access_difficulty == False %}<span class="badge bg-neutral-soft text-neutral">{% trans "No" %}</span>
+        {% else %}<span class="text-muted">—</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Registration -->
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-3">{% trans "Registration" %}</h3>
+    <div class="space-y-3">
+      {% include "fuel/partials/_detail_row.html" with label=_("Field Agent") value=driver.field_agent %}
+      {% include "fuel/partials/_detail_row.html" with label=_("Registered") value=driver.registration_date|date:"Y-m-d" %}
+      <div>
+        <p class="text-xs font-medium text-muted mb-0.5">{% trans "Consent" %}</p>
+        {% if driver.consent %}<span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Given" %}</span>{% else %}<span class="text-muted">—</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- QR code -->
+  <div class="card p-5 flex flex-col items-center text-center lg:col-span-3">
+    <h3 class="text-sm font-semibold mb-3 self-start">{% trans "QR Code" %}</h3>
+    <img src="{{ qr_code }}" alt="{% trans 'QR code linking to this driver profile' %}" class="w-40 h-40 rounded-lg border border-line p-2" />
+    <p class="text-xs text-muted mt-3">{% trans "Scan to open this driver's profile" %}</p>
+  </div>
+
+</div>
+{% endblock %}

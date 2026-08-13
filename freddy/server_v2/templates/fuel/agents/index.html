@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Users & Agents" %}{% endblock %}
+{% block page_title %}{% trans "Users & Agents" %}{% endblock %}
+{% block page_subtitle %}{{ users|length }} {% trans "accounts" %}{% endblock %}
+{% block header_actions %}
+<a href="{% url 'fuel:agent-create' %}" class="btn btn-primary">+ {% trans "New User" %}</a>
+{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+  {% for u in users %}
+  <div class="card p-4 flex flex-col gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+        {{ u.username|slice:":1"|upper }}
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold truncate">{{ u.username }}</p>
+        <p class="text-xs text-muted">{{ u.firstname }} {{ u.lastname }}</p>
+      </div>
+      <span class="badge flex-shrink-0
+        {% if u.role == 'NGO_ADMIN' %}bg-info-soft text-info
+        {% elif u.role == 'COMPANY_MANAGER' %}bg-accent-soft text-accent
+        {% else %}bg-neutral-soft text-neutral{% endif %}">
+        {{ u.get_role_display|default:u.role }}
+      </span>
+    </div>
+
+    <div class="text-xs space-y-1 text-muted">
+      {% if u.email %}<p>📧 {{ u.email }}</p>{% endif %}
+      {% if u.mobile %}<p>📞 {{ u.mobile }}</p>{% endif %}
+      {% if u.assigned_station %}<p>📍 <span class="text-ink">{{ u.assigned_station.name }}</span></p>{% endif %}
+      {% if u.managed_company %}<p>🏢 <span class="text-ink">{{ u.managed_company.name }}</span></p>{% endif %}
+    </div>
+
+    <div class="flex items-center justify-between mt-auto">
+      {% if u.is_active %}
+      <span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Active" %}</span>
+      {% else %}
+      <span class="badge bg-neutral-soft text-neutral">{% trans "Inactive" %}</span>
+      {% endif %}
+      <a href="{% url 'fuel:agent-edit' u.id %}" class="text-xs text-accent hover:underline">{% trans "Edit" %} →</a>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-span-full">
+    {% url 'fuel:agent-create' as create_url %}
+    {% include "fuel/partials/_empty_state.html" with message=_("No users.") action_url=create_url action_label=_("Create one →") %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

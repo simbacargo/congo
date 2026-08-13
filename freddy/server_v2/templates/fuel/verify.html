@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Verify Receipt" %}{% endblock %}
+{% block page_title %}{% trans "Verify Receipt" %}{% endblock %}
+{% block page_subtitle %}{% trans "Check the authenticity of any LCI transaction" %}{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto">
+  <div class="card p-6">
+    <form hx-get="{% url 'fuel:verify' %}"
+          hx-target="#verify-result"
+          hx-swap="innerHTML"
+          hx-trigger="submit"
+          class="flex gap-2">
+      <input type="text" name="code" value="{{ code }}"
+             placeholder="LCI-XXXX-XXXX-XXXX"
+             autofocus
+             class="field receipt-code flex-1">
+      <button type="submit" class="btn btn-primary">{% trans "Verify" %}</button>
+    </form>
+  </div>
+  <div id="verify-result" class="mt-4">
+    {% if code %}{% include "fuel/partials/verify_result.html" %}{% endif %}
+  </div>
+</div>
+{% endblock %}

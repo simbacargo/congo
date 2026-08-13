@@ -1,0 +1,15 @@
+{% load i18n %}
+<tr class="text-xs">
+  <td>{{ ft.name }}</td>
+  <td class="receipt-code text-muted">{{ ft.code }}</td>
+  <td>
+    {% if ft.is_active %}
+    <span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Active" %}</span>
+    {% else %}
+    <span class="badge bg-neutral-soft text-neutral">{% trans "Inactive" %}</span>
+    {% endif %}
+  </td>
+  <td>
+    <a href="{% url 'fuel:fuel-type-edit' ft.pk %}" class="text-accent hover:underline">{% trans "Edit" %}</a>
+  </td>
+</tr>

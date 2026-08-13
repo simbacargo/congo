@@ -1,0 +1,50 @@
+{% load i18n %}
+{# Company card: include with company=<ParentCompany> (optionally annotated with station_count/tx_count/total_levy) #}
+<div class="card p-5 flex flex-col gap-3">
+  <div class="flex items-start justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-accent flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+        {{ company.code|slice:":2" }}
+      </div>
+      <div>
+        <p class="font-semibold text-sm">{{ company.name }}</p>
+        <p class="text-xs text-muted receipt-code">{{ company.code }}</p>
+      </div>
+    </div>
+    {% if company.is_active %}
+    <span class="badge" style="background: var(--color-ok-soft); color: var(--color-ok);">{% trans "Active" %}</span>
+    {% else %}
+    <span class="badge bg-neutral-soft text-neutral">{% trans "Inactive" %}</span>
+    {% endif %}
+  </div>
+
+  <div class="grid grid-cols-3 gap-2 text-center text-xs">
+    <div class="rounded-lg py-2 bg-surface-2">
+      <p class="font-semibold text-base num">{{ company.station_count|default:0 }}</p>
+      <p class="text-muted">{% trans "Stations" %}</p>
+    </div>
+    <div class="rounded-lg py-2 bg-surface-2">
+      <p class="font-semibold text-base num">{{ company.tx_count|default:0 }}</p>
+      <p class="text-muted">{% trans "Transactions" %}</p>
+    </div>
+    <div class="rounded-lg py-2 bg-surface-2">
+      <p class="font-semibold text-base money">${{ company.total_levy|default:0|floatformat:0 }}</p>
+      <p class="text-muted">{% trans "Levy" %}</p>
+    </div>
+  </div>
+
+  <div class="text-xs text-muted">
+    {% if company.contact_email %}📧 {{ company.contact_email }}{% endif %}
+    {% if company.contact_phone %} · 📞 {{ company.contact_phone }}{% endif %}
+  </div>
+
+  <div class="flex gap-2 mt-auto">
+    <button class="btn flex-1 justify-center !text-xs"
+            hx-get="{% url 'fuel:company-detail' company.id %}"
+            hx-target="#drill-panel"
+            hx-swap="innerHTML">
+      {% trans "Drill-down" %}
+    </button>
+    <a href="{% url 'fuel:company-edit' company.id %}" class="btn flex-1 justify-center !text-xs">{% trans "Edit" %}</a>
+  </div>
+</div>

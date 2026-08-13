@@ -1,0 +1,16 @@
+{% load i18n %}
+{# Fuel type add/edit form fragment (htmx target: #fuel-type-form-panel) #}
+<h3 class="text-sm font-semibold mb-4">{% if ft %}{% trans "Edit" %}{% else %}{% trans "Add" %}{% endif %} {% trans "Fuel Type" %}</h3>
+<form method="post"
+      action="{% if ft %}{% url 'fuel:fuel-type-edit' ft.pk %}{% else %}{% url 'fuel:fuel-type-create' %}{% endif %}"
+      class="space-y-3">
+  {% csrf_token %}
+  {% for field in form %}
+  <div>
+    <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    {% if field.errors %}<p class="text-xs text-danger mt-1">{{ field.errors.0 }}</p>{% endif %}
+  </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+</form>
