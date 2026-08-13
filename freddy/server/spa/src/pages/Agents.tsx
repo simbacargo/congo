@@ -193,6 +193,8 @@ export function MyHistory() {
         page={page}
         setPage={setPage}
         hideAgent
+        hideChurch
+        hideLevy
       />
     </div>
   );

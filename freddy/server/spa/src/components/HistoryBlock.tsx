@@ -29,6 +29,8 @@ export function HistoryBlock({
   setPage,
   hideStation = false,
   hideAgent = false,
+  hideChurch = false,
+  hideLevy = false,
 }: {
   data: HistoryResponse | undefined;
   isLoading: boolean;
@@ -40,6 +42,8 @@ export function HistoryBlock({
   setPage: (page: number) => void;
   hideStation?: boolean;
   hideAgent?: boolean;
+  hideChurch?: boolean;
+  hideLevy?: boolean;
 }) {
   const { t } = useTranslation();
   const summary = data?.summary;
@@ -60,13 +64,17 @@ export function HistoryBlock({
     ...(hideAgent
       ? []
       : [{ key: "agent", header: t("tx.agent"), render: (tx: Transaction) => tx.agent_username }]),
-    { key: "church", header: t("tx.church"), render: (tx) => tx.church_name },
-    {
-      key: "levy",
-      header: t("tx.levyUsd"),
-      numeric: true,
-      render: (tx) => <span className="money">{usd(tx.levy_amount_usd)}</span>,
-    },
+    ...(hideChurch ? [] : [{ key: "church", header: t("tx.church"), render: (tx: Transaction) => tx.church_name }]),
+    ...(hideLevy
+      ? []
+      : [
+          {
+            key: "levy",
+            header: t("tx.levyUsd"),
+            numeric: true,
+            render: (tx: Transaction) => <span className="money">{usd(tx.levy_amount_usd)}</span>,
+          },
+        ]),
     { key: "status", header: t("common.status"), render: (tx) => <StatusBadge status={tx.status} /> },
     {
       key: "date",
@@ -79,11 +87,13 @@ export function HistoryBlock({
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard label={t("history.transactions")} value={summary?.count ?? 0} />
-        <KpiCard
-          label={t("history.totalLevy")}
-          value={usd(summary?.total_levy_usd)}
-          accent
-        />
+        {!hideLevy && (
+          <KpiCard
+            label={t("history.totalLevy")}
+            value={usd(summary?.total_levy_usd)}
+            accent
+          />
+        )}
         <KpiCard label={t("history.totalAmount")} value={usd(summary?.total_amount_usd)} />
         <KpiCard
           label={t("history.lastAt")}
